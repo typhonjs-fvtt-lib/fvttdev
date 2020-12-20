@@ -1,6 +1,6 @@
 {
   "name": "fvttdev",
-  "description": "Provides a zero config build tool for Foundry VTT modules / systems based on Rollup and Oclif",
+  "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
   "version": "0.0.0",
   "author": "typhonrt",
   "bin": {
@@ -10,7 +10,10 @@
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.1"
+    "@oclif/plugin-help": "^3.2.1",
+    "@oclif/plugin-plugins": "^1.9.4",
+    "backbone-esnext-events": "^0.3.0",
+    "typhonjs-plugin-manager": "^0.2.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
@@ -20,7 +23,9 @@
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
     "mocha": "^5.2.0",
-    "nyc": "^14.1.1"
+    "nyc": "^14.1.1",
+    "typhonjs-config-eslint": "^0.6.0",
+    "kleur": "^4.0.0"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -39,14 +44,20 @@
   "main": "src/index.js",
   "oclif": {
     "commands": "./src/commands",
+    "hooks": {
+      "init": [
+        "./src/hooks/init/eventbus"
+      ]
+    },
     "bin": "fvttdev",
     "plugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
     ]
   },
   "repository": "typhonjs-fvtt/fvttdev",
   "scripts": {
-    "run-hello": "fvttdev build",
+    "run-build": "fvttdev build",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme && oclif-dev manifest && oclif-dev readme",

@@ -1,0 +1,13 @@
+Today
+-----------------------------------------
+1. Checkout existing repos
+
+2. Define all flags spread between all modules
+   - Create any bundler plugins that are missing for various Rollup plugins
+   - create flag handler on the eventbus
+   - test flags
+
+3. Examine esmbundler and entry points / initial code handling for JS / TS
+
+4. Parse module.json / system.json
+

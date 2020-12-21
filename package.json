@@ -49,7 +49,7 @@
     "commands": "./src/commands",
     "hooks": {
       "init": [
-        "./src/hooks/init/eventbus"
+        "./src/hooks/init/init"
       ]
     },
     "bin": "fvttdev",

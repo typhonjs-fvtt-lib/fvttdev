@@ -1,11 +1,12 @@
 Today
 -----------------------------------------
-1. Checkout existing repos
+1. Flag verification; especially
+  - shorthand 'char' overlap
+  - flag parsing for matched "<XXX>=<XXX>"
 
-2. Define all flags spread between all modules
-   - Create any bundler plugins that are missing for various Rollup plugins
+2. Clean up package.json imports IE latest Mocha / define peer dependencies / update license to correct MPL attribution
 
-3. Examine esmbundler and entry points / initial code handling for JS / TS
+2. Examine esmbundler and entry points / initial code handling for JS / TS
 
 3. TODO: consider `cwd` flag and implications
 

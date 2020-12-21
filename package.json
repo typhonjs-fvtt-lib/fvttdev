@@ -13,6 +13,7 @@
     "@oclif/plugin-help": "^3.2.1",
     "@oclif/plugin-plugins": "^1.9.4",
     "backbone-esnext-events": "^0.3.0",
+    "typhonjs-color-logger": "^0.0.13",
     "typhonjs-plugin-manager": "^0.2.0"
   },
   "devDependencies": {
@@ -20,12 +21,10 @@
     "@oclif/test": "^1.2.8",
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
-    "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
-    "typhonjs-config-eslint": "^0.6.0",
-    "kleur": "^4.0.0"
+    "typhonjs-config-eslint": "^0.6.0"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -58,6 +57,7 @@
   "repository": "typhonjs-fvtt/fvttdev",
   "scripts": {
     "run-build": "fvttdev build",
+    "run-build-env": "fvttdev build -e test",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme && oclif-dev manifest && oclif-dev readme",

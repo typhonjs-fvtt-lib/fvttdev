@@ -1,3 +1,6 @@
+#temporary until testing framework is setup.
+/env
+
 .idea
 .DS_Store
 npm-debug.log

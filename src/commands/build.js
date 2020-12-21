@@ -13,10 +13,12 @@ class BuildCommand extends Command
     */
    async run()
    {
-      const test = process.eventbus.triggerSync('test');
-      this.log(`test: ${test}`);
+      // Dynamically load flags for the command from oclif-flaghandler.
+      BuildCommand.flags = process.eventbus.triggerSync('oclif:flaghandler:get');
 
       const { flags } = this.parse(BuildCommand);
+
+      this.log(`build - run - flags ${JSON.stringify(flags)}`);
 
       // TODO: need to load *.env file here then reparse flags?
 
@@ -25,16 +27,9 @@ class BuildCommand extends Command
    }
 }
 
-BuildCommand.description = `Describe the command here
+BuildCommand.description = `Builds a module or system
 ...
 Extra documentation goes here
 `;
-
-BuildCommand.flags = (function()
-{
-   return {
-      name: flags.string({ 'char': 'b', 'description': 'name to print' })
-   };
-})();
 
 module.exports = BuildCommand;

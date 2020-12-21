@@ -15,6 +15,10 @@ const FlagHandler    = require('../../lib/FlagHandler');
  */
 module.exports = async function(opts)
 {
+   // Save base executing path immediately before anything else occurs w/ CLI / Oclif.
+   // TODO RECONSIDER: TAKE INTO ACCOUNT `cwd` flag
+   process.__baseName = process.cwd();
+
    process.eventbus = new Events();
    process.pluginManager = new PluginManager({ eventbus: process.eventbus });
 
@@ -29,19 +33,22 @@ module.exports = async function(opts)
 
    process.pluginManager.add({ name: 'oclif-flaghandler', instance: new FlagHandler() });
 
-//   process.stdout.write(`fvttdev eventbus init hook opts ${JSON.stringify(opts)}\n`);
+   // Adds flags for various built in commands like `build`.
+   s_ADD_FLAGS(opts.id);
 
+   // TODO REMOVE
+   process.stdout.write(`fvttdev eventbus init hook running ${opts.id}\n`);
+};
 
-   switch (opts.id)
-   {
-/*
-'--env, -e' - a name of the *.env file to load from ./env directory.
-'--entry, -i' - specific entry point though we are going to parse module.json for them
-'--output, -o' - 'Directory to place build files into' / also use *.env files
-'--cwd', 'Use an alternative working directory' - default: '.'
-'--sourcemap' - 'Generate source map' - default: true
+/**
+ * Adds flags for various built in commands like `build`.
+ *
+ * @param {string} commandID - ID of the command being run.
  */
-
+function s_ADD_FLAGS(commandID)
+{
+   switch (commandID)
+   {
       // Add all built in flags for the build command.
       case 'build':
          process.eventbus.trigger('oclif:flaghandler:add', {
@@ -51,20 +58,27 @@ module.exports = async function(opts)
 
             env: flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from ./env' }),
 
-            output: flags.string({
-             'char': 'o', 'description': 'Directory to place build files into.', 'default': './dist' }),
+            deploy: flags.string({
+               'char': 'd',
+               'description': 'Directory to deploy build files into.',
+               'default': './dist',
+               'env': 'DEPLOY_PATH'
+            }),
 
-            sourcemap: flags.boolean({ 'description': 'Generate source map.', 'default': true }),
+            // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
+            // 'true' or 'false' that will determine the setting for sourcemap.
+            sourcemap: flags.boolean({
+               'description': 'Generate source map.', 'default': function()
+               {
+                  if (process.env.DEPLOY_SOURCEMAP === 'true') { return true; }
+
+                  return process.env.DEPLOY_SOURCEMAP !== 'false';
+               }
+            }),
 
             watch: flags.boolean({
-             'description': 'Continually build / bundle source to output directory', 'default': false }),
-
-            // TODO REMOVE
-            name: flags.string({ 'char': 'b', 'description': 'name to print' })
+               'description': 'Continually build / bundle source to output directory', 'default': false }),
          });
          break;
    }
-
-   // TODO REMOVE
-   process.stdout.write(`fvttdev eventbus init hook running ${opts.id}\n`);
-};
+}

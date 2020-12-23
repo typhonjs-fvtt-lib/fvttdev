@@ -18,6 +18,7 @@
     "backbone-esnext-events": "^0.3.0",
     "dotenv": "^8.0.0",
     "typhonjs-color-logger": "^0.0.13",
+    "typhonjs-package-util": "^0.0.3",
     "typhonjs-plugin-manager": "^0.2.0"
   },
   "devDependencies": {
@@ -43,7 +44,7 @@
   "keywords": [
     "oclif"
   ],
-  "license": "MPL2.0",
+  "license": "MPL-2.0",
   "main": "src/index.js",
   "oclif": {
     "commands": "./src/commands",

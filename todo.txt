@@ -4,11 +4,27 @@ Today
   - shorthand 'char' overlap
   - flag parsing for matched "<XXX>=<XXX>"
 
-2. Clean up package.json imports IE latest Mocha / define peer dependencies / update license to correct MPL attribution
-
 2. Examine esmbundler and entry points / initial code handling for JS / TS
 
 3. TODO: consider `cwd` flag and implications
 
 4. Parse module.json / system.json
 
+
+
+Before publishing
+---------
+
+Make and test a separate modules for FlagHandler & RollupRunner
+
+---------
+
+Keep in mind:
+- Our CLI error handler is potentially a big fragile (needs better testing for node org / non-org modules).
+
+- It appears that @oclif/plugin-not-found does not appear to play nice w/ dynamic command flags
+
+---------
+
+External projects:
+typhonjs-package-util - `formatFromError` does not take into account NPM organizations.

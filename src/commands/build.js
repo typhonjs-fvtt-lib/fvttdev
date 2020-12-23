@@ -59,7 +59,7 @@ class BuildCommand extends Command
    async run()
    {
       // Dynamically load flags for the command from oclif-flaghandler.
-      BuildCommand.flags = process.eventbus.triggerSync('oclif:flaghandler:get');
+      BuildCommand.flags = process.eventbus.triggerSync('oclif:system:flaghandler:get', 'build');
 
       let { flags } = this.parse(BuildCommand);
 

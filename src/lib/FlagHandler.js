@@ -1,5 +1,6 @@
 /**
- * Receives all flags from plugins for the given build action.
+ * Receives all flags from the various Oclif plugins allowing dynamic flag association for the plugin to a specific
+ * build command.
  */
 class FlagHandler
 {
@@ -14,33 +15,128 @@ class FlagHandler
    /**
     * Adds new flags, but posts warnings if there are existing flags w/ the same name.
     *
-    * @param {object} newFlags - new flags to add.
+    * @param {object} newEntry - object defining command name, plugin name, and associated flags
+    * @param {string} newEntry.command - The command name to store the flags.
+    * @param {string} newEntry.plugin - new flags to add.
+    * @param {object} newEntry.flags - new flags to add.
     */
-   addFlags(newFlags = {})
+   addFlags(newEntry = {})
    {
-      const keys = Object.keys(newFlags);
-
-      for (const key of keys)
+      if (typeof newEntry !== 'object')
       {
-         if (!(key in this._flags))
+         throw new Error(`FlagHandler addFlags: 'newEntry' is not an 'object'.`);
+      }
+
+      if (typeof newEntry.command !== 'string')
+      {
+         throw new Error(`FlagHandler addFlags: 'newEntry.command' is not a 'string'.`);
+      }
+
+      if (typeof newEntry.plugin !== 'string')
+      {
+         throw new Error(`FlagHandler addFlags: 'newEntry.plugin' is not a 'string'.`);
+      }
+
+      if (typeof newEntry.flags !== 'object')
+      {
+         throw new Error(`FlagHandler addFlags: 'newEntry.flags' is not an 'object'.`);
+      }
+
+      const commandName = newEntry.command;
+      const pluginName = newEntry.plugin;
+      const newFlags = newEntry.flags;
+
+      // Check for any existing flag conflicts for a given command. An error messages will be thrown if there are
+      // conflicts.
+      this._checkFlagConflict(commandName, pluginName, newFlags);
+
+      // Retrieve existing command object or create new.
+      const commandFlags = this._flags[commandName] || {};
+
+      // Assign copied flags by plugin name to command object.
+      commandFlags[pluginName] = Object.assign(newFlags, {});
+
+      // Store command name object.
+      this._flags[commandName] = commandFlags;
+   }
+
+   /**
+    * Checks if there are existing command / plugin flags that conflict with new flags being added.
+    *
+    * @param {string}   commandName - the name of the command
+    * @param {string}   newPluginName - the name of the plugin for new flags attempting to be added.
+    * @param {object}   newPluginFlags - new plugin flags to add.
+    *
+    * @throws {Error}   Throws an Error if conflict is detected
+    * @private
+    */
+   _checkFlagConflict(commandName, newPluginName, newPluginFlags)
+   {
+      let flagConflictMsg = '';
+
+      // Retrieve the object for the particular command name or create a new one.
+      const commandFlags = this._flags[commandName] || {};
+
+      const pluginNames = Object.keys(commandFlags);
+
+      // Verify that an entry for the new plugin hasn't already been made.
+      if (pluginNames.includes(newPluginName))
+      {
+         throw new Error(`flags have already been added for a plugin named '${newPluginName}.'`);
+      }
+
+      // The keys of the new flags to add - this is the long name for the flag.
+      const newFlags = Object.keys(newPluginFlags);
+
+      // Check all flags across all plugin names against new flags to add.
+      for (const name of pluginNames)
+      {
+         const pluginFlags = commandFlags[name] || {};
+
+         for (const newFlag of newFlags)
          {
-            this._flags[key] = newFlags[key];
+            if (newFlag in pluginFlags)
+            {
+               flagConflictMsg += `flag '${newFlag}' from '${newPluginName}' already defined by `
+                + `'${name}' plugin for '${commandName}' command.\n`;
+            }
          }
-         else
-         {
-            process.eventbus.trigger('log:warn', `add: skipping key '${key}' as already managed.\n`);
-         }
+      }
+
+      if (flagConflictMsg !== '')
+      {
+         throw new Error(`FlagHandler Error - There following conflicts are detected:\n${flagConflictMsg}`);
       }
    }
 
    /**
-    * Gets the flags.
+    * Gets associated flags for a particular command name.
+    *
+    * @param {string}   commandName - Retrieve flags for this command name.
     *
     * @returns {*|{}}
     */
-   getFlags()
+   getFlags(commandName)
    {
-      return this._flags;
+      if (typeof commandName !== 'string')
+      {
+         throw new Error(`FlagHandler getFlags: 'commandName' is not a 'string'.`);
+      }
+
+      // Retrieve existing command object or create new.
+      const commandFlags = this._flags[commandName] || {};
+
+      const pluginNames = Object.keys(commandFlags);
+
+      let allFlags = {};
+
+      // Combine all flags across all plugin names.
+      for (const name of pluginNames)
+      {
+         allFlags = Object.assign(allFlags, commandFlags[name]);
+      }
+
+      return allFlags;
    }
 
    /**
@@ -56,19 +152,8 @@ class FlagHandler
    {
       const eventbus = ev.eventbus;
 
-      let eventPrepend = '';
-
-      const options = ev.pluginOptions;
-
-      // Apply any plugin options.
-      if (typeof options === 'object')
-      {
-         // If `eventPrepend` is defined then it is prepended before all event bindings.
-         if (typeof options.eventPrepend === 'string') { eventPrepend = `${options.eventPrepend}:`; }
-      }
-
-      eventbus.on(`${eventPrepend}oclif:flaghandler:add`, this.addFlags, this);
-      eventbus.on(`${eventPrepend}oclif:flaghandler:get`, this.getFlags, this);
+      eventbus.on(`oclif:system:flaghandler:add`, this.addFlags, this);
+      eventbus.on(`oclif:system:flaghandler:get`, this.getFlags, this);
    }
 }
 

@@ -10,7 +10,8 @@ class FlagHandler
    constructor()
    {
       /**
-       * Stores flags broken down by command name -> plugin name -> flags
+       * Stores flags and a potential verify function broken down by command name -> plugin name -> { flags, verify }
+       *
        * @type {{}}
        * @private
        */
@@ -20,10 +21,11 @@ class FlagHandler
    /**
     * Adds new flags, but posts warnings if there are existing flags w/ the same name.
     *
-    * @param {object} newEntry - object defining command name, plugin name, and associated flags
-    * @param {string} newEntry.command - The command name to store the flags.
-    * @param {string} newEntry.plugin - new flags to add.
-    * @param {object} newEntry.flags - new flags to add.
+    * @param {object}   newEntry - object defining command name, plugin name, and associated flags
+    * @param {string}   newEntry.command - The command name to store the flags.
+    * @param {string}   newEntry.plugin - The plugin name.
+    * @param {object}   newEntry.flags - new flags to add.
+    * @param {function} [newEntry.verify] - An optional function invoked to verify flags set by the given plugin.
     */
    addFlags(newEntry = {})
    {
@@ -47,9 +49,18 @@ class FlagHandler
          throw new Error(`FlagHandler addFlags: 'newEntry.flags' is not an 'object'.`);
       }
 
+      if (newEntry.verify !== null && newEntry.verify !== undefined)
+      {
+         if (typeof newEntry.verify !== 'function')
+         {
+            throw new Error(`FlagHandler addFlags: 'newEntry.verify' is not a 'function'.`);
+         }
+      }
+
       const commandName = newEntry.command;
       const pluginName = newEntry.plugin;
       const newFlags = newEntry.flags;
+      const newVerify = typeof newEntry.verify === 'function' ? newEntry.verify : null;
 
       // Check for any existing flag conflicts for a given command. An error messages will be thrown if there are
       // conflicts.
@@ -59,7 +70,7 @@ class FlagHandler
       const commandFlags = this._flags[commandName] || {};
 
       // Assign copied flags by plugin name to command object.
-      commandFlags[pluginName] = Object.assign(newFlags, {});
+      commandFlags[pluginName] = { flags: Object.assign(newFlags, {}), verify: newVerify };
 
       // Store command name object.
       this._flags[commandName] = commandFlags;
@@ -102,7 +113,7 @@ class FlagHandler
          // Iterate over all existing plugins and verify that the long flag name is not already defined.
          for (const pluginName of pluginNames)
          {
-            const pluginFlags = commandFlags[pluginName] || {};
+            const pluginFlags = commandFlags[pluginName].flags || {};
 
             // Verify that long hand flag is not already in plugin flags.
             if (newFlag in pluginFlags)
@@ -142,12 +153,20 @@ class FlagHandler
    /**
     * Gets associated flags for a particular command name.
     *
-    * @param {string}   commandName - Retrieve flags for this command name.
+    * @param {object}   query - Query object
+    * @param {string}   query.command - Retrieve flags for this command name.
     *
     * @returns {*|{}}
     */
-   getFlags(commandName)
+   getFlags(query = {})
    {
+      if (typeof query !== 'object')
+      {
+         throw new Error(`FlagHandler getFlags: 'query' is not a 'string'.`);
+      }
+
+      const commandName = query.command;
+
       if (typeof commandName !== 'string')
       {
          throw new Error(`FlagHandler getFlags: 'commandName' is not a 'string'.`);
@@ -161,9 +180,9 @@ class FlagHandler
       let allFlags = {};
 
       // Combine all flags across all plugin names.
-      for (const name of pluginNames)
+      for (const pluginName of pluginNames)
       {
-         allFlags = Object.assign(allFlags, commandFlags[name]);
+         allFlags = Object.assign(allFlags, commandFlags[pluginName].flags);
       }
 
       return allFlags;
@@ -184,6 +203,51 @@ class FlagHandler
 
       eventbus.on(`oclif:system:flaghandler:add`, this.addFlags, this);
       eventbus.on(`oclif:system:flaghandler:get`, this.getFlags, this);
+      eventbus.on(`oclif:system:flaghandler:verify`, this.verifyFlags, this);
+   }
+
+   /**
+    * Invokes any stored Oclif plugin verification functions against the final command flags.
+    *
+    * @param {object}   query - Query object
+    * @param {string}   query.command - Retrieve flags for this command name.
+    * @param {object}   query.flags - Parsed flags for a command.
+    */
+   verifyFlags(query = {})
+   {
+      if (typeof query !== 'object')
+      {
+         throw new Error(`FlagHandler verifyFlags: 'query' is not a 'string'.`);
+      }
+
+      const commandName = query.command;
+      const flags = query.flags;
+
+      if (typeof commandName !== 'string')
+      {
+         throw new Error(`FlagHandler verifyFlags: 'commandName' is not a 'string'.`);
+      }
+
+      if (typeof flags !== 'object')
+      {
+         throw new Error(`FlagHandler verifyFlags: 'flags' is not an 'object'.`);
+      }
+
+      // Retrieve existing command object or create new.
+      const commands = this._flags[commandName] || {};
+
+      const pluginNames = Object.keys(commands);
+
+      // Combine all flags across all plugin names.
+      for (const pluginName of pluginNames)
+      {
+         const verifyFunc = commands[pluginName].verify;
+
+         if (typeof verifyFunc === 'function')
+         {
+            verifyFunc(flags);
+         }
+      }
    }
 }
 

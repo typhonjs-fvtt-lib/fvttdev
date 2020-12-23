@@ -57,12 +57,20 @@ class BuildCommand extends Command
    }
 
    /**
-    * Performs any additional initialization after initial flags have been set.
+    * Performs all initialization, loading of flags from *.env file via dotenv and verification of flags.
     *
-    * @param {object}   flags - initial flags set for build command.
+    * @return {object} Parsed and verified flags.
+    *
+    * @private
     */
-   initialize(flags)
+   _initializeFlags()
    {
+      // Dynamically load flags for the command from oclif-flaghandler.
+      BuildCommand.flags = process.eventbus.triggerSync('oclif:system:flaghandler:get', { command: 'build' });
+
+      let { flags } = this.parse(BuildCommand);
+
+      // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
       global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
 
       // Notify that the current working directory is being changed and verify that the new directory exists.
@@ -76,6 +84,14 @@ class BuildCommand extends Command
             this.exit(1);
          }
       }
+
+      // Attempt to parse any environment variables via dotenv if applicable and reload / update flags accordingly.
+      flags = this._loadEnvFile(flags);
+
+      // Verify flags given any plugin provided verify functions in FlagHandler.
+      process.eventbus.triggerSync('oclif:system:flaghandler:verify', { command: 'build', flags });
+
+      return flags;
    }
 
    /**
@@ -85,16 +101,7 @@ class BuildCommand extends Command
     */
    async run()
    {
-      // Dynamically load flags for the command from oclif-flaghandler.
-      BuildCommand.flags = process.eventbus.triggerSync('oclif:system:flaghandler:get', 'build');
-
-      let { flags } = this.parse(BuildCommand);
-
-      // Perform any initialization after initial flags have been loaded.
-      this.initialize(flags);
-
-      // Attempt to parse any environment variables via dot-env if applicable and reload / update flags accordingly.
-      flags = this._loadEnvFile(flags);
+      const flags = this._initializeFlags();
 
       // TODO REMOVE - TEST
       this.log(`\nbuild command - run - flags:\n${JSON.stringify(flags, null, 3)}`);

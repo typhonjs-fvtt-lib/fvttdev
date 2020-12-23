@@ -6,6 +6,12 @@ require('@oclif/command').run()
 .then(require('@oclif/command/flush'))
 .catch((error) =>
 {
+   // Given a magic boolean variable assigned to an error skip printing out a fatal error.
+   if (typeof error.$$bundler_fatal === 'boolean' && !error.$$bundler_fatal)
+   {
+      return oclifHandler(error);
+   }
+
    // Acquire trace info from 'typhonjs-color-logger'
    const traceInfo = logger.getTraceInfo(error);
 

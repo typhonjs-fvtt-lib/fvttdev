@@ -1,7 +1,6 @@
 Today
 -----------------------------------------
 1. Flag verification; especially
-  - loading array for `string`
   - loading array from *.env files for `alias`, `replace`,
   - flag parsing for matched "<XXX>=<XXX>"
 

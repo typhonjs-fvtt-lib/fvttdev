@@ -9,6 +9,11 @@ class FlagHandler
     */
    constructor()
    {
+      /**
+       * Stores flags broken down by command name -> plugin name -> flags
+       * @type {{}}
+       * @private
+       */
       this._flags = {};
    }
 

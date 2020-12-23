@@ -28,11 +28,12 @@ class BuildCommand extends Command
 
       if (typeof existingFlags.env === 'string')
       {
-         const envFilePath = `${process.__baseName}${path.sep}env${path.sep}${existingFlags.env}.env`;
+         const envFilePath = `${global.$$bundler_baseCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
 
          if (!fs.existsSync(envFilePath))
          {
-            process.eventbus.trigger('log:warn', `Could not find specified environment file: \n'${envFilePath}'`);
+            this.error(`Could not find specified environment file: \n'${envFilePath}'`);
+            this.exit(1);
          }
          else
          {
@@ -40,7 +41,11 @@ class BuildCommand extends Command
 
             // Potentially load environment variables from a *.env file.
             const env = dotenv.config({ path: envFilePath });
-            if (env.error) { throw env.error; }
+            if (env.error)
+            {
+               this.error(`An error occurred with 'dotenv' when loading environment file: \n${env.error.message}`);
+               this.exit(1);
+            }
 
             // Parse flags again after environment variables have been loaded.
             const { flags } = this.parse(BuildCommand);
@@ -49,6 +54,28 @@ class BuildCommand extends Command
       }
 
       return output;
+   }
+
+   /**
+    * Performs any additional initialization after initial flags have been set.
+    *
+    * @param {object}   flags - initial flags set for build command.
+    */
+   initialize(flags)
+   {
+      global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
+
+      // Notify that the current working directory is being changed and verify that the new directory exists.
+      if (flags.cwd !== '.')
+      {
+         this.log(`New current working directory set: \n${global.$$bundler_baseCWD}`);
+
+         if (!fs.existsSync(global.$$bundler_baseCWD))
+         {
+            this.error(`New current working directory does not exist.`);
+            this.exit(1);
+         }
+      }
    }
 
    /**
@@ -63,7 +90,10 @@ class BuildCommand extends Command
 
       let { flags } = this.parse(BuildCommand);
 
-      // Attempt to parse any environment variables via dot-env if applicable.
+      // Perform any initialization after initial flags have been loaded.
+      this.initialize(flags);
+
+      // Attempt to parse any environment variables via dot-env if applicable and reload / update flags accordingly.
       flags = this._loadEnvFile(flags);
 
       // TODO REMOVE - TEST

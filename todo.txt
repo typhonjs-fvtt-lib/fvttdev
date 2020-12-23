@@ -1,7 +1,8 @@
 Today
 -----------------------------------------
 1. Flag verification; especially
-  - shorthand 'char' overlap
+  - loading array for `string`
+  - loading array from *.env files for `alias`, `replace`,
   - flag parsing for matched "<XXX>=<XXX>"
 
 2. Examine esmbundler and entry points / initial code handling for JS / TS

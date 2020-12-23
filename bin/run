@@ -18,9 +18,9 @@ require('@oclif/command').run()
       packageData = s_FORMAT_FROM_TRACE(traceInfo.trace);
    }
 
-   // Note: This will exclude any package that starts w/ @oclif from posting an detailed error message. Since this is
+   // Note: This will exclude any package that starts w/ @oclif from posting a detailed error message. Since this is
    // a catch all error handler for the whole CLI we'll only post detailed error messages for non Oclif packages
-   // detected.
+   // detected where a `package.json` file can be found.
    if (packageData !== null && typeof packageData === 'object' && typeof packageData.name === 'string' &&
     !packageData.name.startsWith('@oclif'))
    {
@@ -129,7 +129,7 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
 
       /* eslint-enable prefer-template */
 
-      packageMessage += `${packageData.formattedMessage}\nfvttdev version: ${global.$$fvttdev_version}`;
+      packageMessage += `${packageData.formattedMessage}\nfvttdev version: ${global.$$bundler_version}`;
 
       // Log any uncaught errors as fatal.
       logger.fatal(packageMessage, sep, error, '\n');
@@ -137,6 +137,6 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
    else
    {
       // Log any uncaught errors as fatal.
-      logger.fatal(`An unknown fatal error has occurred; fvttdev (${global.$$fvttdev_version}):`, error, '\n');
+      logger.fatal(`An unknown fatal error has occurred; ${global.$$bundler_name_version}:`, error, '\n');
    }
 }

@@ -89,23 +89,48 @@ class FlagHandler
       const newFlags = Object.keys(newPluginFlags);
 
       // Check all flags across all plugin names against new flags to add.
-      for (const name of pluginNames)
+      for (const newFlag of newFlags)
       {
-         const pluginFlags = commandFlags[name] || {};
+         // Store any alias for the new flag if defined.
+         const newFlagChar = typeof newPluginFlags[newFlag].char === 'string' ? newPluginFlags[newFlag].char : null;
 
-         for (const newFlag of newFlags)
+         // Iterate over all existing plugins and verify that the long flag name is not already defined.
+         for (const pluginName of pluginNames)
          {
+            const pluginFlags = commandFlags[pluginName] || {};
+
+            // Verify that long hand flag is not already in plugin flags.
             if (newFlag in pluginFlags)
             {
-               flagConflictMsg += `flag '${newFlag}' from '${newPluginName}' already defined by `
-                + `'${name}' plugin for '${commandName}' command.\n`;
+               flagConflictMsg += `Flag '${newFlag}' from '${newPluginName}' already defined by `
+                + `'${pluginName}' plugin for '${commandName}' command.\n`;
+            }
+
+            // If an alias is defined for the new flag then iterate over all existing plugin flags to check
+            // alias conflicts w/ shorthand flag values.
+            if (newFlagChar)
+            {
+               const pluginFlagKeys = Object.keys(pluginFlags);
+
+               // Iterate over plugin flag entry data.
+               for (const pluginFlagKey of pluginFlagKeys)
+               {
+                  const pluginFlagEntry = pluginFlags[pluginFlagKey];
+
+                  // An alias conflict is potentially found.
+                  if (typeof pluginFlagEntry.char === 'string' && pluginFlagEntry.char === newFlagChar)
+                  {
+                     flagConflictMsg += `Alias '${newFlagChar}' of flag '${newFlag}' from '${newPluginName}' already `
+                     + `defined by '${pluginFlagKey}' flag in '${pluginName}' for '${commandName}' command.\n`;
+                  }
+               }
             }
          }
       }
 
       if (flagConflictMsg !== '')
       {
-         throw new Error(`FlagHandler Error - There following conflicts are detected:\n${flagConflictMsg}`);
+         throw new Error(`FlagHandler Error - The following conflicts are detected:\n${flagConflictMsg}`);
       }
    }
 

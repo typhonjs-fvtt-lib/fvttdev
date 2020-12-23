@@ -20,8 +20,7 @@ module.exports = async function(opts)
    try
    {
       // Save base executing path immediately before anything else occurs w/ CLI / Oclif.
-      // TODO RECONSIDER: TAKE INTO ACCOUNT `cwd` flag
-      process.__baseName = process.cwd();
+      global.$$bundler_origCWD = process.cwd();
 
       process.eventbus = new Events();
 
@@ -44,7 +43,7 @@ module.exports = async function(opts)
       s_ADD_FLAGS(opts.id);
 
       // TODO REMOVE
-      process.stdout.write(`fvttdev eventbus init hook running ${opts.id}\n`);
+      process.stdout.write(`fvttdev init hook running ${opts.id}\n`);
    }
    catch (error)
    {
@@ -67,11 +66,11 @@ function s_ADD_FLAGS(command)
             command,
             plugin: 'fvttdev',
             flags: {
-               cwd: flags.string({ 'description': 'Use an alternative working directory', 'default': '.' }),
+               cwd: flags.string({ 'description': 'Use an alternative working directory.', 'default': '.' }),
 
-               entry: flags.string({ 'char': 'i', 'description': 'Explicit entry module(s)' }),
+               entry: flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
 
-               env: flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from ./env' }),
+               env: flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
 
                deploy: flags.string({
                   'char': 'd',
@@ -83,17 +82,19 @@ function s_ADD_FLAGS(command)
                // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
                // 'true' or 'false' that will determine the setting for sourcemap.
                sourcemap: flags.boolean({
-                  'description': 'Generate source map.', 'default': function()
+                  'description': '[default: true] Generate source maps.',
+                  'allowNo': true,
+                  'default': function()
                   {
-                     if (process.env.DEPLOY_SOURCEMAP === 'true')
-                     { return true; }
+                     if (process.env.DEPLOY_SOURCEMAP === 'true') { return true; }
 
                      return process.env.DEPLOY_SOURCEMAP !== 'false';
                   }
                }),
 
                watch: flags.boolean({
-                  'description': 'Continually build / bundle source to output directory', 'default': false
+                  'description': 'Continually build / bundle source to deploy directory.',
+                  'default': false
                }),
             }
          });
@@ -107,6 +108,8 @@ function s_ADD_FLAGS(command)
  */
 function s_SET_VERSION()
 {
+   global.$$bundler_name = 'fvttdev';
+
    const packagePath = path.resolve(__dirname, '../../../package.json');
 
    try
@@ -115,12 +118,8 @@ function s_SET_VERSION()
 
       if (packageObj)
       {
-         if (process.eventbus)
-         {
-            process.eventbus.on('fvttdev:data:version:get', () => { return packageObj.version; });
-         }
-
-         global.$$fvttdev_version = packageObj.version;
+         global.$$bundler_version = packageObj.version;
+         global.$$bundler_name_version = `fvttdev (${packageObj.version})`;
       }
    }
    catch (err) { /* nop */ }

@@ -12,8 +12,11 @@ const RollupRunner         = require('../lib/RollupRunner');
 class BuildCommand extends Command
 {
    /**
-    * Attempts to load environment variables from a *.env file w/ `dot-env`. Many flags have defaults, but also can be
+    * Attempts to load environment variables from a *.env file w/ `dotenv`. Many flags have defaults, but also can be
     * set with environment variables and this is a convenient way to load many different configurations.
+    *
+    * Note: If an environment file is loaded by `dotenv` the flags are parsed again below via
+    * `this.parse(BuildCommand)`.
     *
     * @param {object}   existingFlags - parsed flags from command.
     *
@@ -26,10 +29,13 @@ class BuildCommand extends Command
    {
       let output = existingFlags;
 
+      // Check to see if the `env` flag has been set; if so attempt to load the *.env file and parse the flags again.
       if (typeof existingFlags.env === 'string')
       {
+         // By default the environment variables will always be stored in `./env`
          const envFilePath = `${global.$$bundler_baseCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
 
+         // Exit gracefully if the environment file could not be found.
          if (!fs.existsSync(envFilePath))
          {
             this.error(`Could not find specified environment file: \n'${envFilePath}'`);
@@ -66,8 +72,9 @@ class BuildCommand extends Command
    _initializeFlags()
    {
       // Dynamically load flags for the command from oclif-flaghandler.
-      BuildCommand.flags = process.eventbus.triggerSync('oclif:system:flaghandler:get', { command: 'build' });
+      BuildCommand.flags = global.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { command: 'build' });
 
+      // Perform the first stage of parsing flags. This is
       let { flags } = this.parse(BuildCommand);
 
       // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
@@ -89,7 +96,7 @@ class BuildCommand extends Command
       flags = this._loadEnvFile(flags);
 
       // Verify flags given any plugin provided verify functions in FlagHandler.
-      process.eventbus.triggerSync('oclif:system:flaghandler:verify', { command: 'build', flags });
+      global.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:verify', { command: 'build', flags });
 
       return flags;
    }

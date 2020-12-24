@@ -1,18 +1,27 @@
 /**
  * Receives all flags from the various Oclif plugins allowing dynamic flag association for the plugin to a specific
- * build command.
+ * Oclif command action. This allows TyphonJS Oclif plugins to register flags for command actions dynamically. When
+ * commands are added in `addFlags` conflict checking occurs to ensure that no plugin can add the same flag or
+ * shorthand alias. If a conflict occurs an error message is posted and CLI exits.
+ *
+ * There are three methods which are available on the plugin eventbus:
+ *
+ * `typhonjs:oclif:system:flaghandler:add` -> addFlags
+ *
+ * `typhonjs:oclif:system:flaghandler:get` -> getFlags
+ *
+ * `typhonjs:oclif:system:flaghandler:verify` -> verifyFlags
  */
 class FlagHandler
 {
    /**
-    *
     */
    constructor()
    {
       /**
        * Stores flags and a potential verify function broken down by command name -> plugin name -> { flags, verify }
        *
-       * @type {{}}
+       * @type {{command_name: {plugin_name: {flags: {}, verify: function}}}}
        * @private
        */
       this._flags = {};
@@ -57,6 +66,7 @@ class FlagHandler
          }
       }
 
+      // Store the new entry parameters locally for easier reference.
       const commandName = newEntry.command;
       const pluginName = newEntry.plugin;
       const newFlags = newEntry.flags;
@@ -88,12 +98,14 @@ class FlagHandler
     */
    _checkFlagConflict(commandName, newPluginName, newPluginFlags)
    {
+      // Stores any conflict messages; if this is not empty at the end of the method an Error is thrown.
       let flagConflictMsg = '';
 
       // Retrieve the object for the particular command name or create a new one.
-      const commandFlags = this._flags[commandName] || {};
+      const commandNames = this._flags[commandName] || {};
 
-      const pluginNames = Object.keys(commandFlags);
+      // Retrieve the second level keys / plugin names.
+      const pluginNames = Object.keys(commandNames);
 
       // Verify that an entry for the new plugin hasn't already been made.
       if (pluginNames.includes(newPluginName))
@@ -113,9 +125,11 @@ class FlagHandler
          // Iterate over all existing plugins and verify that the long flag name is not already defined.
          for (const pluginName of pluginNames)
          {
-            const pluginFlags = commandFlags[pluginName].flags || {};
+            // Retrieve the stored plugin flags or create a new object.
+            const pluginFlags = commandNames[pluginName].flags || {};
 
-            // Verify that long hand flag is not already in plugin flags.
+            // Verify that long hand flag is not already in plugin flags. Add a conflict message about the flag
+            // already existing in the DB.
             if (newFlag in pluginFlags)
             {
                flagConflictMsg += `Flag '${newFlag}' from '${newPluginName}' already defined by `
@@ -123,17 +137,19 @@ class FlagHandler
             }
 
             // If an alias is defined for the new flag then iterate over all existing plugin flags to check
-            // alias conflicts w/ shorthand flag values.
+            // alias conflicts w/ shorthand flag values. IE `--env` may also have a char associated `-e`.
             if (newFlagChar)
             {
+               // Retrieve all the keys of the current plugin flags.
                const pluginFlagKeys = Object.keys(pluginFlags);
 
                // Iterate over plugin flag entry data.
                for (const pluginFlagKey of pluginFlagKeys)
                {
+                  // Retrieve the Oclif entry data for this particular flag.
                   const pluginFlagEntry = pluginFlags[pluginFlagKey];
 
-                  // An alias conflict is potentially found.
+                  // An shorthand alias conflict is potentially found. If so add a conflict message.
                   if (typeof pluginFlagEntry.char === 'string' && pluginFlagEntry.char === newFlagChar)
                   {
                      flagConflictMsg += `Alias '${newFlagChar}' of flag '${newFlag}' from '${newPluginName}' already `
@@ -144,6 +160,7 @@ class FlagHandler
          }
       }
 
+      // If there are any conflict messages generated above then throw an error.
       if (flagConflictMsg !== '')
       {
          throw new Error(`FlagHandler Error - The following conflicts are detected:\n${flagConflictMsg}`);
@@ -165,6 +182,7 @@ class FlagHandler
          throw new Error(`FlagHandler getFlags: 'query' is not a 'string'.`);
       }
 
+      // Locally store the command name from query.
       const commandName = query.command;
 
       if (typeof commandName !== 'string')
@@ -173,16 +191,18 @@ class FlagHandler
       }
 
       // Retrieve existing command object or create new.
-      const commandFlags = this._flags[commandName] || {};
+      const commandNames = this._flags[commandName] || {};
 
-      const pluginNames = Object.keys(commandFlags);
+      // Retrieve the second keys for plugin names.
+      const pluginNames = Object.keys(commandNames);
 
-      let allFlags = {};
+      // Store all flags being returned for this request.
+      const allFlags = {};
 
       // Combine all flags across all plugin names.
       for (const pluginName of pluginNames)
       {
-         allFlags = Object.assign(allFlags, commandFlags[pluginName].flags);
+         Object.assign(allFlags, commandNames[pluginName].flags);
       }
 
       return allFlags;
@@ -201,9 +221,9 @@ class FlagHandler
    {
       const eventbus = ev.eventbus;
 
-      eventbus.on(`oclif:system:flaghandler:add`, this.addFlags, this);
-      eventbus.on(`oclif:system:flaghandler:get`, this.getFlags, this);
-      eventbus.on(`oclif:system:flaghandler:verify`, this.verifyFlags, this);
+      eventbus.on(`typhonjs:oclif:system:flaghandler:add`, this.addFlags, this);
+      eventbus.on(`typhonjs:oclif:system:flaghandler:get`, this.getFlags, this);
+      eventbus.on(`typhonjs:oclif:system:flaghandler:verify`, this.verifyFlags, this);
    }
 
    /**
@@ -220,6 +240,7 @@ class FlagHandler
          throw new Error(`FlagHandler verifyFlags: 'query' is not a 'string'.`);
       }
 
+      // Locally store query data.
       const commandName = query.command;
       const flags = query.flags;
 
@@ -234,14 +255,16 @@ class FlagHandler
       }
 
       // Retrieve existing command object or create new.
-      const commands = this._flags[commandName] || {};
+      const commandNames = this._flags[commandName] || {};
 
-      const pluginNames = Object.keys(commands);
+      // Retrieve the second level keys for plugin names.
+      const pluginNames = Object.keys(commandNames);
 
-      // Combine all flags across all plugin names.
+      // Iterate over all plugins and if any verification functions have been provided then invoke them on the
+      // provided flags. Each verification plugin is responsible for throwing an error.
       for (const pluginName of pluginNames)
       {
-         const verifyFunc = commands[pluginName].verify;
+         const verifyFunc = commandNames[pluginName].verify;
 
          if (typeof verifyFunc === 'function')
          {

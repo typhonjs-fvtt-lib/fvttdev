@@ -1,21 +1,22 @@
 Today
 -----------------------------------------
-1. Flag verification; especially
-  - loading array from *.env files for `alias`, `replace`,
-  - flag parsing for matched "<XXX>=<XXX>"
+0. Review comments and write better method & inline comments.
+  - comment plugins
 
-2. Examine esmbundler and entry points / initial code handling for JS / TS
+1. Examine esmbundler and entry points / initial code handling for JS / TS
 
-3. TODO: consider `cwd` flag and implications
-
-4. Parse module.json / system.json
+2. Parse module.json / system.json
 
 
+Testing phase
+---------
+- Consider looking if a verification method needs to be added to plugin-string for bad user data.
+  Test w/ underlying Rollup plugin
 
 Before publishing
 ---------
 
-Make and test a separate modules for FlagHandler & RollupRunner
+- Make and test a separate modules for FlagHandler & RollupRunner
 
 ---------
 

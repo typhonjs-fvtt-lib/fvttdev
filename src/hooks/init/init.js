@@ -22,22 +22,26 @@ module.exports = async function(opts)
       // Save base executing path immediately before anything else occurs w/ CLI / Oclif.
       global.$$bundler_origCWD = process.cwd();
 
-      process.eventbus = new Events();
+      // Save the global eventbus.
+      global.$$eventbus = new Events();
 
       s_SET_VERSION();
 
-      process.pluginManager = new PluginManager({ eventbus: process.eventbus });
+      // Save the global plugin manager
+      global.$$pluginManager = new PluginManager({ eventbus: global.$$eventbus });
 
       // Adds color logger plugin
-      process.pluginManager.add(
+      global.$$pluginManager.add(
       {
          name: 'typhonjs-color-logger',
-         // options: {
-         //    filterConfigs: [{ type: 'exclusive', name: 'oclif', filterString: '@oclif' }]
-         // }
+         options: {
+            // Adds an exclusive filter which removes `FlagHandler` from stack trace / being a source of an error.
+            filterConfigs: [{ type: 'exclusive', name: 'FlagHandler', filterString: 'src/lib/FlagHandler.js' }]
+         }
       });
 
-      process.pluginManager.add({ name: 'oclif-flaghandler', instance: new FlagHandler() });
+      // Add '@typhonjs-node-bundle/oclif-flaghandler'
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-flaghandler', instance: new FlagHandler() });
 
       // Adds flags for various built in commands like `build`.
       s_ADD_FLAGS(opts.id);
@@ -52,7 +56,15 @@ module.exports = async function(opts)
 };
 
 /**
- * Adds flags for various built in commands like `build`.
+ * Adds flags for various built in commands for `build` action.
+ *
+ * Added flags include:
+ * `--cwd`       -      - Use an alternative working directory.      - default: `'.'`
+ * `--deploy`    - `-d` - Directory to deploy build files into.      - default: `'./dist' - env: DEPLOY_PATH
+ * `--entry`     - `-i` - Explicit entry module(s).
+ * `--env`       - `-e` - Name of *.env file to load from `./env`.
+ * `--sourcemap  -      - Generate source maps.                      - default: `true`    - env: DEPLOY_SOURCEMAP
+ * `--watch`     -      - Continually build / bundle source to deploy directory. - default: `false`
  *
  * @param {string} command - ID of the command being run.
  */
@@ -62,7 +74,7 @@ function s_ADD_FLAGS(command)
    {
       // Add all built in flags for the build command.
       case 'build':
-         process.eventbus.trigger('oclif:system:flaghandler:add', {
+         global.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
             command,
             plugin: 'fvttdev',
             flags: {
@@ -103,13 +115,14 @@ function s_ADD_FLAGS(command)
 }
 
 /**
- * Sets the global version number for fvttdev in `global.$$fvttdev_version` and creates an event callback
- * on the eventbus for getting the version number -> `fvttdev:data:version:get`
+ * Sets the global name and version number for `fvttdev` in `global.$$bundler_name` & `global.$$bundler_version`. Also
+ * provides a convenience name + package version string in `global.$$bundler_name_version`.
  */
 function s_SET_VERSION()
 {
    global.$$bundler_name = 'fvttdev';
 
+   // Retrieve the local package path to pull the version number for `fvttdev`
    const packagePath = path.resolve(__dirname, '../../../package.json');
 
    try

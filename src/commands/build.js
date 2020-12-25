@@ -4,7 +4,7 @@ const path                 = require('path');
 const { Command }          = require('@oclif/command');
 const dotenv               = require('dotenv');
 
-const RollupRunner         = require('../lib/RollupRunner');
+const PS = path.sep;
 
 /**
  * Provides the main Oclif `build` command that uses Rollup to bundle an FVTT module / system.
@@ -108,10 +108,60 @@ class BuildCommand extends Command
     */
    async run()
    {
+      const eventbus = global.$$eventbus;
+
+      // Initialize all flags / distributed flags from plugins.
       const flags = this._initializeFlags();
+
+      const remoteInputPlugins = await eventbus.triggerAsync('typhonjs:oclif:rollup:plugins:input:get', { flags });
+
+      let inputPlugins = [];
+
+      if (remoteInputPlugins !== void 0)
+      {
+         if (!Array.isArray(remoteInputPlugins)) { inputPlugins.push(remoteInputPlugins); }
+         else { inputPlugins = remoteInputPlugins; }
+      }
+
+      // TODO REMOVE
+      this.log(`INPUT PLUGINS: ${JSON.stringify(inputPlugins)}`);
+
+      // Simple test input config.
+      const configInput = {
+         input: './test/fixture/demo/src/index.js',
+         plugins: inputPlugins
+      };
+
+      // Output ---------------------------------------------------------------------
+
+      const remoteOutputPlugins = await eventbus.triggerAsync('typhonjs:oclif:rollup:plugins:output:get', { flags });
+
+      let outputPlugins = [];
+
+      if (remoteOutputPlugins !== void 0)
+      {
+         if (!Array.isArray(remoteOutputPlugins)) { outputPlugins.push(remoteOutputPlugins); }
+         else { outputPlugins = remoteOutputPlugins; }
+      }
+
+      // TODO REMOVE
+      this.log(`OUTPUT PLUGINS: ${JSON.stringify(outputPlugins)}`);
+
+      // Simple test output config.
+      const configOutput = {
+         file: `${flags.deploy}${PS}demo-rollup-module.js`,
+         format: 'es',
+         plugins: outputPlugins,
+         sourcemap: flags.sourcemap,
+//            sourcemapPathTransform: (sourcePath) => sourcePath.replace(relativePath, `.`)
+      };
 
       // TODO REMOVE - TEST
       this.log(`\nbuild command - run - flags:\n${JSON.stringify(flags, null, 3)}`);
+
+      const bundle = await global.$$eventbus.triggerAsync('typhonjs:node:bundle:rollup:run', configInput);
+
+      await bundle.write(configOutput);
    }
 }
 

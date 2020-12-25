@@ -1,11 +1,15 @@
 Today
 -----------------------------------------
-0. Review comments and write better method & inline comments.
-  - comment plugins
+0. review current scaffold code
 
-1. Examine esmbundler and entry points / initial code handling for JS / TS
+1. Integrate babel
+   - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
 
-2. Parse module.json / system.json
+2. add in loading config files from file system.
+
+3. Examine esmbundler and entry points / initial code handling for JS / TS
+
+4. Parse module.json / system.json
 
 
 Testing phase
@@ -28,4 +32,5 @@ Keep in mind:
 ---------
 
 External projects:
+backbone-esnext-events - triggerSync & triggerAsync will insert `null` for callbacks that match, but don't return a value.
 typhonjs-package-util - `formatFromError` does not take into account NPM organizations.

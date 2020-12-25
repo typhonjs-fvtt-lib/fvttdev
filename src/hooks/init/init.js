@@ -6,6 +6,7 @@ const Events         = require('backbone-esnext-events');
 const PluginManager  = require('typhonjs-plugin-manager');
 
 const FlagHandler    = require('../../lib/FlagHandler');
+const RollupRunner   = require('../../lib/RollupRunner');
 
 /**
  * Creates a plugin manager instance.
@@ -42,6 +43,9 @@ module.exports = async function(opts)
 
       // Add '@typhonjs-node-bundle/oclif-flaghandler'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-flaghandler', instance: new FlagHandler() });
+
+      // Add '@typhonjs-node-bundle/rollup-runnner'
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/rollup-runner', instance: new RollupRunner() });
 
       // Adds flags for various built in commands like `build`.
       s_ADD_FLAGS(opts.id);

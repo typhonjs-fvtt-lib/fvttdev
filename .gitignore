@@ -7,6 +7,7 @@ npm-debug.log
 *-debug.log
 *-error.log
 /.nyc_output
+/deploy
 /dist
 /tmp
 /yarn.lock

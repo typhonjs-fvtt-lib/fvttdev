@@ -29,6 +29,7 @@
     "globby": "^10.0.2",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
+    "rollup": "^2.0.0",
     "typhonjs-config-eslint": "^0.6.0"
   },
   "engines": {

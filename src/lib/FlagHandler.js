@@ -24,7 +24,7 @@ class FlagHandler
        * @type {{command_name: {plugin_name: {flags: {}, verify: function}}}}
        * @private
        */
-      this._flags = {};
+      this._database = {};
    }
 
    /**
@@ -76,14 +76,14 @@ class FlagHandler
       // conflicts.
       this._checkFlagConflict(commandName, pluginName, newFlags);
 
-      // Retrieve existing command object or create new.
-      const commandFlags = this._flags[commandName] || {};
+      // Retrieve existing 2nd level plugin names object or create new.
+      const plugins = this._database[commandName] || {};
 
       // Assign copied flags by plugin name to command object.
-      commandFlags[pluginName] = { flags: Object.assign(newFlags, {}), verify: newVerify };
+      plugins[pluginName] = { flags: Object.assign(newFlags, {}), verify: newVerify };
 
       // Store command name object.
-      this._flags[commandName] = commandFlags;
+      this._database[commandName] = plugins;
    }
 
    /**
@@ -101,11 +101,11 @@ class FlagHandler
       // Stores any conflict messages; if this is not empty at the end of the method an Error is thrown.
       let flagConflictMsg = '';
 
-      // Retrieve the object for the particular command name or create a new one.
-      const commandNames = this._flags[commandName] || {};
+      // Retrieve the 2nd level object for the particular command name or create a new one.
+      const plugins = this._database[commandName] || {};
 
       // Retrieve the second level keys / plugin names.
-      const pluginNames = Object.keys(commandNames);
+      const pluginNames = Object.keys(plugins);
 
       // Verify that an entry for the new plugin hasn't already been made.
       if (pluginNames.includes(newPluginName))
@@ -126,7 +126,7 @@ class FlagHandler
          for (const pluginName of pluginNames)
          {
             // Retrieve the stored plugin flags or create a new object.
-            const pluginFlags = commandNames[pluginName].flags || {};
+            const pluginFlags = plugins[pluginName].flags || {};
 
             // Verify that long hand flag is not already in plugin flags. Add a conflict message about the flag
             // already existing in the DB.
@@ -191,10 +191,10 @@ class FlagHandler
       }
 
       // Retrieve existing command object or create new.
-      const commandNames = this._flags[commandName] || {};
+      const plugins = this._database[commandName] || {};
 
       // Retrieve the second keys for plugin names.
-      const pluginNames = Object.keys(commandNames);
+      const pluginNames = Object.keys(plugins);
 
       // Store all flags being returned for this request.
       const allFlags = {};
@@ -202,7 +202,7 @@ class FlagHandler
       // Combine all flags across all plugin names.
       for (const pluginName of pluginNames)
       {
-         Object.assign(allFlags, commandNames[pluginName].flags);
+         Object.assign(allFlags, plugins[pluginName].flags);
       }
 
       return allFlags;
@@ -255,16 +255,16 @@ class FlagHandler
       }
 
       // Retrieve existing command object or create new.
-      const commandNames = this._flags[commandName] || {};
+      const plugins = this._database[commandName] || {};
 
       // Retrieve the second level keys for plugin names.
-      const pluginNames = Object.keys(commandNames);
+      const pluginNames = Object.keys(plugins);
 
       // Iterate over all plugins and if any verification functions have been provided then invoke them on the
       // provided flags. Each verification plugin is responsible for throwing an error.
       for (const pluginName of pluginNames)
       {
-         const verifyFunc = commandNames[pluginName].verify;
+         const verifyFunc = plugins[pluginName].verify;
 
          if (typeof verifyFunc === 'function')
          {

@@ -4,6 +4,8 @@ const path                 = require('path');
 const { Command }          = require('@oclif/command');
 const dotenv               = require('dotenv');
 
+const BundleUtil           = require('../lib/BundleUtil');
+
 const PS = path.sep;
 
 /**
@@ -71,8 +73,10 @@ class BuildCommand extends Command
     */
    _initializeFlags()
    {
+      const eventbus = global.$$eventbus;
+
       // Dynamically load flags for the command from oclif-flaghandler.
-      BuildCommand.flags = global.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { command: 'build' });
+      BuildCommand.flags = eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { command: 'build' });
 
       // Perform the first stage of parsing flags. This is
       let { flags } = this.parse(BuildCommand);
@@ -96,13 +100,13 @@ class BuildCommand extends Command
       flags = this._loadEnvFile(flags);
 
       // Verify flags given any plugin provided verify functions in FlagHandler.
-      global.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:verify', { command: 'build', flags });
+      eventbus.triggerSync('typhonjs:oclif:system:flaghandler:verify', { command: 'build', flags });
 
       return flags;
    }
 
    /**
-    * The main Oclif entry point to run the command.
+    * The main Oclif entry point to run the `build` command.
     *
     * @returns {Promise<void>}
     */
@@ -110,58 +114,30 @@ class BuildCommand extends Command
    {
       const eventbus = global.$$eventbus;
 
-      // Initialize all flags / distributed flags from plugins.
+      // Initialize all CLI flags / distributed flags from plugins.
       const flags = this._initializeFlags();
 
-      const remoteInputPlugins = await eventbus.triggerAsync('typhonjs:oclif:rollup:plugins:input:get', { flags });
+      const bundleData = await BundleUtil.getBundle();
 
-      let inputPlugins = [];
+      this.log(`Build - run - bundle data: \n${JSON.stringify(bundleData, null, 3)}`);
 
-      if (remoteInputPlugins !== void 0)
-      {
-         if (!Array.isArray(remoteInputPlugins)) { inputPlugins.push(remoteInputPlugins); }
-         else { inputPlugins = remoteInputPlugins; }
-      }
-
-      // TODO REMOVE
-      this.log(`INPUT PLUGINS: ${JSON.stringify(inputPlugins)}`);
-
-      // Simple test input config.
-      const configInput = {
-         input: './test/fixture/demo/src/index.js',
-         plugins: inputPlugins
-      };
-
-      // Output ---------------------------------------------------------------------
-
-      const remoteOutputPlugins = await eventbus.triggerAsync('typhonjs:oclif:rollup:plugins:output:get', { flags });
-
-      let outputPlugins = [];
-
-      if (remoteOutputPlugins !== void 0)
-      {
-         if (!Array.isArray(remoteOutputPlugins)) { outputPlugins.push(remoteOutputPlugins); }
-         else { outputPlugins = remoteOutputPlugins; }
-      }
-
-      // TODO REMOVE
-      this.log(`OUTPUT PLUGINS: ${JSON.stringify(outputPlugins)}`);
-
-      // Simple test output config.
-      const configOutput = {
-         file: `${flags.deploy}${PS}demo-rollup-module.js`,
-         format: 'es',
-         plugins: outputPlugins,
-         sourcemap: flags.sourcemap,
-//            sourcemapPathTransform: (sourcePath) => sourcePath.replace(relativePath, `.`)
+      // Create main RollupRunner config.
+      const config = {
+         flags,
+         type: 'main',
+         input: {
+            input: bundleData.mainInputPath,
+         },
+         output: {
+            file: `${flags.deploy}${PS}${bundleData.mainInput}`,
+            format: 'es'
+         }
       };
 
       // TODO REMOVE - TEST
-      this.log(`\nbuild command - run - flags:\n${JSON.stringify(flags, null, 3)}`);
+      this.log(`\nbuild command - run - flags:\n${JSON.stringify(config.flags, null, 3)}`);
 
-      const bundle = await global.$$eventbus.triggerAsync('typhonjs:node:bundle:rollup:run', configInput);
-
-      await bundle.write(configOutput);
+      await eventbus.triggerAsync('typhonjs:node:bundle:rollup:run', config);
    }
 }
 

@@ -1,19 +1,25 @@
 Today
 -----------------------------------------
-0. review current scaffold code
+0. Look in refactoring dynamic flag loading to "DynamicCommand" base class.
 
-1. Integrate babel
+1. Create separate NPM bundles
+
+2. setup flags for the copy oclif / rollup module.
+
+3. Integrate babel
    - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
 
-2. add in loading config files from file system.
+4. add in loading config files from file system.
 
-3. Examine esmbundler and entry points / initial code handling for JS / TS
-
-4. Parse module.json / system.json
+5. Examine esmbundler and entry points / initial code handling for JS / TS
 
 
 Testing phase
 ---------
+// TODO MUST CHECK CWD and directory path ramifications
+  - CWD when loading esmodules entry point and local relative paths.
+    - esmodules entry point is considered to be in the same directory as module / system.json.
+
 - Consider looking if a verification method needs to be added to plugin-string for bad user data.
   Test w/ underlying Rollup plugin
 

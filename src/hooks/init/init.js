@@ -1,3 +1,4 @@
+const fs             = require('fs');
 const path           = require('path');
 
 const { flags }      = require('@oclif/command');
@@ -21,7 +22,7 @@ module.exports = async function(opts)
    try
    {
       // Save base executing path immediately before anything else occurs w/ CLI / Oclif.
-      global.$$bundler_origCWD = process.cwd();
+      global.$$bundler_baseCWD = global.$$bundler_origCWD = process.cwd();
 
       // Save the global eventbus.
       global.$$eventbus = new Events();
@@ -112,6 +113,33 @@ function s_ADD_FLAGS(command)
                   'description': 'Continually build / bundle source to deploy directory.',
                   'default': false
                }),
+            },
+            /**
+             * Verifies the `cwd` flag and sets the new base directory if applicable.
+             *
+             * @param {object}   flags - The CLI flags to verify.
+             */
+            verify: function(flags)
+            {
+               // Notify that the current working directory is being changed and verify that the new directory exists.
+               if (typeof flags.cwd === 'string' && flags.cwd !== '.')
+               {
+                  // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
+                  global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
+
+                  // TODO Change to typhonjs-color-logger
+                  process.stdout.write(`New current working directory set: \n${global.$$bundler_baseCWD}\n`);
+
+                  if (!fs.existsSync(global.$$bundler_baseCWD))
+                  {
+                     const error = new Error(`New current working directory does not exist.`);
+
+                     // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+                     error.$$bundler_fatal = false;
+
+                     throw error;
+                  }
+               }
             }
          });
          break;

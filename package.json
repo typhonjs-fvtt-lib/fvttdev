@@ -51,7 +51,8 @@
     "commands": "./src/commands",
     "hooks": {
       "init": [
-        "./src/hooks/init/init"
+        "./src/hooks/init/init",
+        "./src/hooks/init/bundle"
       ]
     },
     "bin": "fvttdev",
@@ -65,8 +66,8 @@
   },
   "repository": "typhonjs-fvtt/fvttdev",
   "scripts": {
-    "run-build": "fvttdev build",
-    "run-build-env": "fvttdev build -e test",
+    "run-build": "fvttdev bundle",
+    "run-build-env": "fvttdev bundle -e test",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme && oclif-dev manifest && oclif-dev readme",

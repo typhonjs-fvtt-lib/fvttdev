@@ -1,14 +1,14 @@
-const path                 = require('path');
+const path           = require('path');
 
-const BundleUtil           = require('../lib/BundleUtil');
-const DynamicCommand       = require('../lib/DynamicCommand');
+const BundleUtil     = require('../lib/BundleUtil');
+const DynamicCommand = require('../lib/DynamicCommand');
 
 const PS = path.sep;
 
 /**
- * Provides the main Oclif `build` command that uses Rollup to bundle an FVTT module / system.
+ * Provides the main Oclif `bundle` command that uses Rollup to bundle a FVTT module / system.
  */
-class BuildCommand extends DynamicCommand
+class BundleCommand extends DynamicCommand
 {
    /**
     * The main Oclif entry point to run the `build` command.
@@ -19,11 +19,9 @@ class BuildCommand extends DynamicCommand
    {
       const eventbus = global.$$eventbus;
 
-      const flags = super._initializeFlags(BuildCommand, 'build');
+      const flags = super._initializeFlags(BundleCommand, 'bundle');
 
       const bundleData = await BundleUtil.getBundle();
-
-      this.log(`Build - run - bundle data: \n${JSON.stringify(bundleData, null, 3)}`);
 
       // Create main RollupRunner config.
       const config = {
@@ -39,15 +37,16 @@ class BuildCommand extends DynamicCommand
       };
 
       // TODO REMOVE - TEST
-      this.log(`\nbuild command - run - flags:\n${JSON.stringify(config.flags, null, 3)}`);
+      this.log(`Bundle command - run - bundle data: \n${JSON.stringify(bundleData, null, 3)}`);
+      this.log(`\nBundle command - run - flags:\n${JSON.stringify(config.flags, null, 3)}`);
 
       await eventbus.triggerAsync('typhonjs:node:bundle:rollup:run', config);
    }
 }
 
-BuildCommand.description = `Builds a module or system
+BundleCommand.description = `Bundles a module or system
 ...
 Extra documentation goes here
 `;
 
-module.exports = BuildCommand;
+module.exports = BundleCommand;

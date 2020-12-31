@@ -24,38 +24,36 @@ class BundleCommand extends DynamicCommand
       const flags = super._initializeFlags(BundleCommand, 'bundle');
 
       // Inspect FVTT module / system and determine bundle data.
-      // const bundleData = await BundleUtil.getBundle(global.$$bundler_baseCWD, flags);
+      const fvttPackage = await FVTTPackage.parse(flags);
 
-      const bundleData = await FVTTPackage.parse(flags);
-
-      await this._bundle(bundleData);
+      await this._bundle(fvttPackage);
    }
 
    /**
     * Invokes Rollup Runner to make one or more bundles from the generated bundle data for the package.
     * All temporary data is reset at the start of the process.
     *
-    * @param {object}   bundleData - The bundle data defining the FVTT package.
+    * @param {FVTTPackage}   fvttPackage - The bundle data defining the FVTT package.
     *
     * @returns {Promise<void>}
     * @private
     */
-   async _bundle(bundleData)
+   async _bundle(fvttPackage)
    {
-      bundleData.reset();
+      fvttPackage.reset();
 
       // Fire off RollupRunner and have it perform all bundling.
-      await global.$$eventbus.triggerAsync('typhonjs:node:rollup:runner:run', bundleData);
+      await global.$$eventbus.triggerAsync('typhonjs:node:rollup:runner:run:all', fvttPackage);
 
       // TODO REMOVE - TEST
-      this.log(`Bundle command - run - bundle data: \n${JSON.stringify(bundleData, null, 3)}`);
+      this.log(`Bundle command - run - bundle data: \n${JSON.stringify(fvttPackage, null, 3)}`);
 
       // Copy all top most directories not included in bundling process, module / system json, and
       // any LICENSE or README.md file.
-      this._copyNonBundleFiles(bundleData);
+      this._copyNonBundleFiles(fvttPackage);
 
       // Rewrites the module.json / system.json primarily for any generated CSS / styles.
-      this._rewritePackageJson(bundleData);
+      this._rewritePackageJson(fvttPackage);
    }
 
    /**
@@ -101,7 +99,7 @@ class BundleCommand extends DynamicCommand
 
       // Remove all top most directories referenced by files that have been bundled. The top most
       // directory is determined even if the bundled file is nested in subdirectories.
-      for (const entry of bundleData.watchFiles)
+      for (const entry of bundleData.allWatchFiles)
       {
          // Get the directory where the source file is located.
          let dirPath = path.dirname(entry);
@@ -152,26 +150,23 @@ class BundleCommand extends DynamicCommand
     */
    _rewritePackageJson(bundleData)
    {
-      const deployDir = bundleData.flags.deploy;
-
-      const cssPath = `${deployDir}${path.sep}${bundleData.cssFilename}`;
-
-      if (fs.existsSync(cssPath))
+      for (const bundleEntry of bundleData.bundleEntries)
       {
-         // Add to existing styles entry or create new array entry.
-         if (Array.isArray(bundleData.newJsonData.styles))
+         if (fs.existsSync(bundleEntry.cssFilepath))
          {
-            bundleData.newJsonData.styles.push(bundleData.cssFilename);
-         }
-         else
-         {
-            bundleData.newJsonData.styles = [bundleData.cssFilename];
+            // Add to existing styles entry or create new array entry.
+            if (Array.isArray(bundleData.newJsonData.styles))
+            {
+               bundleData.newJsonData.styles.push(bundleEntry.cssFilename);
+            }
+            else
+            {
+               bundleData.newJsonData.styles = [bundleEntry.cssFilename];
+            }
          }
       }
 
-      const destPath = `${deployDir}${path.sep}${bundleData.jsonFilename}`;
-
-      jetpack.write(destPath, bundleData.newJsonData);
+      jetpack.write(bundleData.newJsonFilepath, bundleData.newJsonData);
    }
 }
 

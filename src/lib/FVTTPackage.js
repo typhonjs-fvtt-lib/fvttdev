@@ -1,4 +1,5 @@
-const path     = require("path");
+const fs       = require('fs');
+const path     = require('path');
 
 const FileUtil = require('./FileUtil');
 
@@ -23,6 +24,14 @@ class FVVTPackage
    }
 
    /**
+    * @returns {string[]}
+    */
+   get allWatchFiles()
+   {
+      return this._data.allWatchFiles;
+   }
+
+   /**
     * @returns {string}
     */
    get baseDir()
@@ -39,11 +48,11 @@ class FVVTPackage
    }
 
    /**
-    * @returns {string}
+    * @returns {{ cssFilename: string, inputFilename: string, inputPath: string, outputPath: string, type: string }}
     */
-   get bundleType()
+   get bundleEntries()
    {
-      return this._data.bundleType;
+      return this._data.bundleEntries;
    }
 
    /**
@@ -88,19 +97,12 @@ class FVVTPackage
 
    /**
     * @returns {string}
+    * TODO: REMOVE
     */
-   get inputFilename()
-   {
-      return this._data.inputFilename;
-   }
-
-   /**
-    * @returns {string}
-    */
-   get inputPath()
-   {
-      return this._data.inputPath;
-   }
+   // get inputPath()
+   // {
+   //    return this._data.inputPath;
+   // }
 
    /**
     * @returns {object}
@@ -135,6 +137,14 @@ class FVVTPackage
    }
 
    /**
+    * @returns {string}
+    */
+   get newJsonFilepath()
+   {
+      return this._data.newJsonFilepath;
+   }
+
+   /**
     * @returns {string[]}
     */
    get npmFiles()
@@ -145,10 +155,10 @@ class FVVTPackage
    /**
     * @returns {string}
     */
-   get outputPath()
-   {
-      return this._data.outputPath;
-   }
+   // get outputPath()
+   // {
+   //    return this._data.outputPath;
+   // }
 
    /**
     * @returns {string}
@@ -169,10 +179,10 @@ class FVVTPackage
    /**
     * @returns {string[]}
     */
-   get watchFiles()
-   {
-      return this._data.watchFiles;
-   }
+   // get watchFiles()
+   // {
+   //    return this._data.watchFiles;
+   // }
 
    /**
     * Resets the transient state between the bundling process.
@@ -230,7 +240,7 @@ class FVVTPackage
       if (packageType === null)
       {
          const error = new Error(
-            `FileUtil - getBundleList - could not find a Foundry VTT module or system in file path: '${dir}'.`);
+          `FileUtil - getBundleList - could not find a Foundry VTT module or system in file path: '${dir}'.`);
 
          // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
          error.$$bundler_fatal = false;
@@ -263,39 +273,71 @@ class FVVTPackage
       }
 
       // Verify that the module / system.json file has an esmodules entry.
-      if (jsonData.esmodules.length !== 1)
-      {
-         const error = new Error(
-            `Presently only one entry point in 'esmodules' is supported. None or more specified in: ${jsonPath}.`);
+      // TODO REMOVE
+      // if (jsonData.esmodules.length !== 1)
+      // {
+      //    const error = new Error(
+      //       `Presently only one entry point in 'esmodules' is supported. None or more specified in: ${jsonPath}.`);
+      //
+      //    // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+      //    error.$$bundler_fatal = false;
+      //
+      //    throw error;
+      // }
 
-         // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-         error.$$bundler_fatal = false;
-
-         throw error;
-      }
+      const jsonFilename = `${packageType}.json`;
 
       // The results of the bundle file query.
       const data = {
+         allWatchFiles: [],
          flags,
-         bundleType: 'main',
          packageType,
-         jsonFilename: `${packageType}.json`,
+         jsonFilename,
          jsonPath,
          rootPath,
          baseDir: dir,
          baseDirPath: path.resolve(dir),
-         cssFilename: `${path.basename(jsonData.esmodules[0], '.js')}.css`,
-         inputFilename: jsonData.esmodules[0],
-         inputPath: `${rootPath}${path.sep}${jsonData.esmodules[0]}`,
-         outputPath: `${flags.deploy}${path.sep}${jsonData.esmodules[0]}`,
+         bundleEntries: [],
          dirs: [],
          files: [],
          npmFiles: [],
          jsonData,
          newJsonData: {},
+         newJsonFilepath: `${flags.deploy}${path.sep}${jsonFilename}`,
          watchFiles: [],
          copyMap: new Map()
       };
+
+      // Load all data for esmodules referenced
+      // TODO: TYPESCRIPT SUPPORT
+      for (const esmodule of jsonData.esmodules)
+      {
+         const inputPath = `${rootPath}${path.sep}${esmodule}`;
+
+         // Verify that the esmodule file could be found.
+         if (!fs.existsSync(inputPath))
+         {
+            const esmError = new Error(`FVTTPackage - parse error - could not find esmodule:\n${inputPath}`);
+
+            // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+            esmError.$$bundler_fatal = false;
+
+            throw esmError;
+         }
+
+         const cssFilename = `${path.basename(esmodule, '.js')}.css`;
+
+         data.bundleEntries.push({
+            cssFilename,
+            cssFilepath: `${flags.deploy}${path.sep}${cssFilename}`,
+            format: 'es',
+            inputFilename: esmodule,
+            inputPath: `${rootPath}${path.sep}${esmodule}`,
+            outputPath: `${flags.deploy}${path.sep}${esmodule}`,
+            type: 'main',
+            watchFiles: []
+         });
+      }
 
       // The npm file path which by convention is the root path + `npm`.
       const npmFilePath = `${rootPath}${path.sep}npm`;

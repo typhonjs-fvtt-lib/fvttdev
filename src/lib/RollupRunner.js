@@ -2,9 +2,24 @@ const { rollup } = require('rollup');
 
 /**
  * Encapsulates interacting w/ Rollup.
+ *
+ *
+ * Refactor:
+ * bundleType
+ * watchFiles
+ *
  */
 class RollupRunner
 {
+   async rollupAll(bundleData)
+   {
+      for (const bundleEntry of bundleData.bundleEntries)
+      {
+         bundleData.currentBundle = bundleEntry;
+         await this.rollup(bundleData);
+      }
+   }
+
    /**
     * @param {object}   config - Valid rollup config.
     * @returns {Promise<object>}
@@ -21,6 +36,8 @@ class RollupRunner
          throw new Error(`RollupRunner rollup: 'bundleData.flags' is not an 'object'.`);
       }
 
+      const currentBundle = bundleData.currentBundle;
+
       // TODO Add sanity check for config.input.input and config.output.file/format
 
       const eventbus = global.$$eventbus;
@@ -28,18 +45,18 @@ class RollupRunner
       // Create RollupRunner config.
       const config = {
          input: {
-            input: bundleData.inputPath,
+            input: currentBundle.inputPath,
          },
          output: {
-            file: bundleData.outputPath,
-            format: 'es'
+            file: currentBundle.outputPath,
+            format: currentBundle.format
          }
       };
 
       // Retrieve configured input plugins from Oclif plugins based on passed in `config.flags`.
 
       const remoteInputPlugins = await eventbus.triggerAsync(
-       `typhonjs:oclif:rollup:plugins:${bundleData.bundleType}:input:get`, bundleData);
+       `typhonjs:oclif:rollup:plugins:${currentBundle.type}:input:get`, bundleData);
 
       let inputPlugins = [];
 
@@ -59,7 +76,7 @@ class RollupRunner
       // Output ---------------------------------------------------------------------
 
       const remoteOutputPlugins = await eventbus.triggerAsync(
-       `typhonjs:oclif:rollup:plugins:${bundleData.bundleType}:output:get`, bundleData);
+       `typhonjs:oclif:rollup:plugins:${currentBundle.type}:output:get`, bundleData);
 
       let outputPlugins = [];
 
@@ -82,13 +99,15 @@ class RollupRunner
 
       // Store all watch files for later processing. Since multiple bundles may be generated make sure there are
       // no duplicate watch files added to the bundle data.
-      if (bundleData.bundleType === 'main')
+      if (currentBundle.type === 'main')
       {
          for (const entry of bundle.watchFiles)
          {
-            if (!bundleData.watchFiles.includes(entry))
+            currentBundle.watchFiles.push(entry);
+
+            if (!bundleData.allWatchFiles.includes(entry))
             {
-               bundleData.watchFiles.push(entry);
+               bundleData.allWatchFiles.push(entry);
             }
          }
       }
@@ -115,6 +134,7 @@ class RollupRunner
       const eventbus = ev.eventbus;
 
       eventbus.on(`typhonjs:node:rollup:runner:run`, this.rollup, this);
+      eventbus.on(`typhonjs:node:rollup:runner:run:all`, this.rollupAll, this);
    }
 }
 

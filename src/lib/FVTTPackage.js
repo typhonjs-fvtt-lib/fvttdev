@@ -1,7 +1,8 @@
-const fs       = require('fs');
-const path     = require('path');
+const fs             = require('fs');
+const path           = require('path');
 
-const FileUtil = require('./FileUtil');
+const BundleData     = require('./BundleData');
+const FileUtil       = require('./FileUtil');
 
 const s_MODULE_REGEX = /(.*)\/module\.json?/;
 const s_SYSTEM_REGEX = /(.*)\/system\.json?/;
@@ -13,22 +14,17 @@ const s_SYSTEM_REGEX = /(.*)\/system\.json?/;
  * separated as they will be treated as separate bundles. The main entry point of the main module / system bundle is
  * parsed from module or system.json / `esmodules`. For now only one main source file may be specified.
  */
-class FVVTPackage
+class FVVTPackage extends BundleData
 {
    /**
-    * @param {object}   data - A parsed representation of the FVTT repo w/ bundle definitions.
+    * @param {object}   packageData - A parsed representation of the FVTT repo.
+    * @param {Array}    bundleData - Rollup Runner specific data for multiple bundle generation.
     */
-   constructor(data)
+   constructor(packageData, bundleData)
    {
-      this._data = data;
-   }
+      super(bundleData);
 
-   /**
-    * @returns {string[]}
-    */
-   get allWatchFiles()
-   {
-      return this._data.allWatchFiles;
+      this._packageData = packageData;
    }
 
    /**
@@ -36,7 +32,7 @@ class FVVTPackage
     */
    get baseDir()
    {
-      return this._data.baseDir;
+      return this._packageData.baseDir;
    }
 
    /**
@@ -44,15 +40,7 @@ class FVVTPackage
     */
    get baseDirPath()
    {
-      return this._data.baseDirPath;
-   }
-
-   /**
-    * @returns {{ cssFilename: string, inputFilename: string, inputPath: string, outputPath: string, type: string }}
-    */
-   get bundleEntries()
-   {
-      return this._data.bundleEntries;
+      return this._packageData.baseDirPath;
    }
 
    /**
@@ -60,15 +48,7 @@ class FVVTPackage
     */
    get copyMap()
    {
-      return this._data.copyMap;
-   }
-
-   /**
-    * @returns {string}
-    */
-   get cssFilename()
-   {
-      return this._data.cssFilename;
+      return this._packageData.copyMap;
    }
 
    /**
@@ -76,7 +56,7 @@ class FVVTPackage
     */
    get dirs()
    {
-      return this._data.dirs;
+      return this._packageData.dirs;
    }
 
    /**
@@ -84,32 +64,15 @@ class FVVTPackage
     */
    get files()
    {
-      return this._data.files;
+      return this._packageData.files;
    }
-
-   /**
-    * @returns {object}
-    */
-   get flags()
-   {
-      return this._data.flags;
-   }
-
-   /**
-    * @returns {string}
-    * TODO: REMOVE
-    */
-   // get inputPath()
-   // {
-   //    return this._data.inputPath;
-   // }
 
    /**
     * @returns {object}
     */
    get jsonData()
    {
-      return this._data.jsonData;
+      return this._packageData.jsonData;
    }
 
    /**
@@ -117,7 +80,7 @@ class FVVTPackage
     */
    get jsonFilename()
    {
-      return this._data.jsonFilename;
+      return this._packageData.jsonFilename;
    }
 
    /**
@@ -125,7 +88,7 @@ class FVVTPackage
     */
    get jsonPath()
    {
-      return this._data.jsonPath;
+      return this._packageData.jsonPath;
    }
 
    /**
@@ -133,7 +96,7 @@ class FVVTPackage
     */
    get newJsonData()
    {
-      return this._data.newJsonData;
+      return this._packageData.newJsonData;
    }
 
    /**
@@ -141,7 +104,7 @@ class FVVTPackage
     */
    get newJsonFilepath()
    {
-      return this._data.newJsonFilepath;
+      return this._packageData.newJsonFilepath;
    }
 
    /**
@@ -149,23 +112,15 @@ class FVVTPackage
     */
    get npmFiles()
    {
-      return this._data.npmFiles;
+      return this._packageData.npmFiles;
    }
-
-   /**
-    * @returns {string}
-    */
-   // get outputPath()
-   // {
-   //    return this._data.outputPath;
-   // }
 
    /**
     * @returns {string}
     */
    get packageType()
    {
-      return this._data.packageType;
+      return this._packageData.packageType;
    }
 
    /**
@@ -173,38 +128,32 @@ class FVVTPackage
     */
    get rootPath()
    {
-      return this._data.rootPath;
+      return this._packageData.rootPath;
    }
-
-   /**
-    * @returns {string[]}
-    */
-   // get watchFiles()
-   // {
-   //    return this._data.watchFiles;
-   // }
 
    /**
     * Resets the transient state between the bundling process.
     */
    reset()
    {
+      super.reset();
+
       // Clear the map of files / directories to copy.
       this.copyMap.clear();
 
       // Create a new instance of the original module.json / system.json file.
-      this._data.newJsonData = Object.assign(this.jsonData, {});
+      this._packageData.newJsonData = Object.assign(this.jsonData, {});
    }
 
    /**
     * Performs initialization / parsing of the FVTT repo being parsed.
     *
-    * @param {object}   flags - The CLI runtime flags.
+    * @param {object}   cliFlags - The CLI runtime flags.
     * @param {string}   [dir] - The root directory to parse.
     *
     * @private
     */
-   static async parse(flags, dir = global.$$bundler_baseCWD)
+   static async parse(cliFlags, dir = global.$$bundler_baseCWD)
    {
       const allDirs = await FileUtil.getDirList(dir);
       const allFiles = await FileUtil.getFileList(dir);
@@ -272,40 +221,30 @@ class FVVTPackage
          throw error;
       }
 
-      // Verify that the module / system.json file has an esmodules entry.
-      // TODO REMOVE
-      // if (jsonData.esmodules.length !== 1)
-      // {
-      //    const error = new Error(
-      //       `Presently only one entry point in 'esmodules' is supported. None or more specified in: ${jsonPath}.`);
-      //
-      //    // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-      //    error.$$bundler_fatal = false;
-      //
-      //    throw error;
-      // }
-
       const jsonFilename = `${packageType}.json`;
 
+      // Defines the data required for RollupRunner.
+      const bundleData = {
+         cliFlags,
+         entries: [],
+         deployDir: cliFlags.deploy
+      };
+
       // The results of the bundle file query.
-      const data = {
-         allWatchFiles: [],
-         flags,
-         packageType,
-         jsonFilename,
-         jsonPath,
-         rootPath,
+      const packageData = {
          baseDir: dir,
          baseDirPath: path.resolve(dir),
-         bundleEntries: [],
+         copyMap: new Map(),
          dirs: [],
          files: [],
-         npmFiles: [],
          jsonData,
+         jsonFilename,
+         jsonPath,
          newJsonData: {},
-         newJsonFilepath: `${flags.deploy}${path.sep}${jsonFilename}`,
-         watchFiles: [],
-         copyMap: new Map()
+         newJsonFilepath: `${cliFlags.deploy}${path.sep}${jsonFilename}`,
+         npmFiles: [],
+         packageType,
+         rootPath
       };
 
       // Load all data for esmodules referenced
@@ -327,13 +266,13 @@ class FVVTPackage
 
          const cssFilename = `${path.basename(esmodule, '.js')}.css`;
 
-         data.bundleEntries.push({
+         bundleData.entries.push({
             cssFilename,
-            cssFilepath: `${flags.deploy}${path.sep}${cssFilename}`,
+            cssFilepath: `${cliFlags.deploy}${path.sep}${cssFilename}`,
             format: 'es',
             inputFilename: esmodule,
             inputPath: `${rootPath}${path.sep}${esmodule}`,
-            outputPath: `${flags.deploy}${path.sep}${esmodule}`,
+            outputPath: `${cliFlags.deploy}${path.sep}${esmodule}`,
             type: 'main',
             watchFiles: []
          });
@@ -346,7 +285,7 @@ class FVVTPackage
       {
          if (dirPath.startsWith(rootPath) && !dirPath.startsWith(npmFilePath))
          {
-            data.dirs.push(dirPath);
+            packageData.dirs.push(dirPath);
          }
       }
 
@@ -355,15 +294,15 @@ class FVVTPackage
       {
          if (filePath.startsWith(npmFilePath))
          {
-            data.npmFiles.push(filePath);
+            packageData.npmFiles.push(filePath);
          }
          else if (filePath.startsWith(rootPath))
          {
-            data.files.push(filePath);
+            packageData.files.push(filePath);
          }
       }
 
-      return new FVVTPackage(data);
+      return new FVVTPackage(packageData, bundleData);
    }
 }
 

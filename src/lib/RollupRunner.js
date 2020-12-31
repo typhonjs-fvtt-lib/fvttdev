@@ -2,12 +2,6 @@ const { rollup } = require('rollup');
 
 /**
  * Encapsulates interacting w/ Rollup.
- *
- *
- * Refactor:
- * bundleType
- * watchFiles
- *
  */
 class RollupRunner
 {
@@ -31,9 +25,14 @@ class RollupRunner
          throw new Error(`RollupRunner rollup: 'bundleData' is not an 'object'.`);
       }
 
-      if (typeof bundleData.flags !== 'object')
+      if (typeof bundleData.cliFlags !== 'object')
       {
-         throw new Error(`RollupRunner rollup: 'bundleData.flags' is not an 'object'.`);
+         throw new Error(`RollupRunner rollup: 'bundleData.cliFlags' is not an 'object'.`);
+      }
+
+      if (typeof bundleData.currentBundle !== 'object')
+      {
+         throw new Error(`RollupRunner rollup: 'bundleData.currentBundle' is not an 'object'.`);
       }
 
       const currentBundle = bundleData.currentBundle;
@@ -92,7 +91,7 @@ class RollupRunner
 
       // Simple test output config.
       config.output.plugins = outputPlugins;
-      config.output.sourcemap = bundleData.flags.sourcemap || false;
+      config.output.sourcemap = bundleData.cliFlags.sourcemap || false;
 //      config.output.sourcemapPathTransform = (sourcePath) => sourcePath.replace(relativePath, `.`);
 
       const bundle = await rollup(config.input);

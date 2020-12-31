@@ -66,20 +66,18 @@ class BundleCommand extends DynamicCommand
     */
    _copyNonBundleFiles(bundleData)
    {
-      const deployDir = bundleData.flags.deploy;
-
       // Store any LICENSE file to be copied.
       const licensePath = `${bundleData.rootPath}${path.sep}LICENSE`;
       if (fs.existsSync(licensePath))
       {
-         bundleData.copyMap.set(licensePath, `${deployDir}${path.sep}LICENSE`);
+         bundleData.copyMap.set(licensePath, `${bundleData.deployDir}${path.sep}LICENSE`);
       }
 
       // Store any README.md file to be copied.
       const readmePath = `${bundleData.rootPath}${path.sep}README.md`;
       if (fs.existsSync(readmePath))
       {
-         bundleData.copyMap.set(readmePath, `${deployDir}${path.sep}README.md`);
+         bundleData.copyMap.set(readmePath, `${bundleData.deployDir}${path.sep}README.md`);
       }
 
       // Create a map structure from `bundleData.dirs` for easier / quicker deletions.
@@ -123,7 +121,7 @@ class BundleCommand extends DynamicCommand
       for (const sourcePath of dirCopyMap.keys())
       {
          const relativePath = path.relative(bundleData.rootPath, sourcePath);
-         const destPath = `${deployDir}${path.sep}${relativePath}`;
+         const destPath = `${bundleData.deployDir}${path.sep}${relativePath}`;
 
          bundleData.copyMap.set(sourcePath, destPath);
       }

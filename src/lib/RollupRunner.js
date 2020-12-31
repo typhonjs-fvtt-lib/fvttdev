@@ -80,15 +80,25 @@ class RollupRunner
 
       const bundle = await rollup(config.input);
 
-      // Store all watch files for later processing.
-//      bundleData.rollupWatch = [...bundle.watchFiles];
+      // Store all watch files for later processing. Since multiple bundles may be generated make sure there are
+      // no duplicate watch files added to the bundle data.
+      if (bundleData.bundleType === 'main')
+      {
+         for (const entry of bundle.watchFiles)
+         {
+            if (!bundleData.watchFiles.includes(entry))
+            {
+               bundleData.watchFiles.push(entry);
+            }
+         }
+      }
 
       await bundle.write(config.output);
 
       // closes the bundle
       await bundle.close();
 
-      return config;
+      return bundleData;
    }
 
    /**

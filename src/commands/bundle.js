@@ -23,31 +23,10 @@ class BundleCommand extends DynamicCommand
 
       const bundleData = await BundleUtil.getBundle('.', flags);
 
-      // // Create main RollupRunner config.
-      // const config = {
-      //    // flags: flags,
-      //    // type: 'main',
-      //    input: {
-      //       input: bundleData.mainInputPath,
-      //    },
-      //    output: {
-      //       file: `${flags.deploy}${PS}${bundleData.mainInput}`,
-      //       format: 'es'
-      //    }
-      // };
+      await eventbus.triggerAsync('typhonjs:node:rollup:runner:run', bundleData);
 
       // TODO REMOVE - TEST
       this.log(`Bundle command - run - bundle data: \n${JSON.stringify(bundleData, null, 3)}`);
-
-      await eventbus.triggerAsync('typhonjs:node:rollup:runner:run', bundleData);
-
-      // Determine the directories in the module / system root which don't have any dependencies in the bundles. We
-      // will consider those "asset" directories and copy them to the deploy location.
-      for (const entry of bundleData.rollupWatch)
-      {
-         process.stderr.write(`!!! RW - entry: ${path.dirname(entry)}\n`);
-      }
-
    }
 }
 

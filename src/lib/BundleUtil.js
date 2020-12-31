@@ -118,7 +118,7 @@ class BundleUtil
          files: [],
          npmFiles: [],
          jsonData,
-         rollupWatch: []
+         watchFiles: []
       };
 
       // The npm file path which by convention is the root path + `npm`.

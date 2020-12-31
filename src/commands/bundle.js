@@ -3,8 +3,8 @@ const path           = require('path');
 
 const jetpack        = require('fs-jetpack');
 
-const BundleUtil     = require('../lib/BundleUtil');
 const DynamicCommand = require('../lib/DynamicCommand');
+const FVTTPackage    = require('../lib/FVTTPackage');
 
 const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 
@@ -24,7 +24,9 @@ class BundleCommand extends DynamicCommand
       const flags = super._initializeFlags(BundleCommand, 'bundle');
 
       // Inspect FVTT module / system and determine bundle data.
-      const bundleData = await BundleUtil.getBundle(global.$$bundler_baseCWD, flags);
+      // const bundleData = await BundleUtil.getBundle(global.$$bundler_baseCWD, flags);
+
+      const bundleData = await FVTTPackage.parse(flags);
 
       await this._bundle(bundleData);
    }
@@ -40,8 +42,7 @@ class BundleCommand extends DynamicCommand
     */
    async _bundle(bundleData)
    {
-      bundleData.copyMap.clear();
-      bundleData.newJsonData = Object.assign(bundleData.jsonData, {});
+      bundleData.reset();
 
       // Fire off RollupRunner and have it perform all bundling.
       await global.$$eventbus.triggerAsync('typhonjs:node:rollup:runner:run', bundleData);

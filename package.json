@@ -69,7 +69,8 @@
   "repository": "typhonjs-fvtt/fvttdev",
   "scripts": {
     "run-build": "fvttdev bundle",
-    "run-build-env": "fvttdev bundle -e test",
+    "run-build-1entry": "fvttdev bundle -e test-1entry",
+    "run-build-2entry": "fvttdev bundle -e test-2entry",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme && oclif-dev manifest && oclif-dev readme",

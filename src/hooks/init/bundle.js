@@ -29,7 +29,15 @@ module.exports = async function()
       command: 'bundle',
       plugin: 'fvttdev',
       flags: {
-         cwd: flags.string({ 'description': 'Use an alternative working directory.', 'default': '.' }),
+         cwd: flags.string({
+            'description': 'Use an alternative working directory.',
+            'default': function()
+            {
+               if (typeof process.env.DEPLOY_CWD === 'string') { return process.env.DEPLOY_CWD; }
+
+               return '.';
+            }
+         }),
 
          entry: flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
 

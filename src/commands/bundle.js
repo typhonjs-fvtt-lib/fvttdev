@@ -86,6 +86,9 @@ class BundleCommand extends DynamicCommand
       // Always remove the package root path.
       dirCopyMap.delete(bundleData.rootPath);
 
+      // Always remove the npm folder.
+      dirCopyMap.delete(`${bundleData.rootPath}${path.sep}npm`);
+
       // Remove any directories that are not top most in the module root path.
       for (const dirPath of dirCopyMap.keys())
       {
@@ -150,7 +153,7 @@ class BundleCommand extends DynamicCommand
    {
       for (const bundleEntry of bundleData.bundleEntries)
       {
-         if (fs.existsSync(bundleEntry.cssFilepath))
+         if (bundleEntry.cssFilepath !== null && fs.existsSync(bundleEntry.cssFilepath))
          {
             // Add to existing styles entry or create new array entry.
             if (Array.isArray(bundleData.newJsonData.styles))

@@ -45,6 +45,7 @@ class RollupRunner
       const config = {
          input: {
             input: currentBundle.inputPath,
+            external: bundleData.cliFlags.external
          },
          output: {
             file: currentBundle.outputPath,
@@ -63,7 +64,7 @@ class RollupRunner
       if (remoteInputPlugins !== void 0)
       {
          if (!Array.isArray(remoteInputPlugins)) { inputPlugins.push(remoteInputPlugins); }
-         else { inputPlugins = remoteInputPlugins; }
+         else { inputPlugins = remoteInputPlugins.flat(); }
       }
 
       // TODO REMOVE
@@ -83,7 +84,7 @@ class RollupRunner
       if (remoteOutputPlugins !== void 0)
       {
          if (!Array.isArray(remoteOutputPlugins)) { outputPlugins.push(remoteOutputPlugins); }
-         else { outputPlugins = remoteOutputPlugins; }
+         else { outputPlugins = remoteOutputPlugins.flat(); }
       }
 
       // TODO REMOVE

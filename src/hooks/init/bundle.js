@@ -43,6 +43,49 @@ module.exports = async function()
 
          env: flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
 
+         // Specifies external imports that are ignored; see Rollup config input.external
+         external: flags.string({
+            'description': 'Specifies external import references which are ignored.',
+            'multiple': true,
+            'default': function()
+            {
+               if (typeof process.env.DEPLOY_EXTERNAL === 'string')
+               {
+                  let result = void 0;
+
+                  // Treat it as a JSON array.
+                  try { result = JSON.parse(process.env.DEPLOY_EXTERNAL); }
+                  catch (error)
+                  {
+                     const parseError = new Error(
+                        `Could not parse 'DEPLOY_EXTERNAL' as a JSON array;\n${error.message}`);
+
+                     // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+                     parseError.$$bundler_fatal = false;
+
+                     throw parseError;
+                  }
+
+                  // Verify that the JSON result loaded is an actual array otherwise quit with and error...
+                  if (!Array.isArray(result))
+                  {
+                     const parseError = new Error(`Please format 'DEPLOY_EXTERNAL' as a JSON array.`);
+
+                     // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+                     parseError.$$bundler_fatal = false;
+
+                     throw parseError;
+                  }
+
+                  // TODO: consider adding verification that the loaded array from JSON contains all strings.
+
+                  return result;
+               }
+
+               return [];
+            }
+         }),
+
          deploy: flags.string({
             'char': 'd',
             'description': 'Directory to deploy build files into.',

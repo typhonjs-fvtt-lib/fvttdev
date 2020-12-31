@@ -4,14 +4,21 @@ Today
 
 !! Verify sourcemap transform
 
------
-
 4. Add multiple bundle events
+
+-----
 
 5. Integrate babel
    - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
 
 6. Integrate Typescript
+
+7. Respect any local configuration files provided.
+   - Have a flag / env override to ignore local config files
+
+8. WATCH WATCH WATCH
+
+9. copy command
 
 ---
 

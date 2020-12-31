@@ -223,15 +223,15 @@ class FVVTPackage extends BundleData
 
       const jsonFilename = `${packageType}.json`;
 
+      const deployDir = cliFlags.deploy;
+
       // Defines the data required for RollupRunner.
       const bundleData = {
          cliFlags,
          entries: [],
-         deployDir: cliFlags.deploy,
-         reverseRelativePath: path.relative(cliFlags.deploy, rootPath)
+         deployDir,
+         reverseRelativePath: path.relative(deployDir, rootPath)
       };
-
-      process.stderr.write(`!!!!!!! reverseRelativePath: ${bundleData.reverseRelativePath}\n`);
 
       // The results of the bundle file query.
       const packageData = {
@@ -244,42 +244,11 @@ class FVVTPackage extends BundleData
          jsonFilename,
          jsonPath,
          newJsonData: {},
-         newJsonFilepath: `${cliFlags.deploy}${path.sep}${jsonFilename}`,
+         newJsonFilepath: `${deployDir}${path.sep}${jsonFilename}`,
          npmFiles: [],
          packageType,
          rootPath
       };
-
-      // Load all data for esmodules referenced
-      // TODO: TYPESCRIPT SUPPORT
-      for (const esmodule of jsonData.esmodules)
-      {
-         const inputPath = `${rootPath}${path.sep}${esmodule}`;
-
-         // Verify that the esmodule file could be found.
-         if (!fs.existsSync(inputPath))
-         {
-            const esmError = new Error(`FVTTPackage - parse error - could not find esmodule:\n${inputPath}`);
-
-            // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-            esmError.$$bundler_fatal = false;
-
-            throw esmError;
-         }
-
-         const cssFilename = `${path.basename(esmodule, '.js')}.css`;
-
-         bundleData.entries.push({
-            cssFilename,
-            cssFilepath: `${cliFlags.deploy}${path.sep}${cssFilename}`,
-            format: 'es',
-            inputFilename: esmodule,
-            inputPath: `${rootPath}${path.sep}${esmodule}`,
-            outputPath: `${cliFlags.deploy}${path.sep}${esmodule}`,
-            type: 'main',
-            watchFiles: []
-         });
-      }
 
       // The npm file path which by convention is the root path + `npm`.
       const npmFilePath = `${rootPath}${path.sep}npm`;
@@ -303,6 +272,77 @@ class FVVTPackage extends BundleData
          {
             packageData.files.push(filePath);
          }
+      }
+
+      // Load all data for npm files / bundles referenced
+      if (packageData.npmFiles.length > 0)
+      {
+         // TODO: TYPESCRIPT SUPPORT
+         for (const npmFile of packageData.npmFiles)
+         {
+            const inputPath = npmFile;
+            const inputFilename = path.basename(npmFile);
+            const outputPath = `${deployDir}${path.sep}npm${path.sep}${inputFilename}`;
+
+            // Add a regex for the name of the file / NPM module to external.
+            const regex = `${path.sep}npm${path.sep}${inputFilename}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            cliFlags.external.push(new RegExp(regex));
+
+            // Verify that the file could be found.
+            if (!fs.existsSync(inputPath))
+            {
+               const npmError = new Error(`FVTTPackage - parse error - could not find npm file:\n${inputPath}`);
+
+               // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+               npmError.$$bundler_fatal = false;
+
+               throw npmError;
+            }
+
+            bundleData.entries.push({
+               cssFilename: null,
+               cssFilepath: null,
+               format: 'es',
+               inputFilename,
+               inputPath,
+               outputPath,
+               type: 'npm',
+               watchFiles: []
+            });
+         }
+      }
+
+      // Load all data for esmodules referenced
+      // TODO: TYPESCRIPT SUPPORT
+      for (const esmodule of jsonData.esmodules)
+      {
+         const inputPath = `${rootPath}${path.sep}${esmodule}`;
+
+         // Verify that the esmodule file could be found.
+         if (!fs.existsSync(inputPath))
+         {
+            const esmError = new Error(`FVTTPackage - parse error - could not find esmodule:\n${inputPath}`);
+
+            // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+            esmError.$$bundler_fatal = false;
+
+            throw esmError;
+         }
+
+         const cssFilename = `${path.basename(esmodule, '.js')}.css`;
+
+         bundleData.entries.push({
+            cssFilename,
+            cssFilepath: `${deployDir}${path.sep}${cssFilename}`,
+            external: cliFlags.external,
+            format: 'es',
+            inputFilename: esmodule,
+            inputPath: `${rootPath}${path.sep}${esmodule}`,
+            outputPath: `${deployDir}${path.sep}${esmodule}`,
+            type: 'main',
+            watchFiles: []
+         });
       }
 
       return new FVVTPackage(packageData, bundleData);

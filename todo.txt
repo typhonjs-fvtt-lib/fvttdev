@@ -1,18 +1,23 @@
 Today
 -----------------------------------------
-0. Look in refactoring dynamic flag loading to "DynamicCommand" base class.
+0. restructure bundle data to send to Rollup Runner
 
-1. Create separate NPM bundles
+1. directly copy files / don't use rollup-plugin-copy
+   - always copy module / system.json
+   - always copy LICENSE / README.md
 
-2. setup flags for the copy oclif / rollup module.
+2. restructure bundle data for multiple bundles
 
-3. Integrate babel
+3. Create separate NPM bundles
+
+4. Integrate babel
    - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
 
-4. add in loading config files from file system.
+5. Integrate Typescript
 
-5. Examine esmbundler and entry points / initial code handling for JS / TS
+---
 
+copy command
 
 Testing phase
 ---------

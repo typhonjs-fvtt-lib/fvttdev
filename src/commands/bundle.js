@@ -21,26 +21,33 @@ class BundleCommand extends DynamicCommand
 
       const flags = super._initializeFlags(BundleCommand, 'bundle');
 
-      const bundleData = await BundleUtil.getBundle();
+      const bundleData = await BundleUtil.getBundle('.', flags);
 
-      // Create main RollupRunner config.
-      const config = {
-         flags,
-         type: 'main',
-         input: {
-            input: bundleData.mainInputPath,
-         },
-         output: {
-            file: `${flags.deploy}${PS}${bundleData.mainInput}`,
-            format: 'es'
-         }
-      };
+      // // Create main RollupRunner config.
+      // const config = {
+      //    // flags: flags,
+      //    // type: 'main',
+      //    input: {
+      //       input: bundleData.mainInputPath,
+      //    },
+      //    output: {
+      //       file: `${flags.deploy}${PS}${bundleData.mainInput}`,
+      //       format: 'es'
+      //    }
+      // };
 
       // TODO REMOVE - TEST
       this.log(`Bundle command - run - bundle data: \n${JSON.stringify(bundleData, null, 3)}`);
-      this.log(`\nBundle command - run - flags:\n${JSON.stringify(config.flags, null, 3)}`);
 
-      await eventbus.triggerAsync('typhonjs:node:bundle:rollup:run', config);
+      await eventbus.triggerAsync('typhonjs:node:rollup:runner:run', bundleData);
+
+      // Determine the directories in the module / system root which don't have any dependencies in the bundles. We
+      // will consider those "asset" directories and copy them to the deploy location.
+      for (const entry of bundleData.rollupWatch)
+      {
+         process.stderr.write(`!!! RW - entry: ${path.dirname(entry)}\n`);
+      }
+
    }
 }
 

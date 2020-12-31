@@ -18,16 +18,18 @@ class BundleUtil
     * parsed from module or system.json / `esmodules`. For now only one main source file may be specified.
     *
     * @param {string}   dir - The root directory to parse.
+    * @param {object}   flags - The CLI runtime flags.
     *
     * @returns {Promise<{baseDir: string, mainInput: string, jsonData: *, files: [], jsonPath: null, rootPath: null, npmFiles: [], type: null}>}
     */
-   static async getBundle(dir = '.')
+   static async getBundle(dir = '.', flags)
    {
+      const allDirs = await FileUtil.getDirList(dir);
       const allFiles = await FileUtil.getFileList(dir);
 
       let rootPath = null;
       let jsonPath = null;
-      let type = null;
+      let packageType = null;
 
       // Search through all file paths checking the module & system regex against file paths to find the root path
       // of the module / system and the associated *.json file.
@@ -38,7 +40,7 @@ class BundleUtil
          {
             jsonPath = matches[0];
             rootPath = matches[1];
-            type = 'module';
+            packageType = 'module';
             break;
          }
 
@@ -47,13 +49,13 @@ class BundleUtil
          {
             jsonPath = matches[0];
             rootPath = matches[1];
-            type = 'system';
+            packageType = 'system';
             break;
          }
       }
 
       // Throw a control flow error.
-      if (type === null)
+      if (packageType === null)
       {
          const error = new Error(
             `FileUtil - getBundleList - could not find a Foundry VTT module or system in file path: '${dir}'.`);
@@ -68,7 +70,7 @@ class BundleUtil
 
       try
       {
-         jsonData = require(`${global.$$bundler_baseCWD}${path.sep}${jsonPath}`);
+         jsonData = require(jsonPath);
       }
       catch (err)
       {
@@ -102,19 +104,33 @@ class BundleUtil
 
       // The results of the bundle file query.
       const result = {
-         type,
+         flags,
+         bundleType: 'main',
+         packageType,
          jsonPath,
          rootPath,
          baseDir: dir,
+         baseDirPath: path.resolve(dir),
          mainInput: jsonData.esmodules[0],
-         mainInputPath: `${dir}${path.sep}${rootPath}${path.sep}${jsonData.esmodules[0]}`,
+         mainInputPath: `${rootPath}${path.sep}${jsonData.esmodules[0]}`,
+         outputPath: `${flags.deploy}${path.sep}${jsonData.esmodules[0]}`,
+         dirs: [],
          files: [],
          npmFiles: [],
-         jsonData
+         jsonData,
+         rollupWatch: []
       };
 
       // The npm file path which by convention is the root path + `npm`.
       const npmFilePath = `${rootPath}${path.sep}npm`;
+
+      for (const dirPath of allDirs)
+      {
+         if (dirPath.startsWith(rootPath) && !dirPath.startsWith(npmFilePath))
+         {
+            result.dirs.push(dirPath);
+         }
+      }
 
       // Parse all file and store NPM files first before checking if the root path matches the detected module / system.
       for (const filePath of allFiles)

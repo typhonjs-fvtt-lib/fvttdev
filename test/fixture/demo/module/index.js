@@ -1,7 +1,7 @@
 import alias    from 'foo';
 
 import testHTML from './templates/test.html';
-import testJSON from './json/test.json';
+import testJSON from './json/json2/json3/test.json';
 
 import './sass/dialog.scss';
 

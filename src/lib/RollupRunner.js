@@ -28,7 +28,7 @@ class RollupRunner
       // Create RollupRunner config.
       const config = {
          input: {
-            input: bundleData.mainInputPath,
+            input: bundleData.inputPath,
          },
          output: {
             file: bundleData.outputPath,

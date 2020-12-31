@@ -20,7 +20,8 @@ class BundleUtil
     * @param {string}   dir - The root directory to parse.
     * @param {object}   flags - The CLI runtime flags.
     *
-    * @returns {Promise<{baseDir: string, mainInput: string, jsonData: *, files: [], jsonPath: null, rootPath: null, npmFiles: [], type: null}>}
+    * @returns {Promise<{baseDir: string, inputFilename: string, jsonData: *, files: [], jsonPath: null, rootPath:
+    *    null, npmFiles: [], type: null}>}
     */
    static async getBundle(dir = '.', flags)
    {
@@ -107,18 +108,22 @@ class BundleUtil
          flags,
          bundleType: 'main',
          packageType,
+         jsonFilename: `${packageType}.json`,
          jsonPath,
          rootPath,
          baseDir: dir,
          baseDirPath: path.resolve(dir),
-         mainInput: jsonData.esmodules[0],
-         mainInputPath: `${rootPath}${path.sep}${jsonData.esmodules[0]}`,
+         cssFilename: `${path.basename(jsonData.esmodules[0], '.js')}.css`,
+         inputFilename: jsonData.esmodules[0],
+         inputPath: `${rootPath}${path.sep}${jsonData.esmodules[0]}`,
          outputPath: `${flags.deploy}${path.sep}${jsonData.esmodules[0]}`,
          dirs: [],
          files: [],
          npmFiles: [],
          jsonData,
-         watchFiles: []
+         newJsonData: {},
+         watchFiles: [],
+         copyMap: new Map()
       };
 
       // The npm file path which by convention is the root path + `npm`.

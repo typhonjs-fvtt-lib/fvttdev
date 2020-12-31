@@ -6,6 +6,7 @@
   "bin": {
     "fvttdev": "./bin/run"
   },
+  "private": true,
   "bugs": "https://github.com/typhonjs-fvtt/fvttdev/issues",
   "dependencies": {
     "@oclif/command": "^1.8.0",
@@ -17,6 +18,7 @@
     "@oclif/plugin-which": "^1.0.3",
     "backbone-esnext-events": "^0.3.0",
     "dotenv": "^8.0.0",
+    "fs-jetpack": "^4.0.0",
     "typhonjs-color-logger": "^0.0.13",
     "typhonjs-package-util": "^0.0.3",
     "typhonjs-plugin-manager": "^0.2.0"

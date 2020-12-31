@@ -1,19 +1,15 @@
 Today
 -----------------------------------------
-0. restructure bundle data to send to Rollup Runner
-
-1. directly copy files / don't use rollup-plugin-copy
-   - always copy module / system.json
-   - always copy LICENSE / README.md
-
 2. restructure bundle data for multiple bundles
 
 3. Create separate NPM bundles
 
-4. Integrate babel
+4. Add multiple bundle events
+
+5. Integrate babel
    - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
 
-5. Integrate Typescript
+6. Integrate Typescript
 
 ---
 
@@ -27,6 +23,8 @@ Testing phase
 
 - Consider looking if a verification method needs to be added to plugin-string for bad user data.
   Test w/ underlying Rollup plugin
+
+- In bundle command there are multiple array includes usages, so consider structuring data differently for performance.
 
 Before publishing
 ---------

@@ -80,19 +80,24 @@ module.exports = async function()
          if (typeof flags.cwd === 'string' && flags.cwd !== '.')
          {
             // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
-            global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
+            const newCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
 
-            // TODO Change to typhonjs-color-logger
-            process.stdout.write(`New current working directory set: \n${global.$$bundler_baseCWD}\n`);
-
-            if (!fs.existsSync(global.$$bundler_baseCWD))
+            if (newCWD !== global.$$bundler_baseCWD)
             {
-               const error = new Error(`New current working directory does not exist.`);
+               global.$$bundler_baseCWD = newCWD;
 
-               // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-               error.$$bundler_fatal = false;
+               // TODO Change to typhonjs-color-logger
+               process.stdout.write(`New current working directory set: \n${global.$$bundler_baseCWD}\n`);
 
-               throw error;
+               if (!fs.existsSync(global.$$bundler_baseCWD))
+               {
+                  const error = new Error(`New current working directory does not exist.`);
+
+                  // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+                  error.$$bundler_fatal = false;
+
+                  throw error;
+               }
             }
          }
       }

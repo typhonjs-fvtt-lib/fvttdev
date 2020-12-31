@@ -1,8 +1,10 @@
 Today
 -----------------------------------------
-2. restructure bundle data for multiple bundles
-
 3. Create separate NPM bundles
+
+!! Verify sourcemap transform
+
+-----
 
 4. Add multiple bundle events
 

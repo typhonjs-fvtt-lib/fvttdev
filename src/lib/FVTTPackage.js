@@ -227,8 +227,11 @@ class FVVTPackage extends BundleData
       const bundleData = {
          cliFlags,
          entries: [],
-         deployDir: cliFlags.deploy
+         deployDir: cliFlags.deploy,
+         reverseRelativePath: path.relative(cliFlags.deploy, rootPath)
       };
+
+      process.stderr.write(`!!!!!!! reverseRelativePath: ${bundleData.reverseRelativePath}\n`);
 
       // The results of the bundle file query.
       const packageData = {

@@ -45,6 +45,14 @@ class BundleData
    }
 
    /**
+    * @returns {string}
+    */
+   get reverseRelativePath()
+   {
+      return this._bundleData.reverseRelativePath;
+   }
+
+   /**
     * Resets any transitory data.
     */
    reset()

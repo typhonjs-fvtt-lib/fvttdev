@@ -323,15 +323,19 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
          throw esmError;
       }
 
-      const cssFilename = `${path.basename(esmodule, '.js')}.css`;
+      const inputBasename = path.basename(esmodule, '.js');
+
+      const outputCSSFilename = `${inputBasename}.css`;
 
       bundleData.entries.push({
-         cssFilename,
-         cssFilepath: `${bundleData.deployDir}${path.sep}${cssFilename}`,
          format: 'es',
+         inputBasename,
+         inputExt: path.extname(esmodule),
          inputFilename: esmodule,
          inputPath: `${packageData.rootPath}${path.sep}${esmodule}`,
          outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
+         outputCSSFilename,
+         outputCSSFilepath: `${bundleData.deployDir}${path.sep}${outputCSSFilename}`,
          reverseRelativePath: path.relative(bundleData.deployDir, packageData.rootPath),
          type: 'main',
          watchFiles: []
@@ -377,12 +381,12 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData)
          // `../` and get `./node_modules/xxx` as a result. Seems to work, but beware.
 
          bundleData.entries.push({
-            cssFilename: null,
-            cssFilepath: null,
             format: 'es',
             inputFilename,
             inputPath,
             outputPath,
+            outputCSSFilename: null,
+            outputCSSFilepath: null,
             reverseRelativePath: `..${path.sep}${path.relative(bundleData.deployDir, packageData.baseDir)}`,
             type: 'npm',
             watchFiles: []

@@ -153,16 +153,16 @@ class BundleCommand extends DynamicCommand
    {
       for (const bundleEntry of bundleData.bundleEntries)
       {
-         if (bundleEntry.cssFilepath !== null && fs.existsSync(bundleEntry.cssFilepath))
+         if (bundleEntry.outputCSSFilepath !== null && fs.existsSync(bundleEntry.outputCSSFilepath))
          {
             // Add to existing styles entry or create new array entry.
             if (Array.isArray(bundleData.newJsonData.styles))
             {
-               bundleData.newJsonData.styles.push(bundleEntry.cssFilename);
+               bundleData.newJsonData.styles.push(bundleEntry.outputCSSFilename);
             }
             else
             {
-               bundleData.newJsonData.styles = [bundleEntry.cssFilename];
+               bundleData.newJsonData.styles = [bundleEntry.outputCSSFilename];
             }
          }
       }

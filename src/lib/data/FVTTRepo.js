@@ -155,21 +155,10 @@ function s_PARSE_FILES(packageData, bundleData)
 function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
 {
    // Load all data for esmodules referenced
-   // TODO: TYPESCRIPT SUPPORT
    for (const esmodule of packageData.jsonData.esmodules)
    {
-      const inputPath = `${packageData.rootPath}${path.sep}${esmodule}`;
-
-      FileUtil.resolveESModule(esmodule, packageData);
-
-      // Verify that the esmodule file could be found.
-      if (!fs.existsSync(inputPath))
-      {
-         throw new NonFatalError(`FVTTPackage - parse error - could not find esmodule:\n${inputPath}`);
-      }
-
-      const inputExt = path.extname(esmodule);
-      const inputBasename = path.basename(esmodule, inputExt);
+      // s_RESOLVE_ESMODULE attempts to load a JS file then attempts to load a Typescript file.
+      const { inputPath, inputExt, inputBasename, inputType } = s_RESOLVE_ESMODULE(esmodule, packageData);
 
       const outputCSSFilename = `${inputBasename}.css`;
 
@@ -178,7 +167,8 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
          inputBasename,
          inputExt,
          inputFilename: esmodule,
-         inputPath: `${packageData.rootPath}${path.sep}${esmodule}`,
+         inputPath,
+         inputType,
          outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
          outputCSSFilename,
          outputCSSFilepath: `${bundleData.deployDir}${path.sep}${outputCSSFilename}`,
@@ -198,7 +188,6 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData)
    // Load all data for npm files / bundles referenced
    if (packageData.npmFiles.length > 0)
    {
-      // TODO: TYPESCRIPT SUPPORT
       for (const npmFile of packageData.npmFiles)
       {
          const inputPath = npmFile;
@@ -234,4 +223,74 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData)
          });
       }
    }
+}
+
+/**
+ * Returns whether the given filename is a Javascript or Typescript file.
+ *
+ * @param {string}   esmodule - file name to test.
+ * @param {object}   packageData - absolute file path.
+ *
+ * @returns {{inputBasename: string, inputExt: string, inputPath: string, inputType: string}}
+ * @throws NonFatalError
+ */
+function s_RESOLVE_ESMODULE(esmodule, packageData)
+{
+   const extension = path.extname(esmodule);
+
+   // The entry in esmodules attribute is not a JS file.
+   if (!FileUtil.isJS(extension))
+   {
+      throw new NonFatalError(
+       `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.jsonFilename}':\n`
+        + `${packageData.jsonPath}`);
+   }
+
+   const inputParsed = path.parse(esmodule);
+
+   const inputPathBase = `${packageData.rootPath}${path.sep}${inputParsed.dir}${path.sep}${inputParsed.name}`;
+
+   const inputPathJS = `${inputPathBase}${inputParsed.ext}`;
+
+   // Verify that the esmodule file could be found / a valid JS file has been found.
+   if (fs.existsSync(inputPathJS))
+   {
+      return {
+         inputBasename: inputParsed.base,
+         inputExt: inputParsed.ext,
+         inputPath: inputPathJS,
+         inputType: 'javascript'
+      };
+   }
+
+   // Next try to load a `.ts` or `.tsx` file.
+   const inputPathTS = `${inputPathBase}.ts`;
+
+   if (fs.existsSync(inputPathTS))
+   {
+      return {
+         inputBasename: inputParsed.base,
+         inputExt: '.ts',
+         inputPath: inputPathTS,
+         inputType: 'typescript'
+      };
+   }
+
+   const inputPathTSX = `${inputPathBase}.tsx`;
+
+   if (fs.existsSync(inputPathTSX))
+   {
+      return {
+         inputBasename: inputParsed.base,
+         inputExt: '.tsx',
+         inputPath: inputPathTSX,
+         inputType: 'typescript'
+      };
+   }
+
+   // Could not locate any JS or TS file to load.
+
+   throw new NonFatalError(
+    `Could not load filename '${inputParsed.dir}${path.sep}${inputParsed.name}(${inputParsed.ext}|.ts|.tsx)' `
+     + ` in 'esmodules' entry in '${packageData.jsonFilename}': \n${packageData.jsonPath}`);
 }

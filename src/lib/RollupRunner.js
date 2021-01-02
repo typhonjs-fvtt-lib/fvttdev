@@ -56,7 +56,7 @@ class RollupRunner
       // Retrieve configured input plugins from Oclif plugins based on passed in `config.flags`.
 
       const remoteInputPlugins = await eventbus.triggerAsync(
-       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:input:get`, bundleData);
+       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:input:get`, bundleData, currentBundle);
 
       let inputPlugins = [];
 
@@ -76,7 +76,7 @@ class RollupRunner
       // Output ---------------------------------------------------------------------
 
       const remoteOutputPlugins = await eventbus.triggerAsync(
-       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:output:get`, bundleData);
+       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:output:get`, bundleData, currentBundle);
 
       let outputPlugins = [];
 

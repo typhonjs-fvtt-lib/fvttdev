@@ -64,7 +64,7 @@ class RollupRunner
       if (remoteInputPlugins !== void 0)
       {
          if (!Array.isArray(remoteInputPlugins)) { inputPlugins.push(remoteInputPlugins); }
-         else { inputPlugins = remoteInputPlugins.flat(); }
+         else { inputPlugins = remoteInputPlugins.flat().filter((entry) => entry !== void 0); }
       }
 
       // TODO REMOVE

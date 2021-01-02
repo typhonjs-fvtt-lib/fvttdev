@@ -158,7 +158,8 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
    for (const esmodule of packageData.jsonData.esmodules)
    {
       // s_RESOLVE_ESMODULE attempts to load a JS file then attempts to load a Typescript file.
-      const { inputPath, inputExt, inputBasename, inputType } = s_RESOLVE_ESMODULE(esmodule, packageData);
+      const { inputPath, inputExt, inputFilename, inputBasename, inputType } =
+       s_RESOLVE_ESMODULE(esmodule, packageData);
 
       const outputCSSFilename = `${inputBasename}.css`;
 
@@ -166,7 +167,7 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
          format: 'es',
          inputBasename,
          inputExt,
-         inputFilename: esmodule,
+         inputFilename,
          inputPath,
          inputType,
          outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
@@ -248,7 +249,14 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
 
    const inputParsed = path.parse(esmodule);
 
-   const inputPathBase = `${packageData.rootPath}${path.sep}${inputParsed.dir}${path.sep}${inputParsed.name}`;
+process.stderr.write(`!!!! FVTTRepo - s_RESOLVE_ESMODULE - 0 - inputParsed: ${JSON.stringify(inputParsed)}\n`);
+// {"root":"","dir":"src","base":"index.js","ext":".js","name":"index"}
+   const inputPathBase =
+    `${packageData.rootPath}${path.sep}${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
+
+   const esmoduleBase = `${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
+
+process.stderr.write(`!!!! FVTTRepo - s_RESOLVE_ESMODULE - 1 - inputPathBase: \n${inputPathBase}\n`);
 
    const inputPathJS = `${inputPathBase}${inputParsed.ext}`;
 
@@ -256,8 +264,9 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    if (fs.existsSync(inputPathJS))
    {
       return {
-         inputBasename: inputParsed.base,
+         inputBasename: inputParsed.name,
          inputExt: inputParsed.ext,
+         inputFilename: esmodule,
          inputPath: inputPathJS,
          inputType: 'javascript'
       };
@@ -269,8 +278,9 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    if (fs.existsSync(inputPathTS))
    {
       return {
-         inputBasename: inputParsed.base,
+         inputBasename: inputParsed.name,
          inputExt: '.ts',
+         inputFilename: `${esmoduleBase}.ts`,
          inputPath: inputPathTS,
          inputType: 'typescript'
       };
@@ -281,8 +291,9 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    if (fs.existsSync(inputPathTSX))
    {
       return {
-         inputBasename: inputParsed.base,
+         inputBasename: inputParsed.name,
          inputExt: '.tsx',
+         inputFilename: `${esmoduleBase}.tsx`,
          inputPath: inputPathTSX,
          inputType: 'typescript'
       };

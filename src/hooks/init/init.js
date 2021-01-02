@@ -35,7 +35,10 @@ module.exports = async function(opts)
          name: 'typhonjs-color-logger',
          options: {
             // Adds an exclusive filter which removes `FlagHandler` from stack trace / being a source of an error.
-            filterConfigs: [{ type: 'exclusive', name: 'FlagHandler', filterString: 'src/lib/FlagHandler.js' }]
+            filterConfigs: [
+               { type: 'exclusive', name: 'FlagHandler', filterString: 'src/lib/FlagHandler.js' },
+               { type: 'exclusive', name: '@babel', filterString: '@babel' }
+            ]
          }
       });
 

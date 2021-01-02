@@ -32,6 +32,22 @@ class FVVTPackage extends BundlePackage
    }
 
    /**
+    * @returns {string[]}
+    */
+   get allDirs()
+   {
+      return this._packageData.allDirs;
+   }
+
+   /**
+    * @returns {string[]}
+    */
+   get allFiles()
+   {
+      return this._packageData.allFiles;
+   }
+
+   /**
     * @returns {string}
     */
    get baseDir()
@@ -167,85 +183,16 @@ class FVVTPackage extends BundlePackage
 
       s_PARSE_FILES(packageData, bundleData);
 
-      // Load all data for npm files / bundles referenced
-      if (packageData.npmFiles.length > 0)
-      {
-         // TODO: TYPESCRIPT SUPPORT
-         for (const npmFile of packageData.npmFiles)
-         {
-            const inputPath = npmFile;
-            const inputFilename = path.basename(npmFile);
-            const outputPath = `${bundleData.deployDir}${path.sep}npm${path.sep}${inputFilename}`;
+      s_PARSE_NPM_BUNDLES(packageData, bundleData);
 
-            // Add a regex for the name of the file / NPM module to external.
-            const regex = `${path.sep}npm${path.sep}${inputFilename}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      s_PARSE_MAIN_BUNDLES(packageData, bundleData);
 
-            cliFlags.external.push(new RegExp(regex));
+      const fvttPackage = new FVVTPackage(packageData, bundleData);
 
-            // Verify that the file could be found.
-            if (!fs.existsSync(inputPath))
-            {
-               const npmError = new Error(`FVTTPackage - parse error - could not find npm file:\n${inputPath}`);
+      // Allow any plugins to potentially process package & bundle data.
+      await global.$$eventbus.triggerAsync('typhonjs:oclif:bundle:data:parse', fvttPackage);
 
-               // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-               npmError.$$bundler_fatal = false;
-
-               throw npmError;
-            }
-
-            // Note: Consider that reverseRelativePath has `..${path.sep}` hard coded before the path relative
-            // calculation. This likely is necessary as the source path is generated from ./npm/ so Rollup uses
-            // ../../node_modules for two levels of indirection. We want ./node_modules/xxxx as a result so prepend
-            // `../` and get `./node_modules/xxx` as a result. Seems to work, but beware.
-
-            bundleData.entries.push({
-               cssFilename: null,
-               cssFilepath: null,
-               format: 'es',
-               inputFilename,
-               inputPath,
-               outputPath,
-               reverseRelativePath: `..${path.sep}${path.relative(bundleData.deployDir, baseDir)}`,
-               type: 'npm',
-               watchFiles: []
-            });
-         }
-      }
-
-      // Load all data for esmodules referenced
-      // TODO: TYPESCRIPT SUPPORT
-      for (const esmodule of packageData.jsonData.esmodules)
-      {
-         const inputPath = `${packageData.rootPath}${path.sep}${esmodule}`;
-
-         // Verify that the esmodule file could be found.
-         if (!fs.existsSync(inputPath))
-         {
-            const esmError = new Error(`FVTTPackage - parse error - could not find esmodule:\n${inputPath}`);
-
-            // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-            esmError.$$bundler_fatal = false;
-
-            throw esmError;
-         }
-
-         const cssFilename = `${path.basename(esmodule, '.js')}.css`;
-
-         bundleData.entries.push({
-            cssFilename,
-            cssFilepath: `${bundleData.deployDir}${path.sep}${cssFilename}`,
-            external: cliFlags.external,
-            format: 'es',
-            inputFilename: esmodule,
-            inputPath: `${packageData.rootPath}${path.sep}${esmodule}`,
-            outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
-            reverseRelativePath: path.relative(bundleData.deployDir, packageData.rootPath),
-            type: 'main',
-            watchFiles: []
-         });
-      }
-
-      return new FVVTPackage(packageData, bundleData);
+      return fvttPackage;
    }
 }
 
@@ -349,6 +296,97 @@ function s_PARSE_FILES(packageData, bundleData)
       else if (filePath.startsWith(rootPath))
       {
          packageData.files.push(filePath);
+      }
+   }
+}
+
+/**
+ * @param {FVTTData}    packageData -
+ * @param {BundleData}  bundleData -
+ */
+function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
+{
+   // Load all data for esmodules referenced
+   // TODO: TYPESCRIPT SUPPORT
+   for (const esmodule of packageData.jsonData.esmodules)
+   {
+      const inputPath = `${packageData.rootPath}${path.sep}${esmodule}`;
+
+      // Verify that the esmodule file could be found.
+      if (!fs.existsSync(inputPath))
+      {
+         const esmError = new Error(`FVTTPackage - parse error - could not find esmodule:\n${inputPath}`);
+
+         // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+         esmError.$$bundler_fatal = false;
+
+         throw esmError;
+      }
+
+      const cssFilename = `${path.basename(esmodule, '.js')}.css`;
+
+      bundleData.entries.push({
+         cssFilename,
+         cssFilepath: `${bundleData.deployDir}${path.sep}${cssFilename}`,
+         format: 'es',
+         inputFilename: esmodule,
+         inputPath: `${packageData.rootPath}${path.sep}${esmodule}`,
+         outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
+         reverseRelativePath: path.relative(bundleData.deployDir, packageData.rootPath),
+         type: 'main',
+         watchFiles: []
+      });
+   }
+}
+
+/**
+ * @param {FVTTData}    packageData -
+ * @param {BundleData}  bundleData -
+ */
+function s_PARSE_NPM_BUNDLES(packageData, bundleData)
+{
+   // Load all data for npm files / bundles referenced
+   if (packageData.npmFiles.length > 0)
+   {
+      // TODO: TYPESCRIPT SUPPORT
+      for (const npmFile of packageData.npmFiles)
+      {
+         const inputPath = npmFile;
+         const inputFilename = path.basename(npmFile);
+         const outputPath = `${bundleData.deployDir}${path.sep}npm${path.sep}${inputFilename}`;
+
+         // Add a regex and escape it for the name of the file / NPM module to external.
+         const regex = `${path.sep}npm${path.sep}${inputFilename}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+         bundleData.cliFlags.external.push(new RegExp(regex));
+
+         // Verify that the file could be found.
+         if (!fs.existsSync(inputPath))
+         {
+            const npmError = new Error(`FVTTPackage - parse error - could not find npm file:\n${inputPath}`);
+
+            // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+            npmError.$$bundler_fatal = false;
+
+            throw npmError;
+         }
+
+         // Note: Consider that reverseRelativePath has `..${path.sep}` hard coded before the path relative
+         // calculation. This likely is necessary as the source path is generated from ./npm/ so Rollup uses
+         // ../../node_modules for two levels of indirection. We want ./node_modules/xxxx as a result so prepend
+         // `../` and get `./node_modules/xxx` as a result. Seems to work, but beware.
+
+         bundleData.entries.push({
+            cssFilename: null,
+            cssFilepath: null,
+            format: 'es',
+            inputFilename,
+            inputPath,
+            outputPath,
+            reverseRelativePath: `..${path.sep}${path.relative(bundleData.deployDir, packageData.baseDir)}`,
+            type: 'npm',
+            watchFiles: []
+         });
       }
    }
 }

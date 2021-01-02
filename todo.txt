@@ -1,7 +1,5 @@
 Today
 -----------------------------------------
-2. Investigate a way for postcss plugin to support sass & less dynamically
-
 3. Integrate babel
    - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
 
@@ -22,8 +20,20 @@ unbundle command
 
 ---
 
+RollupRunner / Bundle Events
+// Allow plugins a chance to parse any config data when
+triggerAsync    'typhonjs:oclif:bundle:data:parse' -> packageData, bundleData
+
+// Triggered during the rollup / bundle process allowing Oclif plugins to return specific Rollup plugins.
+triggerAsync    'typhonjs:oclif:bundle:plugins:main:output:get' -> bundleData
+triggerAsync    'typhonjs:oclif:bundle:plugins:npm:input:get' -> bundleData
+
+--
+
 ?. Add multiple bundle events
    - add more event callbacks for plugins to respond to
+
+------
 
 Testing phase
 ---------

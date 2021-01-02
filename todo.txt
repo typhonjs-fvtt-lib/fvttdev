@@ -1,14 +1,17 @@
 Today
 -----------------------------------------
-3.5) Create introspection code to determine JS or TS and disable babel plugin if TS
-
-
-4. Integrate Typescript
-
 5. refactor - move all Rollup / oclif plugins to typhonjs-node-rollup org
 
 6. Respect any local configuration files provided.
    - Have a flag / env override to ignore local config files
+
+7. Workout weighting algorithm for Oclif / Rollup plugins.
+
+-----
+
+Investigate:
+We may want to hydrate / expand on plugin configuration data after the repo is inspected.
+  - plugin-alias is such an example
 
 -----
 
@@ -47,6 +50,14 @@ Testing phase
   Test w/ underlying Rollup plugin
 
 - In bundle command there are multiple array includes usages, so consider structuring data differently for performance.
+
+---------
+Known Conflicts (Rollup plugins)
+- rollup-plugin-sourcemaps must be after @rollup/plugin-typescript otherwise things will fail for typescript.
+  - current solution was to disable rollup-plugin-sourcemaps for the main bundle generation as it's only really
+    necessary for including existing source maps of bundled npm modules.
+
+---------
 
 Before publishing
 ---------

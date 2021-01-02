@@ -4,7 +4,7 @@ const path           = require('path');
 const jetpack        = require('fs-jetpack');
 
 const DynamicCommand = require('../lib/DynamicCommand');
-const FVTTPackage    = require('../lib/data/FVTTPackage');
+const FVTTRepo       = require('../lib/data/FVTTRepo');
 
 const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 
@@ -24,7 +24,7 @@ class BundleCommand extends DynamicCommand
       const flags = super._initializeFlags(BundleCommand, 'bundle');
 
       // Inspect FVTT module / system and determine bundle data.
-      const fvttPackage = await FVTTPackage.parse(flags);
+      const fvttPackage = await FVTTRepo.parse(flags);
 
       await this._bundle(fvttPackage);
    }

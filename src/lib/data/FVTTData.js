@@ -20,27 +20,19 @@ class FVTTData
       this.dirs =  [];
       this.files = [];
 
-      this.jsonData = null;
+      this.packageData = null;
       this.jsonFilename = null;
       this.jsonPath = null;
 
       this.newJsonFilepath = null;
 
-      this.newJsonData = {};
+      this.newpackageData = {};
       this.npmFiles = [];
       this.nodeInstallPath = `${baseDir}${path.sep}node_modules`;
 
       this.packageType = null;
       this.rootPath = null;
-      this.npmFilePath = null;
-
-      // jsonData,
-      // jsonFilename,
-      // jsonPath,
-      // newJsonFilepath: `${deployDir}${path.sep}${jsonFilename}`,
-      // packageType,
-      // rootPath,
-      // npmFilePath,
+      this.npmModulePath = null;
    }
 }
 

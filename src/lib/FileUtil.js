@@ -1,11 +1,48 @@
-const fs    = require("fs");
-const path  = require("path");
+const fs             = require("fs");
+const path           = require("path");
+
+const NonFatalError = require ('./NonFatalError');
+
+const s_EXT_JS = ['.js', '.jsx', '.es6', '.es', '.mjs'];
+const s_EXT_TS = ['.ts', '.tsx'];
 
 /**
  * Provides a few utility functions to walk the local file tree.
  */
 class FileUtil
 {
+   static isJS(extension)
+   {
+      return s_EXT_JS.includes(extension);
+   }
+
+   static isTS(extension)
+   {
+      return s_EXT_TS.includes(extension);
+   }
+
+   /**
+    * Returns whether the given filename is a Javascript or Typescript file.
+    *
+    * @param {string}   esmodule - file name to test.
+    * @param {object}   packageData - absolute file path.
+    */
+   static resolveESModule(esmodule, packageData)
+   {
+      const extension = path.extname(esmodule);
+
+      if (!FileUtil.isJS(extension))
+      {
+         throw new NonFatalError(
+          `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in ${packageData.jsonFilename}:`
+          + `${packageData.jsonPath}`
+         );
+      }
+
+      const inputPath = `${packageData.rootPath}${path.sep}${esmodule}`;
+
+   }
+
    /**
     * Returns an array of all directories found from walking the directory tree provided.
     *

@@ -1,11 +1,13 @@
 Today
 -----------------------------------------
-3. Integrate babel
-   - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
+3.5) Create introspection code to determine JS or TS and disable babel plugin if TS
+
 
 4. Integrate Typescript
 
-5. Respect any local configuration files provided.
+5. refactor - move all Rollup / oclif plugins to typhonjs-node-rollup org
+
+6. Respect any local configuration files provided.
    - Have a flag / env override to ignore local config files
 
 -----
@@ -48,6 +50,8 @@ Testing phase
 
 Before publishing
 ---------
+- Info on setting up eslint for @babel/preset-env use:
+https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
 
 - Make and test a separate modules for FlagHandler & RollupRunner
 

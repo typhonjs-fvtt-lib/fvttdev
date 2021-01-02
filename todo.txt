@@ -1,9 +1,5 @@
 Today
 -----------------------------------------
-1. Add multiple bundle events
-   - rename bundle events
-   - add more event callbacks for plugins to respond to
-
 2. Investigate a way for postcss plugin to support sass & less dynamically
 
 3. Integrate babel
@@ -22,7 +18,12 @@ Today
 
 ---
 
-copy command
+unbundle command
+
+---
+
+?. Add multiple bundle events
+   - add more event callbacks for plugins to respond to
 
 Testing phase
 ---------

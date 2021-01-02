@@ -1,10 +1,10 @@
 /**
  *
  */
-class BundleData
+class BundlePackage
 {
    /**
-    * @param {Array}    bundleData - RollupRunner specific data for multiple bundle generation.
+    * @param {object}   bundleData - RollupRunner specific data for multiple bundle generation.
     */
    constructor(bundleData)
    {
@@ -61,4 +61,4 @@ class BundleData
    }
 }
 
-module.exports = BundleData;
+module.exports = BundlePackage;

@@ -4,7 +4,7 @@ const path           = require('path');
 const jetpack        = require('fs-jetpack');
 
 const DynamicCommand = require('../lib/DynamicCommand');
-const FVTTPackage    = require('../lib/FVTTPackage');
+const FVTTPackage    = require('../lib/data/FVTTPackage');
 
 const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 

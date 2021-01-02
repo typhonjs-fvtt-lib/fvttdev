@@ -2,7 +2,11 @@ const fs             = require('fs');
 const path           = require('path');
 
 const BundleData     = require('./BundleData');
-const FileUtil       = require('./FileUtil');
+const FVTTData       = require('./FVTTData');
+
+const BundlePackage  = require('./BundlePackage');
+
+const FileUtil       = require('../FileUtil');
 
 const s_MODULE_REGEX = /(.*)\/module\.json?/;
 const s_SYSTEM_REGEX = /(.*)\/system\.json?/;
@@ -14,11 +18,11 @@ const s_SYSTEM_REGEX = /(.*)\/system\.json?/;
  * separated as they will be treated as separate bundles. The main entry point of the main module / system bundle is
  * parsed from module or system.json / `esmodules`. For now only one main source file may be specified.
  */
-class FVVTPackage extends BundleData
+class FVVTPackage extends BundlePackage
 {
    /**
     * @param {object}   packageData - A parsed representation of the FVTT repo.
-    * @param {Array}    bundleData - Rollup Runner specific data for multiple bundle generation.
+    * @param {object}    bundleData - Rollup Runner specific data for multiple bundle generation.
     */
    constructor(packageData, bundleData)
    {
@@ -158,124 +162,10 @@ class FVVTPackage extends BundleData
       const allDirs = await FileUtil.getDirList(baseDir);
       const allFiles = await FileUtil.getFileList(baseDir);
 
-      let rootPath = null;
-      let jsonPath = null;
-      let packageType = null;
+      const packageData = new FVTTData(allDirs, allFiles, baseDir);
+      const bundleData = new BundleData(cliFlags);
 
-      // Search through all file paths checking the module & system regex against file paths to find the root path
-      // of the module / system and the associated *.json file.
-      for (const filePath of allFiles)
-      {
-         let matches = s_MODULE_REGEX.exec(filePath);
-         if (matches !== null)
-         {
-            jsonPath = matches[0];
-            rootPath = matches[1];
-            packageType = 'module';
-            break;
-         }
-
-         matches = s_SYSTEM_REGEX.exec(filePath);
-         if (matches !== null)
-         {
-            jsonPath = matches[0];
-            rootPath = matches[1];
-            packageType = 'system';
-            break;
-         }
-      }
-
-      // Throw a control flow error.
-      if (packageType === null)
-      {
-         const error = new Error(
-          `FileUtil - getBundleList - could not find a Foundry VTT module or system in file path: '${baseDir}'.`);
-
-         // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-         error.$$bundler_fatal = false;
-
-         throw error;
-      }
-
-      let jsonData;
-
-      try
-      {
-         jsonData = require(jsonPath);
-      }
-      catch (err)
-      {
-         // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-         err.$$bundler_fatal = false;
-         throw err;
-      }
-
-      // Verify that the module / system.json file has an esmodules entry.
-      if (!Array.isArray(jsonData.esmodules))
-      {
-         const error = new Error(`Could not locate 'esmodules' entry in: ${jsonPath}.`);
-
-         // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-         error.$$bundler_fatal = false;
-
-         throw error;
-      }
-
-      const jsonFilename = `${packageType}.json`;
-
-      const deployDir = cliFlags.deploy;
-
-      // The npm file path which by convention is the root path + `npm`.
-      const npmFilePath = `${rootPath}${path.sep}npm`;
-      const nodeInstallPath = `${baseDir}${path.sep}node_modules`;
-
-      // Defines the data required for RollupRunner.
-      const bundleData = {
-         cliFlags,
-         entries: [],
-         deployDir,
-         reverseRelativePath: path.relative(deployDir, rootPath)
-      };
-
-      // The results of the bundle file query.
-      const packageData = {
-         baseDir,
-         baseDirPath: path.resolve(baseDir),
-         copyMap: new Map(),
-         dirs: [],
-         files: [],
-         jsonData,
-         jsonFilename,
-         jsonPath,
-         newJsonData: {},
-         newJsonFilepath: `${deployDir}${path.sep}${jsonFilename}`,
-         npmFiles: [],
-         packageType,
-         rootPath,
-         npmFilePath,
-         nodeInstallPath
-      };
-
-      for (const dirPath of allDirs)
-      {
-         if (dirPath.startsWith(rootPath) && !dirPath.startsWith(npmFilePath))
-         {
-            packageData.dirs.push(dirPath);
-         }
-      }
-
-      // Parse all file and store NPM files first before checking if the root path matches the detected module / system.
-      for (const filePath of allFiles)
-      {
-         if (filePath.startsWith(npmFilePath))
-         {
-            packageData.npmFiles.push(filePath);
-         }
-         else if (filePath.startsWith(rootPath))
-         {
-            packageData.files.push(filePath);
-         }
-      }
+      s_PARSE_FILES(packageData, bundleData);
 
       // Load all data for npm files / bundles referenced
       if (packageData.npmFiles.length > 0)
@@ -285,7 +175,7 @@ class FVVTPackage extends BundleData
          {
             const inputPath = npmFile;
             const inputFilename = path.basename(npmFile);
-            const outputPath = `${deployDir}${path.sep}npm${path.sep}${inputFilename}`;
+            const outputPath = `${bundleData.deployDir}${path.sep}npm${path.sep}${inputFilename}`;
 
             // Add a regex for the name of the file / NPM module to external.
             const regex = `${path.sep}npm${path.sep}${inputFilename}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -315,7 +205,7 @@ class FVVTPackage extends BundleData
                inputFilename,
                inputPath,
                outputPath,
-               reverseRelativePath: `..${path.sep}${path.relative(deployDir, baseDir)}`,
+               reverseRelativePath: `..${path.sep}${path.relative(bundleData.deployDir, baseDir)}`,
                type: 'npm',
                watchFiles: []
             });
@@ -324,9 +214,9 @@ class FVVTPackage extends BundleData
 
       // Load all data for esmodules referenced
       // TODO: TYPESCRIPT SUPPORT
-      for (const esmodule of jsonData.esmodules)
+      for (const esmodule of packageData.jsonData.esmodules)
       {
-         const inputPath = `${rootPath}${path.sep}${esmodule}`;
+         const inputPath = `${packageData.rootPath}${path.sep}${esmodule}`;
 
          // Verify that the esmodule file could be found.
          if (!fs.existsSync(inputPath))
@@ -343,19 +233,123 @@ class FVVTPackage extends BundleData
 
          bundleData.entries.push({
             cssFilename,
-            cssFilepath: `${deployDir}${path.sep}${cssFilename}`,
+            cssFilepath: `${bundleData.deployDir}${path.sep}${cssFilename}`,
             external: cliFlags.external,
             format: 'es',
             inputFilename: esmodule,
-            inputPath: `${rootPath}${path.sep}${esmodule}`,
-            outputPath: `${deployDir}${path.sep}${esmodule}`,
-            reverseRelativePath: path.relative(deployDir, rootPath),
+            inputPath: `${packageData.rootPath}${path.sep}${esmodule}`,
+            outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
+            reverseRelativePath: path.relative(bundleData.deployDir, packageData.rootPath),
             type: 'main',
             watchFiles: []
          });
       }
 
       return new FVVTPackage(packageData, bundleData);
+   }
+}
+
+/**
+ * @param {FVTTData}    packageData -
+ * @param {BundleData}  bundleData -
+ */
+function s_PARSE_FILES(packageData, bundleData)
+{
+   let rootPath = null;
+   let jsonPath = null;
+   let packageType = null;
+
+   // Search through all file paths checking the module & system regex against file paths to find the root path
+   // of the module / system and the associated *.json file.
+   for (const filePath of packageData.allFiles)
+   {
+      let matches = s_MODULE_REGEX.exec(filePath);
+      if (matches !== null)
+      {
+         jsonPath = matches[0];
+         rootPath = matches[1];
+         packageType = 'module';
+         break;
+      }
+
+      matches = s_SYSTEM_REGEX.exec(filePath);
+      if (matches !== null)
+      {
+         jsonPath = matches[0];
+         rootPath = matches[1];
+         packageType = 'system';
+         break;
+      }
+   }
+
+   // Throw a control flow error.
+   if (packageType === null)
+   {
+      const error = new Error(
+       `FVTTPackage - could not find a Foundry VTT module or system in file path: '${packageData.baseDir}'.`);
+
+      // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+      error.$$bundler_fatal = false;
+
+      throw error;
+   }
+
+   let jsonData;
+
+   try
+   {
+      jsonData = require(jsonPath);
+   }
+   catch (err)
+   {
+      // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+      err.$$bundler_fatal = false;
+      throw err;
+   }
+
+   // Verify that the module / system.json file has an esmodules entry.
+   if (!Array.isArray(jsonData.esmodules))
+   {
+      const error = new Error(`Could not locate 'esmodules' entry in: ${jsonPath}.`);
+
+      // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
+      error.$$bundler_fatal = false;
+
+      throw error;
+   }
+
+   const jsonFilename = `${packageType}.json`;
+
+   // The npm file path which by convention is the root path + `npm`.
+   const npmFilePath = `${rootPath}${path.sep}npm`;
+
+   packageData.jsonData = jsonData;
+   packageData.jsonFilename = jsonFilename;
+   packageData.jsonPath = jsonPath;
+   packageData.newJsonFilepath = `${bundleData.deployDir}${path.sep}${jsonFilename}`;
+   packageData.packageType = packageType;
+   packageData.rootPath = rootPath;
+   packageData.npmFilePath = npmFilePath;
+
+   for (const dirPath of packageData.allDirs)
+   {
+      if (dirPath.startsWith(rootPath) && !dirPath.startsWith(npmFilePath))
+      {
+         packageData.dirs.push(dirPath);
+      }
+   }
+
+   // Parse all file and store NPM files first before checking if the root path matches the detected module / system.
+   for (const filePath of packageData.allFiles)
+   {
+      if (filePath.startsWith(npmFilePath))
+      {
+         packageData.npmFiles.push(filePath);
+      }
+      else if (filePath.startsWith(rootPath))
+      {
+         packageData.files.push(filePath);
+      }
    }
 }
 

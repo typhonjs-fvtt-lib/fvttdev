@@ -43,7 +43,7 @@ class BundleCommand extends DynamicCommand
       fvttPackage.reset();
 
       // Fire off RollupRunner and have it perform all bundling.
-      await global.$$eventbus.triggerAsync('typhonjs:node:rollup:runner:run:all', fvttPackage);
+      await global.$$eventbus.triggerAsync('typhonjs:node:bundle:runner:run:all', fvttPackage);
 
       // TODO REMOVE - TEST
       this.log(`Bundle command - run - bundle data: \n${JSON.stringify(fvttPackage, null, 3)}`);
@@ -133,9 +133,6 @@ class BundleCommand extends DynamicCommand
       for (const sourcePath of bundleData.copyMap.keys())
       {
          const destPath = bundleData.copyMap.get(sourcePath);
-
-         // TODO REMOVE
-         // this.log(`copy: ${sourcePath}\nto: ${destPath}\n`);
 
          jetpack.copy(sourcePath, destPath, { overwrite: true });
       }

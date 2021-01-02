@@ -133,8 +133,8 @@ class RollupRunner
    {
       const eventbus = ev.eventbus;
 
-      eventbus.on(`typhonjs:node:rollup:runner:run`, this.rollup, this);
-      eventbus.on(`typhonjs:node:rollup:runner:run:all`, this.rollupAll, this);
+      eventbus.on(`typhonjs:node:bundle:runner:run`, this.rollup, this);
+      eventbus.on(`typhonjs:node:bundle:runner:run:all`, this.rollupAll, this);
    }
 }
 

@@ -149,14 +149,14 @@ class FVVTPackage extends BundleData
     * Performs initialization / parsing of the FVTT repo being parsed.
     *
     * @param {object}   cliFlags - The CLI runtime flags.
-    * @param {string}   [dir] - The root directory to parse.
+    * @param {string}   [baseDir] - The root directory to parse.
     *
     * @private
     */
-   static async parse(cliFlags, dir = global.$$bundler_baseCWD)
+   static async parse(cliFlags, baseDir = global.$$bundler_baseCWD)
    {
-      const allDirs = await FileUtil.getDirList(dir);
-      const allFiles = await FileUtil.getFileList(dir);
+      const allDirs = await FileUtil.getDirList(baseDir);
+      const allFiles = await FileUtil.getFileList(baseDir);
 
       let rootPath = null;
       let jsonPath = null;
@@ -189,7 +189,7 @@ class FVVTPackage extends BundleData
       if (packageType === null)
       {
          const error = new Error(
-          `FileUtil - getBundleList - could not find a Foundry VTT module or system in file path: '${dir}'.`);
+          `FileUtil - getBundleList - could not find a Foundry VTT module or system in file path: '${baseDir}'.`);
 
          // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
          error.$$bundler_fatal = false;
@@ -225,6 +225,10 @@ class FVVTPackage extends BundleData
 
       const deployDir = cliFlags.deploy;
 
+      // The npm file path which by convention is the root path + `npm`.
+      const npmFilePath = `${rootPath}${path.sep}npm`;
+      const nodeInstallPath = `${baseDir}${path.sep}node_modules`;
+
       // Defines the data required for RollupRunner.
       const bundleData = {
          cliFlags,
@@ -235,8 +239,8 @@ class FVVTPackage extends BundleData
 
       // The results of the bundle file query.
       const packageData = {
-         baseDir: dir,
-         baseDirPath: path.resolve(dir),
+         baseDir,
+         baseDirPath: path.resolve(baseDir),
          copyMap: new Map(),
          dirs: [],
          files: [],
@@ -247,11 +251,10 @@ class FVVTPackage extends BundleData
          newJsonFilepath: `${deployDir}${path.sep}${jsonFilename}`,
          npmFiles: [],
          packageType,
-         rootPath
+         rootPath,
+         npmFilePath,
+         nodeInstallPath
       };
-
-      // The npm file path which by convention is the root path + `npm`.
-      const npmFilePath = `${rootPath}${path.sep}npm`;
 
       for (const dirPath of allDirs)
       {
@@ -300,6 +303,11 @@ class FVVTPackage extends BundleData
                throw npmError;
             }
 
+            // Note: Consider that reverseRelativePath has `..${path.sep}` hard coded before the path relative
+            // calculation. This likely is necessary as the source path is generated from ./npm/ so Rollup uses
+            // ../../node_modules for two levels of indirection. We want ./node_modules/xxxx as a result so prepend
+            // `../` and get `./node_modules/xxx` as a result. Seems to work, but beware.
+
             bundleData.entries.push({
                cssFilename: null,
                cssFilepath: null,
@@ -307,6 +315,7 @@ class FVVTPackage extends BundleData
                inputFilename,
                inputPath,
                outputPath,
+               reverseRelativePath: `..${path.sep}${path.relative(deployDir, baseDir)}`,
                type: 'npm',
                watchFiles: []
             });
@@ -340,6 +349,7 @@ class FVVTPackage extends BundleData
             inputFilename: esmodule,
             inputPath: `${rootPath}${path.sep}${esmodule}`,
             outputPath: `${deployDir}${path.sep}${esmodule}`,
+            reverseRelativePath: path.relative(deployDir, rootPath),
             type: 'main',
             watchFiles: []
          });

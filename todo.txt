@@ -1,24 +1,22 @@
 Today
 -----------------------------------------
-3. Create separate NPM bundles
+1. Add multiple bundle events
 
-!! Verify sourcemap transform
+2. Investigate a way for postcss plugin to support sass & less dynamically
 
-4. Add multiple bundle events
+3. Integrate babel
+   - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
+
+4. Integrate Typescript
+
+5. Respect any local configuration files provided.
+   - Have a flag / env override to ignore local config files
 
 -----
 
-5. Integrate babel
-   - Determine if the code to bundle is JS; set a configuration flag to kick off babel.
+5. WATCH WATCH WATCH
 
-6. Integrate Typescript
-
-7. Respect any local configuration files provided.
-   - Have a flag / env override to ignore local config files
-
-8. WATCH WATCH WATCH
-
-9. copy command
+6. copy command
 
 ---
 

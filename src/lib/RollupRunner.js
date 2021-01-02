@@ -93,7 +93,7 @@ class RollupRunner
       // Simple test output config.
       config.output.plugins = outputPlugins;
       config.output.sourcemap = bundleData.cliFlags.sourcemap || false;
-      config.output.sourcemapPathTransform = (sourcePath) => sourcePath.replace(bundleData.reverseRelativePath, `.`);
+      config.output.sourcemapPathTransform = (sourcePath) => sourcePath.replace(currentBundle.reverseRelativePath, `.`);
 
       const bundle = await rollup(config.input);
 

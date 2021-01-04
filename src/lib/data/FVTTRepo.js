@@ -1,16 +1,17 @@
-const fs             = require('fs');
-const path           = require('path');
+const fs                = require('fs');
+const path              = require('path');
 
-const BundleData     = require('./BundleData');
-const FVTTData       = require('./FVTTData');
+const { FileUtil, NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
-const FVTTPackage    = require('./FVTTPackage');
+const BundleData        = require('./BundleData');
+const FVTTData          = require('./FVTTData');
 
-const FileUtil       = require('../FileUtil');
-const NonFatalError  = require('../NonFatalError');
+const FVTTPackage       = require('./FVTTPackage');
 
-const s_MODULE_REGEX = /(.*)\/module\.json?/;
-const s_SYSTEM_REGEX = /(.*)\/system\.json?/;
+const s_MODULE_REGEX    = /(.*)\/module\.json?/;
+const s_SYSTEM_REGEX    = /(.*)\/system\.json?/;
+
+const s_SKIP_DIRS = ['deploy', 'dist', 'node_modules'];
 
 /**
  * Searches for a Foundry VTT module or system in the root directory provided. Once either `module.json` or
@@ -31,8 +32,8 @@ class FVTTRepo
     */
    static async parse(cliFlags, baseDir = global.$$bundler_baseCWD)
    {
-      const allDirs = await FileUtil.getDirList(baseDir);
-      const allFiles = await FileUtil.getFileList(baseDir);
+      const allDirs = await FileUtil.getDirList(baseDir, s_SKIP_DIRS);
+      const allFiles = await FileUtil.getFileList(baseDir, s_SKIP_DIRS);
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);
@@ -102,9 +103,7 @@ function s_PARSE_FILES(packageData, bundleData)
    }
    catch (err)
    {
-      // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-      err.$$bundler_fatal = false;
-      throw err;
+      throw new NonFatalError(err.message);
    }
 
    // Verify that the module / system.json file has an esmodules entry.
@@ -249,14 +248,10 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
 
    const inputParsed = path.parse(esmodule);
 
-process.stderr.write(`!!!! FVTTRepo - s_RESOLVE_ESMODULE - 0 - inputParsed: ${JSON.stringify(inputParsed)}\n`);
-// {"root":"","dir":"src","base":"index.js","ext":".js","name":"index"}
    const inputPathBase =
     `${packageData.rootPath}${path.sep}${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
 
    const esmoduleBase = `${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
-
-process.stderr.write(`!!!! FVTTRepo - s_RESOLVE_ESMODULE - 1 - inputPathBase: \n${inputPathBase}\n`);
 
    const inputPathJS = `${inputPathBase}${inputParsed.ext}`;
 

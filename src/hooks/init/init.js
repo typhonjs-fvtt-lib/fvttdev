@@ -1,10 +1,11 @@
-const path           = require('path');
+const path              = require('path');
 
-const Events         = require('backbone-esnext-events');
-const PluginManager  = require('typhonjs-plugin-manager');
+const Events            = require('backbone-esnext-events');
+const PluginManager     = require('typhonjs-plugin-manager');
 
-const FlagHandler    = require('../../lib/FlagHandler');
-const RollupRunner   = require('../../lib/RollupRunner');
+const { FlagHandler }   = require('@typhonjs-node-bundle/oclif-commons');
+
+const RollupRunner      = require('../../lib/RollupRunner');
 
 /**
  * Creates a plugin manager instance.

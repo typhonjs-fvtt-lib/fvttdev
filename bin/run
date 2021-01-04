@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-const logger         = require('typhonjs-color-logger').default;
-const oclifHandler   = require('@oclif/errors/handle');
+const logger            = require('typhonjs-color-logger').default;
+const oclifHandler      = require('@oclif/errors/handle');
+const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
 require('@oclif/command').run()
 .then(require('@oclif/command/flush'))
 .catch((error) =>
 {
    // Given a magic boolean variable assigned to an error skip printing out a fatal error.
-   if (typeof error.$$bundler_fatal === 'boolean' && !error.$$bundler_fatal)
+   if (error instanceof NonFatalError || (typeof error.$$bundler_fatal === 'boolean' && !error.$$bundler_fatal))
    {
       return oclifHandler(error);
    }

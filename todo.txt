@@ -1,11 +1,17 @@
 Today
 -----------------------------------------
-5. refactor - move all Rollup / oclif plugins to typhonjs-node-rollup org
+0. Review current code.
+   - Finish refactor of including @typhonjs-node-bundle/oclif-commons
 
-6. Respect any local configuration files provided.
+1. Get logging unified
+   - use typhonjs-color-logger
+
+2. Respect any local configuration files provided.
    - Have a flag / env override to ignore local config files
 
-7. Workout weighting algorithm for Oclif / Rollup plugins.
+3. Workout weighting algorithm for Oclif / Rollup plugins.
+
+4. Test against GMScreen, Hex-Size-Support, TwoDSix system
 
 -----
 
@@ -16,8 +22,6 @@ We may want to hydrate / expand on plugin configuration data after the repo is i
 -----
 
 5. WATCH WATCH WATCH
-
-6. copy command
 
 ---
 

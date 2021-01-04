@@ -1,7 +1,9 @@
-const fs          = require('fs');
-const path        = require('path');
+const fs                = require('fs');
+const path              = require('path');
 
-const { flags }   = require('@oclif/command');
+const { flags }         = require('@oclif/command');
+
+const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
 /**
  * Adds built in flags for the bundle command.
@@ -57,24 +59,13 @@ module.exports = async function()
                   try { result = JSON.parse(process.env.DEPLOY_EXTERNAL); }
                   catch (error)
                   {
-                     const parseError = new Error(
-                        `Could not parse 'DEPLOY_EXTERNAL' as a JSON array;\n${error.message}`);
-
-                     // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-                     parseError.$$bundler_fatal = false;
-
-                     throw parseError;
+                     throw new NonFatalError(`Could not parse 'DEPLOY_EXTERNAL' as a JSON array;\n${error.message}`);
                   }
 
                   // Verify that the JSON result loaded is an actual array otherwise quit with and error...
                   if (!Array.isArray(result))
                   {
-                     const parseError = new Error(`Please format 'DEPLOY_EXTERNAL' as a JSON array.`);
-
-                     // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-                     parseError.$$bundler_fatal = false;
-
-                     throw parseError;
+                     throw new NonFatalError(`Please format 'DEPLOY_EXTERNAL' as a JSON array.`);
                   }
 
                   // TODO: consider adding verification that the loaded array from JSON contains all strings.
@@ -134,12 +125,7 @@ module.exports = async function()
 
                if (!fs.existsSync(global.$$bundler_baseCWD))
                {
-                  const error = new Error(`New current working directory does not exist.`);
-
-                  // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-                  error.$$bundler_fatal = false;
-
-                  throw error;
+                  throw new NonFatalError(`New current working directory does not exist.`);
                }
             }
          }

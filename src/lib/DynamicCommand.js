@@ -1,8 +1,10 @@
-const fs          = require('fs');
-const path        = require('path');
+const fs             = require('fs');
+const path           = require('path');
 
-const { Command } = require('@oclif/command');
-const dotenv      = require('dotenv');
+const { Command }    = require('@oclif/command');
+const dotenv         = require('dotenv');
+
+const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
 /**
  * Provides default handling for TyphonJS dynamic command initialization of flags from Oclif plugins.
@@ -92,12 +94,7 @@ class DynamicCommand extends Command
 
          if (!fs.existsSync(global.$$bundler_baseCWD))
          {
-            const error = new Error(`New current working directory does not exist.`);
-
-            // Set magic boolean for global CLI error handler to skip treating this as a fatal error.
-            error.$$bundler_fatal = false;
-
-            throw error;
+            throw new NonFatalError(`New current working directory does not exist.`)
          }
       }
 

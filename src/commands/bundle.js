@@ -45,11 +45,11 @@ class BundleCommand extends DynamicCommand
    {
       fvttPackage.reset();
 
-      // Fire off RollupRunner and have it perform all bundling.
-      await global.$$eventbus.triggerAsync('typhonjs:node:bundle:runner:run:all', fvttPackage);
-
       // TODO REMOVE - TEST
       // this.log(`Bundle command - run - bundle data: \n${JSON.stringify(fvttPackage, null, 3)}`);
+
+      // Fire off RollupRunner and have it perform all bundling.
+      await global.$$eventbus.triggerAsync('typhonjs:node:bundle:runner:run:all', fvttPackage);
 
       // Copy all top most directories not included in bundling process, module / system json, and
       // any LICENSE or README.md file.
@@ -81,6 +81,13 @@ class BundleCommand extends DynamicCommand
       if (fs.existsSync(readmePath))
       {
          bundleData.copyMap.set(readmePath, `${bundleData.deployDir}${path.sep}README.md`);
+      }
+
+      // Store any README.md file to be copied.
+      const templatePath = `${bundleData.rootPath}${path.sep}template.json`;
+      if (fs.existsSync(templatePath))
+      {
+         bundleData.copyMap.set(templatePath, `${bundleData.deployDir}${path.sep}template.json`);
       }
 
       // Create a map structure from `bundleData.dirs` for easier / quicker deletions.

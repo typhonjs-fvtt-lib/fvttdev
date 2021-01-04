@@ -22,6 +22,9 @@ module.exports = async function(opts)
       // Save base executing path immediately before anything else occurs w/ CLI / Oclif.
       global.$$bundler_baseCWD = global.$$bundler_origCWD = process.cwd();
 
+      // A short version of CWD which has the relative path if CWD is the base or subdirectory otherwise absolute.
+      global.$$bundler_logCWD = '.';
+
       // Save the global eventbus.
       global.$$eventbus = new Events();
 
@@ -37,11 +40,16 @@ module.exports = async function(opts)
          options: {
             // Adds an exclusive filter which removes `FlagHandler` from stack trace / being a source of an error.
             filterConfigs: [
-               { type: 'exclusive', name: 'FlagHandler', filterString: 'src/lib/FlagHandler.js' },
+               { type: 'exclusive', name: 'FlagHandler', filterString:
+                '@typhonjs-node-bundle/oclif-commons/src/util/FlagHandler.js' },
                { type: 'exclusive', name: '@babel', filterString: '@babel' }
-            ]
+            ],
+            showInfo: false
          }
       });
+
+      // TODO CHANGE TO INFO LOG LEVEL FOR DEFAULT
+      global.$$eventbus.trigger('log:level:set', 'debug');
 
       // Add '@typhonjs-node-bundle/oclif-flaghandler'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-flaghandler', instance: new FlagHandler() });
@@ -49,8 +57,7 @@ module.exports = async function(opts)
       // Add '@typhonjs-node-bundle/rollup-runner'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/rollup-runner', instance: new RollupRunner() });
 
-      // TODO REMOVE
-      process.stdout.write(`fvttdev init hook running ${opts.id}\n`);
+      global.$$eventbus.trigger('log:debug', `fvttdev init hook running '${opts.id}'.`);
    }
    catch (error)
    {

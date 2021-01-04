@@ -36,15 +36,17 @@ class DynamicCommand extends Command
          // By default the environment variables will always be stored in `./env`
          const envFilePath = `${global.$$bundler_baseCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
 
+         const logEnvFilePath = `${global.$$bundler_logCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
+
          // Exit gracefully if the environment file could not be found.
          if (!fs.existsSync(envFilePath))
          {
-            this.error(`Could not find specified environment file: \n'${envFilePath}'`);
+            this.error(`Could not find specified environment file: \n'${logEnvFilePath}'`);
             this.exit(1);
          }
          else
          {
-            this.log(`Loading environment variables from: \n${envFilePath}`);
+            global.$$eventbus.trigger('log:verbose', `Loading environment variables from: \n${logEnvFilePath}`);
 
             // Potentially load environment variables from a *.env file.
             const env = dotenv.config({ path: envFilePath });
@@ -86,15 +88,20 @@ class DynamicCommand extends Command
       // Notify that the current working directory is being changed and verify that the new directory exists.
       if (typeof flags.cwd === 'string' && flags.cwd !== '.')
       {
-         // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
-         global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
+         const origCWD = global.$$bundler_baseCWD;
+         const newCWD = flags.cwd;
 
-         // TODO Change to typhonjs-color-logger
-         process.stdout.write(`New current working directory set: \n${global.$$bundler_baseCWD}\n`);
+         // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
+         global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, newCWD);
+
+         // Only log absolute path if the CWD location is outside of the original path.
+         global.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
+
+         global.$$eventbus.trigger('log:verbose', `New current working directory set: \n${global.$$bundler_logCWD}`);
 
          if (!fs.existsSync(global.$$bundler_baseCWD))
          {
-            throw new NonFatalError(`New current working directory does not exist.`)
+            throw new NonFatalError(`New current working directory does not exist.`);
          }
       }
 

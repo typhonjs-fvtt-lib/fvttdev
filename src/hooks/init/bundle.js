@@ -20,12 +20,13 @@ const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
  * `--sourcemap  -      - Generate source maps.                      - default: `true`    - env: DEPLOY_SOURCEMAP
  * `--watch`     -      - Continually build / bundle source to deploy directory. - default: `false`
  *
+ * @param {object} opts - Oclif options
+ *
  * @returns {Promise<void>}
  */
-module.exports = async function()
+module.exports = async function(opts)
 {
-   // TODO REMOVE
-   process.stdout.write(`explicit bundle command init hook running\n`);
+   global.$$eventbus.trigger('log:debug', `explicit bundle command init hook running '${opts.id}'.`);
 
    global.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
       command: 'bundle',
@@ -39,6 +40,13 @@ module.exports = async function()
 
                return '.';
             }
+         }),
+
+         deploy: flags.string({
+            'char': 'd',
+            'description': 'Directory to deploy build files into.',
+            'default': './dist',
+            'env': 'DEPLOY_PATH'
          }),
 
          entry: flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
@@ -77,11 +85,9 @@ module.exports = async function()
             }
          }),
 
-         deploy: flags.string({
-            'char': 'd',
-            'description': 'Directory to deploy build files into.',
-            'default': './dist',
-            'env': 'DEPLOY_PATH'
+         loglevel: flags.string({
+            'description': 'Sets log level (off, fatal, error, warn, info, verbose, debug, trace, all).',
+            'default': 'debug'  // TODO DEFAULT SHOULD BE INFO
          }),
 
          // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
@@ -110,18 +116,38 @@ module.exports = async function()
        */
       verify: function(flags)
       {
+         if (typeof flags.loglevel === 'string')
+         {
+            const logLevels = ['off', 'fatal', 'error', 'warn', 'info', 'verbose', 'debug', 'trace', 'all'];
+
+            // Log a warning if requested log level is unknown.
+            if (!logLevels.includes(flags.loglevel))
+            {
+               global.$$eventbus.trigger('log:warn', `Unknown log level: '${flags.loglevel}'.`);
+            }
+            else
+            {
+               global.$$eventbus.trigger('log:level:set', flags.loglevel);
+            }
+         }
+
          // Notify that the current working directory is being changed and verify that the new directory exists.
          if (typeof flags.cwd === 'string' && flags.cwd !== '.')
          {
             // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
+            const origCWD = global.$$bundler_baseCWD;
             const newCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
 
             if (newCWD !== global.$$bundler_baseCWD)
             {
                global.$$bundler_baseCWD = newCWD;
 
-               // TODO Change to typhonjs-color-logger
-               process.stdout.write(`New current working directory set: \n${global.$$bundler_baseCWD}\n`);
+               // Only log absolute path if the CWD location is outside of the original path.
+               const logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
+
+               // TODO Shorten path if within subdirectory
+               global.$$eventbus.trigger('log:debug',
+                `New current working directory set: \n${logCWD}`);
 
                if (!fs.existsSync(global.$$bundler_baseCWD))
                {

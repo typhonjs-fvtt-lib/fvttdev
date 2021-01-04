@@ -1,11 +1,5 @@
 Today
 -----------------------------------------
-0. Review current code.
-   - Finish refactor of including @typhonjs-node-bundle/oclif-commons
-
-1. Get logging unified
-   - use typhonjs-color-logger
-
 2. Respect any local configuration files provided.
    - Have a flag / env override to ignore local config files
 
@@ -65,6 +59,8 @@ Known Conflicts (Rollup plugins)
 
 Before publishing
 ---------
+- set default log level to info
+
 - Info on setting up eslint for @babel/preset-env use:
 https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
 

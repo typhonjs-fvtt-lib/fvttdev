@@ -92,7 +92,7 @@ function s_PARSE_FILES(packageData, bundleData)
    if (packageType === null)
    {
       throw new NonFatalError(
-         `FVTTPackage - could not find a Foundry VTT module or system in file path: '${packageData.baseDir}'.`);
+       `Could not find a Foundry VTT module or system in file path: \n${global.$$bundler_logCWD}`);
    }
 
    let jsonData;
@@ -109,7 +109,7 @@ function s_PARSE_FILES(packageData, bundleData)
    // Verify that the module / system.json file has an esmodules entry.
    if (!Array.isArray(jsonData.esmodules))
    {
-      throw new NonFatalError(`Could not locate 'esmodules' entry in: ${jsonPath}.`);
+      throw new NonFatalError(`Could not locate 'esmodules' entry in: \n${jsonPath}`);
    }
 
    const jsonFilename = `${packageType}.json`;
@@ -202,7 +202,7 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData)
          // Verify that the file could be found.
          if (!fs.existsSync(inputPath))
          {
-            throw new NonFatalError(`FVTTPackage - parse error - could not find npm file:\n${inputPath}`);
+            throw new NonFatalError(`Could not find npm source file:\n${inputPath}`);
          }
 
          // Note: Consider that reverseRelativePath has `..${path.sep}` hard coded before the path relative

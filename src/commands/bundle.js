@@ -3,7 +3,7 @@ const path                 = require('path');
 
 const jetpack              = require('fs-jetpack');
 
-//const { DynamicCommand }   = require('@typhonjs-node-bundle/oclif-commons');
+// const { DynamicCommand }   = require('@typhonjs-node-bundle/oclif-commons');
 
 const DynamicCommand       = require('../lib/DynamicCommand');
 
@@ -49,7 +49,7 @@ class BundleCommand extends DynamicCommand
       await global.$$eventbus.triggerAsync('typhonjs:node:bundle:runner:run:all', fvttPackage);
 
       // TODO REMOVE - TEST
-      this.log(`Bundle command - run - bundle data: \n${JSON.stringify(fvttPackage, null, 3)}`);
+      // this.log(`Bundle command - run - bundle data: \n${JSON.stringify(fvttPackage, null, 3)}`);
 
       // Copy all top most directories not included in bundling process, module / system json, and
       // any LICENSE or README.md file.

@@ -5,6 +5,13 @@ const { rollup } = require('rollup');
  */
 class RollupRunner
 {
+   /**
+    * Runs `rollup` for all bundle entries in `bundleData`.
+    *
+    * @param {object}   bundleData - Data structure defining a set of bundle entries.
+    *
+    * @returns {Promise<void>}
+    */
    async rollupAll(bundleData)
    {
       for (const bundleEntry of bundleData.bundleEntries)
@@ -15,7 +22,8 @@ class RollupRunner
    }
 
    /**
-    * @param {object}   config - Valid rollup config.
+    * @param {object}   bundleData - Data structure defining a set of bundle entries.
+    *
     * @returns {Promise<object>}
     */
    async rollup(bundleData)
@@ -37,7 +45,7 @@ class RollupRunner
 
       const currentBundle = bundleData.currentBundle;
 
-      // TODO Add sanity check for config.input.input and config.output.file/format
+      // TODO Add sanity check for currentBundle.inputPath and currentBundle.outputPath/format
 
       const eventbus = global.$$eventbus;
 
@@ -67,8 +75,8 @@ class RollupRunner
          else { inputPlugins = remoteInputPlugins.flat().filter((entry) => entry !== void 0); }
       }
 
-      // TODO REMOVE
-      process.stderr.write(`RollupRunner rollup - INPUT PLUGINS: ${JSON.stringify(inputPlugins)}\n`);
+      // Log a debug statement
+      global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - INPUT PLUGINS:`, inputPlugins);
 
       // Add input plugins.
       config.input.plugins = inputPlugins;
@@ -87,8 +95,8 @@ class RollupRunner
          else { outputPlugins = remoteOutputPlugins.flat(); }
       }
 
-      // TODO REMOVE
-      process.stderr.write(`RollupRunner rollup - OUTPUT PLUGINS: ${JSON.stringify(outputPlugins)}\n`);
+      // Log a debug statement
+      global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins);
 
       // Simple test output config.
       config.output.plugins = outputPlugins;

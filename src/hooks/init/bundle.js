@@ -13,12 +13,15 @@ const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
  * We want to explicitly set all bundle command flags before plugins initialize.
  *
  * Added flags include:
- * `--cwd`       -      - Use an alternative working directory.      - default: `'.'`
- * `--deploy`    - `-d` - Directory to deploy build files into.      - default: `'./dist' - env: DEPLOY_PATH
+ * `--cwd`       -      - Use an alternative working directory.      - default: `'.'`     - env: {prefix}_CWD
+ * `--deploy`    - `-d` - Directory to deploy build files into.      - default: `'./dist' - env: {prefix}_DEPLOY_PATH
  * `--entry`     - `-i` - Explicit entry module(s).
  * `--env`       - `-e` - Name of *.env file to load from `./env`.
- * `--sourcemap  -      - Generate source maps.                      - default: `true`    - env: DEPLOY_SOURCEMAP
- * `--watch`     -      - Continually build / bundle source to deploy directory. - default: `false`
+ * `--external`  -      - Specifies external imports that are ignored.                    - env: {prefix}_EXTERNAL
+ * `--ignore-local-config` - Ignores all local configuration files.  - default: `false`
+ * `--loglevel`  -      - Sets log level.                            - default: `'info'`  - env: {prefix}_LOG_LEVEL
+ * `--sourcemap  -      - Generate source maps.                      - default: `true`    - env: {prefix}_SOURCEMAP
+ * `--watch`     -      - Continually bundle to deploy directory.    - default: `false`
  *
  * @param {object} opts - Oclif options
  *
@@ -28,6 +31,8 @@ module.exports = async function(opts)
 {
    global.$$eventbus.trigger('log:debug', `explicit bundle command init hook running '${opts.id}'.`);
 
+   const envVarPrefix = global.$$flag_env_prefix;
+
    global.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
       command: 'bundle',
       plugin: 'fvttdev',
@@ -36,7 +41,9 @@ module.exports = async function(opts)
             'description': 'Use an alternative working directory.',
             'default': function()
             {
-               if (typeof process.env.DEPLOY_CWD === 'string') { return process.env.DEPLOY_CWD; }
+               const envVar = `${envVarPrefix}_CWD`;
+
+               if (typeof process.env[envVar] === 'string') { return process.env[envVar]; }
 
                return '.';
             }
@@ -46,7 +53,7 @@ module.exports = async function(opts)
             'char': 'd',
             'description': 'Directory to deploy build files into.',
             'default': './dist',
-            'env': 'DEPLOY_PATH'
+            'env': `${envVarPrefix}_DEPLOY_PATH`
          }),
 
          'entry': flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
@@ -59,21 +66,23 @@ module.exports = async function(opts)
             'multiple': true,
             'default': function()
             {
-               if (typeof process.env.DEPLOY_EXTERNAL === 'string')
+               const envVar = `${envVarPrefix}_EXTERNAL`;
+
+               if (typeof process.env[envVar] === 'string')
                {
                   let result = void 0;
 
                   // Treat it as a JSON array.
-                  try { result = JSON.parse(process.env.DEPLOY_EXTERNAL); }
+                  try { result = JSON.parse(process.env[envVar]); }
                   catch (error)
                   {
-                     throw new NonFatalError(`Could not parse 'DEPLOY_EXTERNAL' as a JSON array;\n${error.message}`);
+                     throw new NonFatalError(`Could not parse '${envVar}' as a JSON array;\n${error.message}`);
                   }
 
                   // Verify that the JSON result loaded is an actual array otherwise quit with and error...
                   if (!Array.isArray(result))
                   {
-                     throw new NonFatalError(`Please format 'DEPLOY_EXTERNAL' as a JSON array.`);
+                     throw new NonFatalError(`Please format '${envVar}' as a JSON array.`);
                   }
 
                   // TODO: consider adding verification that the loaded array from JSON contains all strings.
@@ -92,7 +101,14 @@ module.exports = async function(opts)
 
          'loglevel': flags.string({
             'description': 'Sets log level (off, fatal, error, warn, info, verbose, debug, trace, all).',
-            'default': 'debug'  // TODO DEFAULT SHOULD BE INFO
+            'default': function()
+            {
+               const envVar = `${envVarPrefix}_LOG_LEVEL`;
+
+               if (typeof process.env[envVar] === 'string') { return process.env[envVar]; }
+
+               return 'debug';  // TODO DEFAULT SHOULD BE INFO
+            }
          }),
 
          // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
@@ -102,9 +118,11 @@ module.exports = async function(opts)
             'allowNo': true,
             'default': function()
             {
-               if (process.env.DEPLOY_SOURCEMAP === 'true') { return true; }
+               const envVar = `${envVarPrefix}_SOURCEMAP`;
 
-               return process.env.DEPLOY_SOURCEMAP !== 'false';
+               if (process.env[envVar] === 'true') { return true; }
+
+               return process.env[envVar] !== 'false';
             }
          }),
 

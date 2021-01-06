@@ -1,8 +1,9 @@
 Today
 -----------------------------------------
-1. Respect any local configuration files provided.
-   - finish terser and postcss config loading
-   - Have a flag / env override to ignore local config files
+- update all demo env files for FVTTDEV_ prefix for environment variables.
+
+
+1. Move FileUtil & FlagHandler to separate modules
 
 2 bundle
   - create BundleUtil
@@ -10,9 +11,6 @@ Today
     - entry flag as optional - remove entry flag for fvttdev
     - add noop flag
 
-  - create @typhonjs-node-rollup/oclif-core
-  - refactor current plugins to be able to load independently or through oclif-core
-  - remove alias support from @typhonjs-node-rollup/oclif-core
 
   - abstract the bundle writing process
     - always get bundle data back
@@ -35,8 +33,6 @@ Today
     - add optional default settings - hidden no flag
 
 3 flag handling
-  - add ability to get prefix for environment variables from package.json of host CLI
-
   - evaluate creating env-resolver
     - rebuild backbone-esnext-events / eventbus
     - rebuild typhonjs-plugin-manager
@@ -44,11 +40,14 @@ Today
 
 - create bumpver command
 
+- create compendium builder command
+  - examine PF2E https://gitlab.com/hooking/foundry-vtt---pathfinder-2e/-/tree/master/packs
 
-
+- remove alias support from @typhonjs-node-rollup/plugin-bundle-core
 
 Working modules
 - Confetti
+- GMScreen
 - Hex-Size-Support
 
 -----
@@ -92,6 +91,8 @@ Testing phase
   Test w/ underlying Rollup plugin
 
 - In bundle command there are multiple array includes usages, so consider structuring data differently for performance.
+
+- Verify that npm bundles with existing sourcemaps still have correct source maps when further compressed by Terser.
 
 ---------
 Known Conflicts (Rollup plugins)

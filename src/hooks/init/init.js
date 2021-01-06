@@ -30,7 +30,7 @@ module.exports = async function(opts)
       global.$$bundler_logCWD = '.';
 
       // Defines the CLI prefix to add before environment variable flag identifiers.
-      global.$$flag_env_prefix = 'DEPLOY';
+      global.$$flag_env_prefix = 'FVTTDEV';
 
       // Save the global eventbus.
       global.$$eventbus = new Events();

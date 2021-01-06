@@ -5,6 +5,8 @@ const { flags }         = require('@oclif/command');
 
 const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
+const s_DEFAULT_LOG_LEVEL = 'trace';  // TODO DEFAULT SHOULD BE INFO
+
 /**
  */
 class BundleUtil
@@ -21,6 +23,8 @@ class BundleUtil
     * `--external`  -      - Specifies external imports that are ignored.                    - env: {prefix}_EXTERNAL
     * `--ignore-local-config` - Ignores all local configuration files.  - default: `false`
     * `--loglevel`  -      - Sets log level.                            - default: `'info'`  - env: {prefix}_LOG_LEVEL
+    * `--noop`      -      - Prints essential bundling info and exits.  - default: `false`   -
+    * {prefix}_LOG_LEVEL
     * `--sourcemap  -      - Generate source maps.                      - default: `true`    - env: {prefix}_SOURCEMAP
     * `--watch`     -      - Continually bundle to deploy directory.    - default: `false`
     *
@@ -118,8 +122,13 @@ class BundleUtil
 
                if (typeof process.env[envVar] === 'string') { return process.env[envVar]; }
 
-               return 'debug';  // TODO DEFAULT SHOULD BE INFO
+               return s_DEFAULT_LOG_LEVEL;
             }
+         }),
+
+         'noop': flags.boolean({
+            'description': 'Prints essential info on any module / system bundle process and exits w/ no operation.',
+            'default': false
          }),
 
          // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as

@@ -32,7 +32,7 @@ module.exports = async function(opts)
       command: 'bundle',
       plugin: 'fvttdev',
       flags: {
-         cwd: flags.string({
+         'cwd': flags.string({
             'description': 'Use an alternative working directory.',
             'default': function()
             {
@@ -42,19 +42,19 @@ module.exports = async function(opts)
             }
          }),
 
-         deploy: flags.string({
+         'deploy': flags.string({
             'char': 'd',
             'description': 'Directory to deploy build files into.',
             'default': './dist',
             'env': 'DEPLOY_PATH'
          }),
 
-         entry: flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
+         'entry': flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
 
-         env: flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
+         'env': flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
 
          // Specifies external imports that are ignored; see Rollup config input.external
-         external: flags.string({
+         'external': flags.string({
             'description': 'Specifies external import references which are ignored.',
             'multiple': true,
             'default': function()
@@ -85,14 +85,19 @@ module.exports = async function(opts)
             }
          }),
 
-         loglevel: flags.string({
+         'ignore-local-config': flags.boolean({
+            'description': 'Ignores all local configuration files using the provided defaults.',
+            'default': false
+         }),
+
+         'loglevel': flags.string({
             'description': 'Sets log level (off, fatal, error, warn, info, verbose, debug, trace, all).',
             'default': 'debug'  // TODO DEFAULT SHOULD BE INFO
          }),
 
          // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
          // 'true' or 'false' that will determine the setting for sourcemap.
-         sourcemap: flags.boolean({
+         'sourcemap': flags.boolean({
             'description': '[default: true] Generate source maps.',
             'allowNo': true,
             'default': function()
@@ -103,7 +108,7 @@ module.exports = async function(opts)
             }
          }),
 
-         watch: flags.boolean({
+         'watch': flags.boolean({
             'description': 'Continually build / bundle source to deploy directory.',
             'default': false
          }),

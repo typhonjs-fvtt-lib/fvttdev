@@ -3,9 +3,13 @@ const path              = require('path');
 const Events            = require('backbone-esnext-events');
 const PluginManager     = require('typhonjs-plugin-manager');
 
+const { FileUtil }      = require('@typhonjs-node-bundle/oclif-commons');
 const { FlagHandler }   = require('@typhonjs-node-bundle/oclif-commons');
 
 const RollupRunner      = require('../../lib/RollupRunner');
+
+// TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
+const s_DEFAULT_LOG_LEVEL = 'debug';
 
 /**
  * Creates a plugin manager instance.
@@ -24,6 +28,9 @@ module.exports = async function(opts)
 
       // A short version of CWD which has the relative path if CWD is the base or subdirectory otherwise absolute.
       global.$$bundler_logCWD = '.';
+
+      // Defines the CLI prefix to add before environment variable flag identifiers.
+      global.$$flag_env_prefix = 'DEPLOY';
 
       // Save the global eventbus.
       global.$$eventbus = new Events();
@@ -48,13 +55,18 @@ module.exports = async function(opts)
          }
       });
 
-      // TODO CHANGE TO INFO LOG LEVEL FOR DEFAULT
-      global.$$eventbus.trigger('log:level:set', 'debug');
+      // Set the initial starting log level.
+      global.$$eventbus.trigger('log:level:set', s_DEFAULT_LOG_LEVEL);
+
+      // TODO: Eventually move these plugins to their actual module locations.
+
+      // Add '@typhonjs-node-bundle/oclif-fileutil'
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-fileutil', instance: FileUtil });
 
       // Add '@typhonjs-node-bundle/oclif-flaghandler'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-flaghandler', instance: new FlagHandler() });
 
-      // Add '@typhonjs-node-bundle/rollup-runner'
+      // Add '@typhonjs-node-rollup/rollup-runner'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/rollup-runner', instance: new RollupRunner() });
 
       global.$$eventbus.trigger('log:debug', `fvttdev init hook running '${opts.id}'.`);

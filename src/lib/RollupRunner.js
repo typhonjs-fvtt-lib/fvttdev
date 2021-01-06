@@ -96,7 +96,8 @@ class RollupRunner
       }
 
       // Log a debug statement
-      global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins);
+      global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins,
+       '-----------------------------------------------------');
 
       // Simple test output config.
       config.output.plugins = outputPlugins;

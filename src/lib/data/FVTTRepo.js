@@ -1,7 +1,7 @@
 const fs                = require('fs');
 const path              = require('path');
 
-const { FileUtil, NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
+const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
 const BundleData        = require('./BundleData');
 const FVTTData          = require('./FVTTData');
@@ -32,8 +32,12 @@ class FVTTRepo
     */
    static async parse(cliFlags, baseDir = global.$$bundler_baseCWD)
    {
-      const allDirs = await FileUtil.getDirList(baseDir, s_SKIP_DIRS);
-      const allFiles = await FileUtil.getFileList(baseDir, s_SKIP_DIRS);
+      const eventbus = global.$$eventbus;
+
+      const allDirs = await eventbus.triggerAsync('typhonjs:oclif:system:file:util:list:dir:get', baseDir, s_SKIP_DIRS);
+
+      const allFiles = await eventbus.triggerAsync('typhonjs:oclif:system:file:util:list:file:get', baseDir,
+       s_SKIP_DIRS);
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);
@@ -239,7 +243,7 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    const extension = path.extname(esmodule);
 
    // The entry in esmodules attribute is not a JS file.
-   if (!FileUtil.isJS(extension))
+   if (!global.$$eventbus.triggerSync('typhonjs:oclif:system:file:util:is:js', extension))
    {
       throw new NonFatalError(
        `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.jsonFilename}':\n`

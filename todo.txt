@@ -1,16 +1,10 @@
 Today
 -----------------------------------------
-- update all demo env files for FVTTDEV_ prefix for environment variables.
-
-
-1. Move FileUtil & FlagHandler to separate modules
-
 2 bundle
   - create BundleUtil
     - abstract the bundle process
     - entry flag as optional - remove entry flag for fvttdev
     - add noop flag
-
 
   - abstract the bundle writing process
     - always get bundle data back

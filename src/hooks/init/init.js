@@ -3,9 +3,6 @@ const path              = require('path');
 const Events            = require('backbone-esnext-events');
 const PluginManager     = require('typhonjs-plugin-manager');
 
-const { FileUtil }      = require('@typhonjs-node-bundle/oclif-commons');
-const { FlagHandler }   = require('@typhonjs-node-bundle/oclif-commons');
-
 const RollupRunner      = require('../../lib/RollupRunner');
 
 // TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
@@ -60,11 +57,11 @@ module.exports = async function(opts)
 
       // TODO: Eventually move these plugins to their actual module locations.
 
-      // Add '@typhonjs-node-bundle/oclif-fileutil'
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-fileutil', instance: FileUtil });
+      // Add '@typhonjs-node-bundle/plugin-fileutil'
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-fileutil' });
 
-      // Add '@typhonjs-node-bundle/oclif-flaghandler'
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/oclif-flaghandler', instance: new FlagHandler() });
+      // Add '@typhonjs-node-bundle/plugin-flaghandler'
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler' });
 
       // Add '@typhonjs-node-rollup/rollup-runner'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/rollup-runner', instance: new RollupRunner() });

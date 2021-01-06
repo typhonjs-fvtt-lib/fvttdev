@@ -16,6 +16,8 @@
     "@oclif/plugin-plugins": "^1.9.4",
     "@oclif/plugin-which": "^1.0.3",
     "@typhonjs-node-bundle/oclif-commons": "typhonjs-node-bundle/oclif-commons#main",
+    "@typhonjs-node-bundle/plugin-fileutil": "typhonjs-node-bundle/plugin-fileutil#main",
+    "@typhonjs-node-bundle/plugin-flaghandler": "typhonjs-node-bundle/plugin-flaghandler#main",
     "backbone-esnext-events": "^0.3.0",
     "fs-jetpack": "^4.0.0",
     "typhonjs-color-logger": "^0.0.13",

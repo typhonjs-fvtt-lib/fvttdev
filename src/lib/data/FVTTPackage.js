@@ -74,41 +74,49 @@ class FVTTPackage extends BundlePackage
    /**
     * @returns {object}
     */
-   get jsonData()
+   get manifestData()
    {
-      return this._packageData.jsonData;
+      return this._packageData.manifestData;
    }
 
    /**
     * @returns {string}
     */
-   get jsonFilename()
+   get manifestFilename()
    {
-      return this._packageData.jsonFilename;
+      return this._packageData.manifestFilename;
    }
 
    /**
     * @returns {string}
     */
-   get jsonPath()
+   get manifestPath()
    {
-      return this._packageData.jsonPath;
+      return this._packageData.manifestPath;
+   }
+
+   /**
+    * @returns {string}
+    */
+   get manifestType()
+   {
+      return this._packageData.manifestType;
    }
 
    /**
     * @returns {object}
     */
-   get newJsonData()
+   get newManifestData()
    {
-      return this._packageData.newJsonData;
+      return this._packageData.newManifestData;
    }
 
    /**
     * @returns {string}
     */
-   get newJsonFilepath()
+   get newManifestFilepath()
    {
-      return this._packageData.newJsonFilepath;
+      return this._packageData.newManifestFilepath;
    }
 
    /**
@@ -120,11 +128,11 @@ class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {null|Object.npmModulePath|string|*}
     */
-   get packageType()
+   get npmModulePath()
    {
-      return this._packageData.packageType;
+      return this._packageData.npmModulePath;
    }
 
    /**
@@ -146,7 +154,7 @@ class FVTTPackage extends BundlePackage
       this.copyMap.clear();
 
       // Create a new instance of the original module.json / system.json file.
-      this._packageData.newJsonData = Object.assign(this.jsonData, {});
+      this._packageData.newManifestData = Object.assign(this.manifestData, {});
    }
 }
 

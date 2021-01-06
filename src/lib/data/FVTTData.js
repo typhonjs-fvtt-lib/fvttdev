@@ -20,18 +20,18 @@ class FVTTData
       this.dirs =  [];
       this.files = [];
 
-      this.packageData = null;
-      this.jsonFilename = null;
-      this.jsonPath = null;
+      this.manifestData = null;
+      this.manifestFilename = null;
+      this.manifestPath = null;
 
-      this.newJsonFilepath = null;
+      this.newManifestFilepath = null;
+      this.newManifestData = {};
 
-      this.newpackageData = {};
       this.npmFiles = [];
-      this.nodeInstallPath = `${baseDir}${path.sep}node_modules`;
 
-      this.packageType = null;
+      this.manifestType = null;
       this.rootPath = null;
+
       this.npmModulePath = null;
    }
 }

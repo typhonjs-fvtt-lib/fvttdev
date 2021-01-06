@@ -51,7 +51,12 @@ class FVTTRepo
       const fvttPackage = new FVTTPackage(packageData, bundleData);
 
       // Allow any plugins to potentially process package & bundle data.
-      await global.$$eventbus.triggerAsync('typhonjs:oclif:bundle:data:parse', fvttPackage);
+      await global.$$eventbus.triggerAsync('typhonjs:oclif:data:bundle:parse', fvttPackage);
+
+      if (typeof fvttPackage.cliFlags.noop === 'boolean' && fvttPackage.cliFlags.noop)
+      {
+         throw new NonFatalError('This is a noop test!', 'info');
+      }
 
       return fvttPackage;
    }
@@ -66,8 +71,8 @@ module.exports = FVTTRepo;
 function s_PARSE_FILES(packageData, bundleData)
 {
    let rootPath = null;
-   let jsonPath = null;
-   let packageType = null;
+   let manifestPath = null;
+   let manifestType = null;
 
    // Search through all file paths checking the module & system regex against file paths to find the root path
    // of the module / system and the associated *.json file.
@@ -76,34 +81,34 @@ function s_PARSE_FILES(packageData, bundleData)
       let matches = s_MODULE_REGEX.exec(filePath);
       if (matches !== null)
       {
-         jsonPath = matches[0];
+         manifestPath = matches[0];
          rootPath = matches[1];
-         packageType = 'module';
+         manifestType = 'module';
          break;
       }
 
       matches = s_SYSTEM_REGEX.exec(filePath);
       if (matches !== null)
       {
-         jsonPath = matches[0];
+         manifestPath = matches[0];
          rootPath = matches[1];
-         packageType = 'system';
+         manifestType = 'system';
          break;
       }
    }
 
    // Throw a control flow error.
-   if (packageType === null)
+   if (manifestType === null)
    {
       throw new NonFatalError(
        `Could not find a Foundry VTT module or system in file path: \n${global.$$bundler_logCWD}`);
    }
 
-   let jsonData;
+   let manifestData;
 
    try
    {
-      jsonData = require(jsonPath);
+      manifestData = require(manifestPath);
    }
    catch (err)
    {
@@ -111,21 +116,21 @@ function s_PARSE_FILES(packageData, bundleData)
    }
 
    // Verify that the module / system.json file has an esmodules entry.
-   if (!Array.isArray(jsonData.esmodules))
+   if (!Array.isArray(manifestData.esmodules))
    {
-      throw new NonFatalError(`Could not locate 'esmodules' entry in: \n${jsonPath}`);
+      throw new NonFatalError(`Could not locate 'esmodules' entry in: \n${manifestPath}`);
    }
 
-   const jsonFilename = `${packageType}.json`;
+   const manifestFilename = `${manifestType}.json`;
 
    // The npm file path which by convention is the root path + `npm`.
    const npmModulePath = `${rootPath}${path.sep}npm`;
 
-   packageData.jsonData = jsonData;
-   packageData.jsonFilename = jsonFilename;
-   packageData.jsonPath = jsonPath;
-   packageData.newJsonFilepath = `${bundleData.deployDir}${path.sep}${jsonFilename}`;
-   packageData.packageType = packageType;
+   packageData.manifestData = manifestData;
+   packageData.manifestFilename = manifestFilename;
+   packageData.manifestPath = manifestPath;
+   packageData.manifestType = manifestType;
+   packageData.newManifestFilepath = `${bundleData.deployDir}${path.sep}${manifestFilename}`;
    packageData.rootPath = rootPath;
    packageData.npmModulePath = npmModulePath;
 
@@ -158,7 +163,7 @@ function s_PARSE_FILES(packageData, bundleData)
 function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
 {
    // Load all data for esmodules referenced
-   for (const esmodule of packageData.jsonData.esmodules)
+   for (const esmodule of packageData.manifestData.esmodules)
    {
       // s_RESOLVE_ESMODULE attempts to load a JS file then attempts to load a Typescript file.
       const { inputPath, inputExt, inputFilename, inputBasename, inputType } =
@@ -246,8 +251,8 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    if (!global.$$eventbus.triggerSync('typhonjs:oclif:system:file:util:is:js', extension))
    {
       throw new NonFatalError(
-       `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.jsonFilename}':\n`
-        + `${packageData.jsonPath}`);
+       `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n`
+        + `${packageData.manifestPath}`);
    }
 
    const inputParsed = path.parse(esmodule);
@@ -302,5 +307,5 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
 
    throw new NonFatalError(
     `Could not load filename '${inputParsed.dir}${path.sep}${inputParsed.name}(${inputParsed.ext}|.ts|.tsx)' `
-     + ` in 'esmodules' entry in '${packageData.jsonFilename}': \n${packageData.jsonPath}`);
+     + ` in 'esmodules' entry in '${packageData.manifestFilename}': \n${packageData.manifestPath}`);
 }

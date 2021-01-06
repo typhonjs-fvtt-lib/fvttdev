@@ -74,6 +74,11 @@ function s_FORMAT_FROM_TRACE(trace)
          modulePath = matches !== null && matches.length >= 1 ? matches[1] : void 0;
          if (typeof modulePath === 'string') { break; }
 
+         // Matches full path to local linked typhonjs-node-rollup package (match is group 1)
+         matches = (/^.*\((\/.*(\/typhonjs-node-rollup\/.*\/))src/g).exec(`${trace[cntr]}`);
+         modulePath = matches !== null && matches.length >= 1 ? matches[1] : void 0;
+         if (typeof modulePath === 'string') { break; }
+
          // Matches full path to organization node module (match is group 1)
          matches = (/^.*\((\/.*(\/node_modules\/(@.*?)\/(.*?)\/))/g).exec(`${trace[cntr]}`);
          modulePath = matches !== null && matches.length >= 1 ? matches[1] : void 0;
@@ -141,7 +146,7 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
 
       /* eslint-enable prefer-template */
 
-      packageMessage += `${packageData.formattedMessage}\nfvttdev version: ${global.$$bundler_version}`;
+      packageMessage += `${packageData.formattedMessage}\n${global.$$bundler_name_version}`;
 
       // Log any uncaught errors as fatal.
       logger.fatal(packageMessage, sep, error, '\n');

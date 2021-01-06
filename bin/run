@@ -10,11 +10,15 @@ require('@oclif/command').run()
 .catch((error) =>
 {
    // Given a magic boolean variable assigned to an error skip printing out a fatal error.
-   if (error instanceof NonFatalError || (typeof error.$$bundler_fatal === 'boolean' && !error.$$bundler_fatal))
+   if (error instanceof NonFatalError || (typeof error.$$error_fatal === 'boolean' && !error.$$error_fatal))
    {
-      global.$$eventbus.trigger('log:error', error.message);
+      const logEvent = typeof error.$$logEvent === 'string' ? error.$$logEvent : 'log:error';
+      const errorCode = Number.isInteger(error.$$errorCode) ? error.$$errorCode : 1;
 
-      return oclifHandler(new ExitError(1));
+      // log error message unless the log event is `log:trace`.
+      global.$$eventbus.trigger(logEvent, logEvent !== 'log:trace' ? error.message : error);
+
+      return oclifHandler(new ExitError(errorCode));
    }
 
    // Acquire trace info from 'typhonjs-color-logger'

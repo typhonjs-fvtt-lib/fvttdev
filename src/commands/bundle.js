@@ -1,13 +1,11 @@
-const fs                   = require('fs');
-const path                 = require('path');
+const fs             = require('fs');
+const path           = require('path');
 
-const jetpack              = require('fs-jetpack');
+const jetpack        = require('fs-jetpack');
 
-// const { DynamicCommand }   = require('@typhonjs-node-bundle/oclif-commons');
+const DynamicCommand = require('@typhonjs-node-bundle/oclif-commons/src/command/DynamicCommand');
 
-const DynamicCommand       = require('../lib/DynamicCommand');
-
-const FVTTRepo             = require('../lib/data/FVTTRepo');
+const FVTTRepo       = require('../lib/data/FVTTRepo');
 
 const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 

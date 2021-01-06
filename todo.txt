@@ -1,11 +1,55 @@
 Today
 -----------------------------------------
-2. Respect any local configuration files provided.
+1. Respect any local configuration files provided.
+   - finish terser and postcss config loading
    - Have a flag / env override to ignore local config files
 
-3. Workout weighting algorithm for Oclif / Rollup plugins.
+2 bundle
+  - create BundleUtil
+    - abstract the bundle process
+    - entry flag as optional - remove entry flag for fvttdev
+    - add noop flag
 
-4. Test against GMScreen, Hex-Size-Support, TwoDSix system
+  - create @typhonjs-node-rollup/oclif-core
+  - refactor current plugins to be able to load independently or through oclif-core
+  - remove alias support from @typhonjs-node-rollup/oclif-core
+
+  - abstract the bundle writing process
+    - always get bundle data back
+    - write or manipulate (zip) in a post step
+
+  - create package command
+
+- create NPMBundle CLI and get it up w/ @typhonjs-node-rollup/oclif-core
+
+  - more bundle default CLI flags
+    - add platform flag -> node, browser
+    - add format flag -> iife, cjs, esm
+    - add target flag -> es2020, es<XXXX>, modern, (chrome, firefox, safari, edge, or node) -> chrome58,firefox57,safari11,edge16,node12.19.0
+    - add banner flag / test rollup output options
+    - add footer flag / test rollup output options
+    - add inject flag? / @rollup/plugin-virtual
+    - add metafile flag -> This option tells CLI to write out a JSON file with metadata about the build.
+    - add tsconfig flag -> explicit loading of a provided tsconfig file.
+    - add babelconfig flag -> explicit loading of a provided babel config file.
+    - add optional default settings - hidden no flag
+
+3 flag handling
+  - add ability to get prefix for environment variables from package.json of host CLI
+
+  - evaluate creating env-resolver
+    - rebuild backbone-esnext-events / eventbus
+    - rebuild typhonjs-plugin-manager
+      - include NPM path and ESM dynamic module loading
+
+- create bumpver command
+
+
+
+
+Working modules
+- Confetti
+- Hex-Size-Support
 
 -----
 

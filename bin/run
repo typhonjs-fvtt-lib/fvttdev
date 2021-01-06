@@ -125,7 +125,8 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
           + 'Please report this error to the issues forum after checking if a similar '
            + 'report already exists:\n' + sep;
       }
-      else if (packageData.bugs.url === 'https://github.com/typhonjs-node-bundle/npmbundle/issues')
+      else if (packageData.bugs.url === 'https://github.com/typhonjs-node-bundle/issues/issues' ||
+       packageData.bugs.url === 'https://github.com/typhonjs-node-rollup/issues/issues')
       {
          packageMessage = 'An uncaught fatal error has been detected with a TyphonJS Oclif bundle module.\n'
           + 'Please report this error to the issues forum after checking if a similar '
@@ -134,8 +135,8 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
       else
       {
          packageMessage = 'An uncaught fatal error has been detected with an external module.\n'
-          + 'Please report this error to any issues forum after checking if a similar '
-           + 'report already exists:\n' + sep;
+          + 'This may be a valid runtime error, but consider reporting this error to any issues forum after '
+           + 'checking if a similar report already exists:\n' + sep;
       }
 
       /* eslint-enable prefer-template */

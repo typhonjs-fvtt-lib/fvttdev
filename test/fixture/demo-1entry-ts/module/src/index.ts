@@ -15,6 +15,8 @@ const num: number = 3;
 
 const FOO: string = 'BAR';
 
+import './hooks'
+
 /**
  * My super simple program test
  */

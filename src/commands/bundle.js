@@ -161,19 +161,19 @@ class BundleCommand extends DynamicCommand
          if (bundleEntry.outputCSSFilepath !== null && fs.existsSync(bundleEntry.outputCSSFilepath))
          {
             // Add to existing styles entry if not already included or create new array entry.
-            if (Array.isArray(bundleData.newJsonData.styles) &&
-             !bundleData.newJsonData.styles.includes(bundleEntry.outputCSSFilename))
+            if (Array.isArray(bundleData.newManifestData.styles) &&
+             !bundleData.newManifestData.styles.includes(bundleEntry.outputCSSFilename))
             {
-               bundleData.newJsonData.styles.push(bundleEntry.outputCSSFilename);
+               bundleData.newManifestData.styles.push(bundleEntry.outputCSSFilename);
             }
             else
             {
-               bundleData.newJsonData.styles = [bundleEntry.outputCSSFilename];
+               bundleData.newManifestData.styles = [bundleEntry.outputCSSFilename];
             }
          }
       }
 
-      jetpack.write(bundleData.newJsonFilepath, bundleData.newJsonData);
+      jetpack.write(bundleData.newManifestFilepath, bundleData.newManifestData);
    }
 }
 

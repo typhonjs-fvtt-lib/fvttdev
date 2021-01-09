@@ -3,7 +3,10 @@ const path              = require('path');
 
 const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
 
+const FileUtil          = require('@typhonjs-node-bundle/plugin-fileutil');
+
 const BundleData        = require('./BundleData');
+const BundleEntry       = require('./BundleEntry');
 const FVTTData          = require('./FVTTData');
 
 const FVTTPackage       = require('./FVTTPackage');
@@ -27,38 +30,49 @@ class FVTTRepo
     *
     * @param {object}   cliFlags - The CLI runtime flags.
     * @param {string}   [baseDir] - The root directory to parse.
+    * @param {string}   [origCWD] - The original CWD.
     *
     * @private
     */
-   static async parse(cliFlags, baseDir = global.$$bundler_baseCWD)
+   static async parse(cliFlags, baseDir = '.', origCWD = '.')
    {
       const eventbus = global.$$eventbus;
 
-      const allDirs = await eventbus.triggerAsync('typhonjs:oclif:system:file:util:list:dir:get', baseDir, s_SKIP_DIRS);
-
-      const allFiles = await eventbus.triggerAsync('typhonjs:oclif:system:file:util:list:file:get', baseDir,
-       s_SKIP_DIRS);
+      const allDirs = await FileUtil.getDirList(baseDir, s_SKIP_DIRS);
+      const allFiles = await FileUtil.getFileList(baseDir, s_SKIP_DIRS);
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);
 
-      s_PARSE_FILES(packageData, bundleData);
+      s_PARSE_FILES(packageData, bundleData, origCWD);
 
-      s_PARSE_NPM_BUNDLES(packageData, bundleData);
+      s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD);
 
-      s_PARSE_MAIN_BUNDLES(packageData, bundleData);
+      s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD);
 
       const fvttPackage = new FVTTPackage(packageData, bundleData);
 
       // Allow any plugins to potentially process package & bundle data.
-      await global.$$eventbus.triggerAsync('typhonjs:oclif:data:bundle:parse', fvttPackage);
-
-      if (typeof fvttPackage.cliFlags.noop === 'boolean' && fvttPackage.cliFlags.noop)
+      if (eventbus !== void 0)
       {
-         throw new NonFatalError('This is a noop test!', 'info');
+         await eventbus.triggerAsync('typhonjs:oclif:data:bundle:parse', fvttPackage);
       }
 
       return fvttPackage;
+   }
+
+   /**
+    * Wires up FVTTRepo on the plugin eventbus.
+    *
+    * @param {PluginEvent} ev - The plugin event.
+    *
+    * @see https://www.npmjs.com/package/typhonjs-plugin-manager
+    *
+    * @ignore
+    */
+   static onPluginLoad(ev)
+   {
+      ev.eventbus.on(`typhonjs:fvttdev:system:fvttrepo:parse`, FVTTRepo.parse, FVTTRepo);
    }
 }
 
@@ -67,8 +81,9 @@ module.exports = FVTTRepo;
 /**
  * @param {FVTTData}    packageData -
  * @param {BundleData}  bundleData -
+ * @param {string}      origCWD -
  */
-function s_PARSE_FILES(packageData, bundleData)
+function s_PARSE_FILES(packageData, bundleData, origCWD)
 {
    let rootPath = null;
    let manifestPath = null;
@@ -129,6 +144,7 @@ function s_PARSE_FILES(packageData, bundleData)
    packageData.manifestData = manifestData;
    packageData.manifestFilename = manifestFilename;
    packageData.manifestPath = manifestPath;
+   packageData.manifestPathRelative = FileUtil.getRelativePath(origCWD, manifestPath);
    packageData.manifestType = manifestType;
    packageData.newManifestFilepath = `${bundleData.deployDir}${path.sep}${manifestFilename}`;
    packageData.rootPath = rootPath;
@@ -159,8 +175,9 @@ function s_PARSE_FILES(packageData, bundleData)
 /**
  * @param {FVTTData}    packageData -
  * @param {BundleData}  bundleData -
+ * @param {string}      origCWD -
  */
-function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
+function s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD)
 {
    // Load all data for esmodules referenced
    for (const esmodule of packageData.manifestData.esmodules)
@@ -171,12 +188,13 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
 
       const outputCSSFilename = `${inputBasename}.css`;
 
-      bundleData.entries.push({
+      bundleData.entries.push(new BundleEntry({
          format: 'es',
          inputBasename,
          inputExt,
          inputFilename,
          inputPath,
+         inputPathRelative: FileUtil.getRelativePath(origCWD, inputPath),
          inputType,
          outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
          outputCSSFilename,
@@ -184,15 +202,16 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData)
          reverseRelativePath: path.relative(bundleData.deployDir, packageData.rootPath),
          type: 'main',
          watchFiles: []
-      });
+      }));
    }
 }
 
 /**
  * @param {FVTTData}    packageData -
  * @param {BundleData}  bundleData -
+ * @param {string}      origCWD -
  */
-function s_PARSE_NPM_BUNDLES(packageData, bundleData)
+function s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD)
 {
    // Load all data for npm files / bundles referenced
    if (packageData.npmFiles.length > 0)
@@ -219,17 +238,18 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData)
          // ../../node_modules for two levels of indirection. We want ./node_modules/xxxx as a result so prepend
          // `../` and get `./node_modules/xxx` as a result. Seems to work, but beware.
 
-         bundleData.entries.push({
+         bundleData.entries.push(new BundleEntry({
             format: 'es',
             inputFilename,
             inputPath,
+            inputPathRelative: FileUtil.getRelativePath(origCWD, inputPath),
             outputPath,
             outputCSSFilename: null,
             outputCSSFilepath: null,
             reverseRelativePath: `..${path.sep}${path.relative(bundleData.deployDir, packageData.baseDir)}`,
             type: 'npm',
             watchFiles: []
-         });
+         }));
       }
    }
 }
@@ -248,7 +268,7 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    const extension = path.extname(esmodule);
 
    // The entry in esmodules attribute is not a JS file.
-   if (!global.$$eventbus.triggerSync('typhonjs:oclif:system:file:util:is:js', extension))
+   if (!FileUtil.isJS(extension))
    {
       throw new NonFatalError(
        `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n`

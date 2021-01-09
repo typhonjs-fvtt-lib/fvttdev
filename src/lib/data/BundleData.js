@@ -10,7 +10,7 @@ class BundleData
    {
       this.cliFlags = cliFlags;
       this.entries = [];
-      this.deployDir = cliFlags.deploy;
+      this.deployDir = typeof cliFlags.deploy === 'string' ? cliFlags.deploy : './dist';
       this.reverseRelativePath = null;
 
       // reverseRelativePath: path.relative(deployDir, rootPath)

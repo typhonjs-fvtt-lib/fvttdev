@@ -23,6 +23,7 @@ class FVTTData
       this.manifestData = null;
       this.manifestFilename = null;
       this.manifestPath = null;
+      this.manifestPathRelative = null;
 
       this.newManifestFilepath = null;
       this.newManifestData = {};

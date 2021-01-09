@@ -1,6 +1,14 @@
 const BundlePackage  = require('./BundlePackage');
 
 /**
+ * Defines keys to print from the manifest data.
+ *
+ * @type {string[]}
+ */
+const s_TO_STRING_NOOP_KEYS = ['name', 'title', 'description', 'author', 'version', 'minimumCoreVersion',
+ 'compatibleCoreVersion', 'url'];
+
+/**
  */
 class FVTTPackage extends BundlePackage
 {
@@ -98,6 +106,14 @@ class FVTTPackage extends BundlePackage
    /**
     * @returns {string}
     */
+   get manifestPathRelative()
+   {
+      return this._packageData.manifestPathRelative;
+   }
+
+   /**
+    * @returns {string}
+    */
    get manifestType()
    {
       return this._packageData.manifestType;
@@ -155,6 +171,27 @@ class FVTTPackage extends BundlePackage
 
       // Create a new instance of the original module.json / system.json file.
       this._packageData.newManifestData = Object.assign(this.manifestData, {});
+   }
+
+   /**
+    * Construct the high level overview of this FVTT package.
+    *
+    * @returns {string}
+    */
+   toStringNoop()
+   {
+      const md = this.manifestData;
+
+      let results = `detected a ${this.manifestType}\n`;
+
+      for (const key of s_TO_STRING_NOOP_KEYS)
+      {
+         if (md[key]) { results += `${key}: ${md[key]}\n`; }
+      }
+
+      results += `manifest path: ${this.manifestPathRelative}\n`;
+
+      return results;
    }
 }
 

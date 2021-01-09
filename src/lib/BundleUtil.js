@@ -152,7 +152,6 @@ class BundleUtil
          }),
       };
 
-
       if (options.disableKeys)
       {
          for (const disableKey of options.disableKeys)
@@ -163,7 +162,7 @@ class BundleUtil
 
       global.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
          command: 'bundle',
-         plugin: options.pluginName,
+         pluginName: options.pluginName,
          flags: flagOptions,
 
          /**
@@ -215,7 +214,6 @@ class BundleUtil
          }
       });
    }
-
 }
 
 module.exports = BundleUtil;

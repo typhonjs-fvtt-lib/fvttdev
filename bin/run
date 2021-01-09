@@ -150,7 +150,7 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
 
       /* eslint-enable prefer-template */
 
-      packageMessage += `${packageData.formattedMessage}\n${global.$$bundler_name_version}`;
+      packageMessage += `${packageData.formattedMessage}\n${global.$$cli_name_version}`;
 
       // Log any uncaught errors as fatal.
       logger.fatal(packageMessage, sep, error, '\n');
@@ -158,6 +158,6 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
    else
    {
       // Log any uncaught errors as fatal.
-      logger.fatal(`An unknown fatal error has occurred; ${global.$$bundler_name_version}:`, error, '\n');
+      logger.fatal(`An unknown fatal error has occurred; ${global.$$cli_name_version}:`, error, '\n');
    }
 }

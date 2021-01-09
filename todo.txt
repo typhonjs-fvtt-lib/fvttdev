@@ -1,48 +1,69 @@
 Today
 -----------------------------------------
-2 bundle
+0. evaluate cosmicconfig for loading configuration files.
+  - test postcss / terser
+
+1. Refactor FVTTRepo / and data generated
+  - Investigate reverseRelativePath and sourcemap path transformation.
+    - make sure the module base path correctly transforms and check various CWD configurations
+  - Make it a system plugin which takes an event message to generate "CommandData".
+
+2. Refactor DynamicCommand
+  - Store CLI flags
+  - Implement `noop` flag
+    - Print out basic data on runtime.
+      - print detected module / system name & version
+      - print number of bundles being generated and associated esmodule entry points
+      - print copy / asset directories
+  - Implement `metafile` flag -> This option tells CLI to write out JSON files with metadata about the runtime & command.
+  - Create a finalize method which knows about `metafile` CLI flag to log data about CLI and command data.
+
+3. bundle
   - create BundleUtil
+    - create a manifest validator
     - abstract the bundle process
-    - entry flag as optional - remove entry flag for fvttdev
-    - add noop flag
 
   - abstract the bundle writing process
     - always get bundle data back
     - write or manipulate (zip) in a post step
 
-  - create package command
+4. create package command
 
-- create NPMBundle CLI and get it up w/ @typhonjs-node-rollup/oclif-core
+5. create NPMBundle CLI and get it up w/ @typhonjs-node-rollup/oclif-core
 
-  - more bundle default CLI flags
-    - add platform flag -> node, browser
-    - add format flag -> iife, cjs, esm
-    - add target flag -> es2020, es<XXXX>, modern, (chrome, firefox, safari, edge, or node) -> chrome58,firefox57,safari11,edge16,node12.19.0
-    - add banner flag / test rollup output options
-    - add footer flag / test rollup output options
-    - add inject flag? / @rollup/plugin-virtual
-    - add metafile flag -> This option tells CLI to write out a JSON file with metadata about the build.
-    - add tsconfig flag -> explicit loading of a provided tsconfig file.
-    - add babelconfig flag -> explicit loading of a provided babel config file.
-    - add optional default settings - hidden no flag
+6. More default bundle CLI flags
+  - add platform flag -> node, browser
+  - add format flag -> iife, cjs, esm
+  - add target flag -> es2020, es<XXXX>, modern, (chrome, firefox, safari, edge, or node) -> chrome58,firefox57,safari11,edge16,node12.19.0
+  - add banner flag / test rollup output options
+  - add footer flag / test rollup output options
+  - add inject flag? / @rollup/plugin-virtual
+  - add tsconfig flag -> explicit loading of a provided tsconfig file.
+  - add babelconfig flag -> explicit loading of a provided babel config file.
+  - add optional default settings - hidden no flag
 
-3 flag handling
+7. flag handling
   - evaluate creating env-resolver
     - rebuild backbone-esnext-events / eventbus
     - rebuild typhonjs-plugin-manager
       - include NPM path and ESM dynamic module loading
 
-- create bumpver command
+8. create bumpver command
 
 - create compendium builder command
   - examine PF2E https://gitlab.com/hooking/foundry-vtt---pathfinder-2e/-/tree/master/packs
 
 - remove alias support from @typhonjs-node-rollup/plugin-bundle-core
 
+------
+
 Working modules
 - Confetti
 - GMScreen
 - Hex-Size-Support
+
+Working systems
+- TwoDSix
 
 -----
 

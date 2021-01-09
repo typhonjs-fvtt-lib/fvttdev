@@ -83,12 +83,12 @@ module.exports = async function(opts)
 };
 
 /**
- * Sets the global name and version number for `fvttdev` in `global.$$bundler_name` & `global.$$bundler_version`. Also
- * provides a convenience name + package version string in `global.$$bundler_name_version`.
+ * Sets the global name and version number for `fvttdev` in `global.$$cli_name` & `global.$$cli_version`. Also
+ * provides a convenience name + package version string in `global.$$cli_name_version`.
  */
 function s_SET_VERSION()
 {
-   global.$$bundler_name = 'fvttdev';
+   global.$$cli_name = 'fvttdev';
 
    // Retrieve the local package path to pull the version number for `fvttdev`
    const packagePath = path.resolve(__dirname, '../../../package.json');
@@ -99,8 +99,8 @@ function s_SET_VERSION()
 
       if (packageObj)
       {
-         global.$$bundler_version = packageObj.version;
-         global.$$bundler_name_version = `fvttdev (${packageObj.version})`;
+         global.$$cli_version = packageObj.version;
+         global.$$cli_name_version = `fvttdev (${packageObj.version})`;
       }
    }
    catch (err) { /* nop */ }

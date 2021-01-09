@@ -5,6 +5,10 @@ const PluginManager     = require('typhonjs-plugin-manager');
 
 const RollupRunner      = require('../../lib/RollupRunner');
 
+const FVTTRepo          = require('../../lib/data/FVTTRepo');
+
+const FlagHandler       = require('../../lib/FlagHandler');
+
 // TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
 const s_DEFAULT_LOG_LEVEL = 'debug';
 
@@ -61,7 +65,11 @@ module.exports = async function(opts)
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-fileutil' });
 
       // Add '@typhonjs-node-bundle/plugin-flaghandler'
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler' });
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler', instance: new FlagHandler() });
+// TODO swap back to using flaghandler module
+//      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler' });
+
+      global.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
 
       // Add '@typhonjs-node-rollup/rollup-runner'
       global.$$pluginManager.add({ name: '@typhonjs-node-bundle/rollup-runner', instance: new RollupRunner() });

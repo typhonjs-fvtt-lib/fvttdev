@@ -3,9 +3,10 @@ const path           = require('path');
 
 const jetpack        = require('fs-jetpack');
 
-const DynamicCommand = require('@typhonjs-node-bundle/oclif-commons/src/command/DynamicCommand');
+// TODO Enable module loading of DynamicCommand
+// const DynamicCommand = require('@typhonjs-node-bundle/oclif-commons/src/command/DynamicCommand');
 
-const FVTTRepo       = require('../lib/data/FVTTRepo');
+const DynamicCommand = require('../lib/DynamicCommand');
 
 const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 
@@ -21,20 +22,20 @@ class BundleCommand extends DynamicCommand
     */
    async run()
    {
-      // Initialize the dynamic flags from all Oclif plugins.
-      const flags = super._initializeFlags(BundleCommand, 'bundle');
+      // Initialize the dynamic flags from all Oclif plugins & inspect FVTT module / system via FVTTRepo.
+      await super.initialize({ commands: ['bundle'], event: 'typhonjs:fvttdev:system:fvttrepo:parse' });
 
-      // Inspect FVTT module / system and determine bundle data.
-      const fvttPackage = await FVTTRepo.parse(flags);
+      await this._bundle(this.commandData);
 
-      await this._bundle(fvttPackage);
+      // Finalize any actions for DynamicCommand; used for logging with `--metafile` flag.
+      super.finalize();
    }
 
    /**
     * Invokes Rollup Runner to make one or more bundles from the generated bundle data for the package.
     * All temporary data is reset at the start of the process.
     *
-    * @param {FVTTPackage}   fvttPackage - The bundle data defining the FVTT package.
+    * @param {object}   fvttPackage - The bundle data defining the FVTT package.
     *
     * @returns {Promise<void>}
     * @private
@@ -174,6 +175,25 @@ class BundleCommand extends DynamicCommand
       }
 
       jetpack.write(bundleData.newManifestFilepath, bundleData.newManifestData);
+   }
+
+   /**
+    * Return specific information regarding the bundle command.
+    *
+    * @returns {string}
+    */
+   toStringNoop()
+   {
+      let results = '';
+
+      for (const entry of this.commandData.bundleEntries)
+      {
+         results += `${entry.toStringNoop()}\n`;
+      }
+
+      results += `deploy directory: ${this.commandData.deployDir}\n`;
+
+      return results;
    }
 }
 

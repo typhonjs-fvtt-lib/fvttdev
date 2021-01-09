@@ -92,7 +92,7 @@ class RollupRunner
       if (remoteOutputPlugins !== void 0)
       {
          if (!Array.isArray(remoteOutputPlugins)) { outputPlugins.push(remoteOutputPlugins); }
-         else { outputPlugins = remoteOutputPlugins.flat(); }
+         else { outputPlugins = remoteOutputPlugins.flat().filter((entry) => entry !== void 0); }
       }
 
       // Log a debug statement

@@ -199,11 +199,10 @@ class BundleUtil
                   global.$$bundler_baseCWD = newCWD;
 
                   // Only log absolute path if the CWD location is outside of the original path.
-                  const logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
+                  global.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
 
-                  // TODO Shorten path if within subdirectory
-                  global.$$eventbus.trigger('log:debug',
-                     `New current working directory set: \n${logCWD}`);
+                  global.$$eventbus.trigger('log:verbose',
+                   `New current working directory set: \n${global.$$bundler_logCWD}`);
 
                   if (!fs.existsSync(global.$$bundler_baseCWD))
                   {

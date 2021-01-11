@@ -1,27 +1,12 @@
 Today
 -----------------------------------------
-0. evaluate cosmicconfig for loading configuration files.
-  - test postcss / terser
+0) Investigate reverseRelativePath and sourcemap path transformation.
+  - make sure the module base path correctly transforms and check various CWD configurations
 
-1. Refactor FVTTRepo / and data generated
-  - Investigate reverseRelativePath and sourcemap path transformation.
-    - make sure the module base path correctly transforms and check various CWD configurations
-  - Make it a system plugin which takes an event message to generate "CommandData".
+FVTTPackage -> create a manifest validator
 
-2. Refactor DynamicCommand
-  - Store CLI flags
-  - Implement `noop` flag
-    - Print out basic data on runtime.
-      - print detected module / system name & version
-      - print number of bundles being generated and associated esmodule entry points
-      - print copy / asset directories
-  - Implement `metafile` flag -> This option tells CLI to write out JSON files with metadata about the runtime & command.
-  - Create a finalize method which knows about `metafile` CLI flag to log data about CLI and command data.
-
-3. bundle
-  - create BundleUtil
-    - create a manifest validator
-    - abstract the bundle process
+3. BundleCommand -> BundleUtil
+  - abstract the bundle process
 
   - abstract the bundle writing process
     - always get bundle data back

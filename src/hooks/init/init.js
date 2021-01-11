@@ -1,4 +1,5 @@
 const path              = require('path');
+const os                = require('os');
 
 const Events            = require('backbone-esnext-events');
 const PluginManager     = require('typhonjs-plugin-manager');
@@ -89,6 +90,11 @@ module.exports = async function(opts)
 function s_SET_VERSION()
 {
    global.$$cli_name = 'fvttdev';
+
+   const homeDir = os.homedir();
+
+   // Set the log path to be <USER_HOME>/.fvttdev/logs
+   global.$$cli_log_dir = `${homeDir}${path.sep}.${global.$$cli_name}${path.sep}logs`;
 
    // Retrieve the local package path to pull the version number for `fvttdev`
    const packagePath = path.resolve(__dirname, '../../../package.json');

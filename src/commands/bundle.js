@@ -28,7 +28,7 @@ class BundleCommand extends DynamicCommand
       await this._bundle(this.commandData);
 
       // Finalize any actions for DynamicCommand; used for logging with `--metafile` flag.
-      super.finalize();
+      await super.finalize();
    }
 
    /**

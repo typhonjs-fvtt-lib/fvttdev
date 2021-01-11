@@ -1,10 +1,12 @@
-const fs             = require('fs');
-const path           = require('path');
+const fs                = require('fs');
+const path              = require('path');
 
-const { Command }    = require('@oclif/command');
-const dotenv         = require('dotenv');
+const { Command }       = require('@oclif/command');
+const dotenv            = require('dotenv');
 
 const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
+
+const FileUtil          = require('typhonjs-file-util').default;
 
 /**
  * Provides default handling for TyphonJS dynamic command initialization of flags from Oclif plugins.
@@ -15,9 +17,13 @@ class DynamicCommand extends Command
     * Performs any final steps before the command execution completes. This is useful for logging any data
     * in response to the `--metafile` flag.
     */
-   finalize()
+   async finalize()
    {
-
+      // Write any log metafiles before handling noop flag.
+      if (typeof this._cliFlags.metafile === 'boolean' && this._cliFlags.metafile)
+      {
+         await this._writeMetafiles();
+      }
    }
 
    /**
@@ -126,11 +132,11 @@ class DynamicCommand extends Command
          // Write any log metafiles before handling noop flag.
          if (typeof this._cliFlags.metafile === 'boolean' && this._cliFlags.metafile)
          {
-            this._writeMetafiles();
+            await this._writeMetafiles();
          }
 
          let results = `-----------------------------------\n`;
-         results += `${global.$$bundler_name_version} running: '${this.id}' - `;
+         results += `${global.$$cli_name_version} running: '${this.id}' - `;
 
          // Attempt to get abbreviated noop description from command data.
          if (this._commandData && typeof this._commandData.toStringNoop === 'function')
@@ -196,6 +202,11 @@ class DynamicCommand extends Command
       return flags;
    }
 
+   /**
+    * Provides the base method to be overridden to provide per command implementation details for noop flag.
+    *
+    * @returns {string}
+    */
    toStringNoop()
    {
       return '';
@@ -208,10 +219,51 @@ class DynamicCommand extends Command
     *
     * @private
     */
-   _writeMetafiles()
+   async _writeMetafiles()
    {
+      const archiveDir = global.$$cli_log_dir;
+      const compressFormat = this.config.windows ? 'zip' : 'tar.gz';
 
+      const fileUtil = new FileUtil({ compressFormat, eventbus: global.$$eventbus });
+
+      const date = new Date();
+      const currentTime = date.getTime() - (date.getTimezoneOffset() * 60000);
+
+      const archiveFilename =
+       `${archiveDir}${path.sep}logs_${(new Date(currentTime).toJSON().slice(0, 19))}`.replace(/:/g, '_');
+
+      global.$$eventbus.trigger('log:info', `Writing metafile logs to: ${archiveFilename}.${compressFormat}`);
+
+      fileUtil.archiveCreate({ filePath: archiveFilename });
+
+      // Write out parsed package.json data.
+      fileUtil.writeFile({
+         fileData: JSON.stringify(this.config, null, 3),
+         filePath: 'oclif.config.json'
+      });
+
+      if (typeof this.cliFlags === 'object')
+      {
+         fileUtil.writeFile({
+            fileData: JSON.stringify(this.cliFlags, null, 3),
+            filePath: 'cli-flags.json'
+         });
+      }
+
+      if (typeof this.commandData === 'object')
+      {
+         fileUtil.writeFile({
+            fileData: JSON.stringify(this.commandData, null, 3),
+            filePath: `command-data.json`
+         });
+      }
+
+      return fileUtil.archiveFinalize();
    }
 }
 
 module.exports = DynamicCommand;
+
+function sleep(ms) {
+   return new Promise((resolve) => setTimeout(resolve, ms));
+}

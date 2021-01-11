@@ -126,8 +126,13 @@ class BundleUtil
             }
          }),
 
+         'metafile': flags.boolean({
+            'description': `Archives CLI runtime metafiles in: ${global.$$cli_log_dir}.`,
+            'default': false
+         }),
+
          'noop': flags.boolean({
-            'description': 'Prints essential info on any module / system bundle process and exits w/ no operation.',
+            'description': 'Prints info on any FVTT module / system detected and exits w/ no operation.',
             'default': false
          }),
 

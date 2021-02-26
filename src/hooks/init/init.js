@@ -11,7 +11,7 @@ const FVTTRepo          = require('../../lib/data/FVTTRepo');
 const FlagHandler       = require('../../lib/FlagHandler');
 
 // TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
-const s_DEFAULT_LOG_LEVEL = 'debug';
+const s_DEFAULT_LOG_LEVEL = 'verbose';
 
 /**
  * Creates a plugin manager instance.

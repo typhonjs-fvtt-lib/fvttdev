@@ -76,7 +76,7 @@ class RollupRunner
       }
 
       // Log a debug statement
-      global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - INPUT PLUGINS:`, inputPlugins);
+      // TODO global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - INPUT PLUGINS:`, inputPlugins);
 
       // Add input plugins.
       config.input.plugins = inputPlugins;
@@ -96,8 +96,8 @@ class RollupRunner
       }
 
       // Log a debug statement
-      global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins,
-       '-----------------------------------------------------');
+      // TODO global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins,
+      // '-----------------------------------------------------');
 
       // Simple test output config.
       config.output.plugins = outputPlugins;

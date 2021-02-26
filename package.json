@@ -1,5 +1,5 @@
 {
-  "name": "fvttdev",
+  "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
   "version": "0.0.0",
   "author": "typhonrt",
@@ -18,6 +18,7 @@
     "@typhonjs-node-bundle/oclif-commons": "typhonjs-node-bundle/oclif-commons#main",
     "@typhonjs-node-bundle/plugin-fileutil": "typhonjs-node-bundle/plugin-fileutil#main",
     "@typhonjs-node-bundle/plugin-flaghandler": "typhonjs-node-bundle/plugin-flaghandler#main",
+    "@typhonjs-node-rollup/plugin-bundle-core": "typhonjs-node-rollup/plugin-bundle-core",
     "backbone-esnext-events": "^0.3.0",
     "fs-jetpack": "^4.0.0",
     "typhonjs-color-logger": "^0.0.13",
@@ -64,7 +65,8 @@
       "@oclif/plugin-commands",
       "@oclif/plugin-help",
       "@oclif/plugin-plugins",
-      "@oclif/plugin-which"
+      "@oclif/plugin-which",
+      "@typhonjs-node-rollup/plugin-bundle-core"
     ]
   },
   "repository": "typhonjs-fvtt/fvttdev",

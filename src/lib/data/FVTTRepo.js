@@ -11,8 +11,8 @@ const FVTTData          = require('./FVTTData');
 
 const FVTTPackage       = require('./FVTTPackage');
 
-const s_MODULE_REGEX    = /(.*)\/module\.json?/;
-const s_SYSTEM_REGEX    = /(.*)\/system\.json?/;
+const s_MODULE_REGEX    = /(.*)[\\\/]module\.json?/;
+const s_SYSTEM_REGEX    = /(.*)[\\\/]system\.json?/;
 
 const s_SKIP_DIRS = ['deploy', 'dist', 'node_modules'];
 

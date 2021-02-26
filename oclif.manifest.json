@@ -1,1 +1,1 @@
-{"version":"0.0.0","commands":{"bundle":{"id":"bundle","description":"Bundles a module or system\n...\nExtra documentation goes here\n","pluginName":"fvttdev","pluginType":"core","aliases":[],"flags":{},"args":[]}}}
+{"version":"0.0.0","commands":{"bundle":{"id":"bundle","description":"Bundles a module or system\n...\nExtra documentation goes here\n","pluginName":"@typhonjs-fvtt/fvttdev","pluginType":"core","aliases":[],"flags":{},"args":[]}}}

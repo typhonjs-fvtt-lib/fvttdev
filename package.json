@@ -4,15 +4,18 @@
   "version": "0.0.1",
   "author": "typhonrt",
   "bin": {
-    "fvttdev": "./bin/run"
+    "fvttdev": "./bin/run.js"
   },
+  "type": "module",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "bugs": "https://github.com/typhonjs-fvtt/fvttdev/issues",
   "dependencies": {
     "@oclif/command": "^1.8.0",
-    "@oclif/config": "^1.17.0",
+    "@oclif/config": "typhonjs-node-bundle/oclif-config#main",
     "@oclif/plugin-commands": "^1.3.0",
-    "@oclif/plugin-help": "^3.2.1",
-    "@oclif/plugin-plugins": "^1.9.4",
+    "@oclif/plugin-help": "^3.2.2",
+    "@oclif/plugin-plugins": "^1.10.0",
     "@oclif/plugin-which": "^1.0.3",
     "@typhonjs-node-bundle/oclif-commons": "typhonjs-node-bundle/oclif-commons#main",
     "@typhonjs-node-bundle/plugin-fileutil": "typhonjs-node-bundle/plugin-fileutil#main",
@@ -33,11 +36,10 @@
     "globby": "^10.0.2",
     "mocha": "^5.2.0",
     "nyc": "^14.1.1",
-    "rollup": "^2.0.0",
     "typhonjs-config-eslint": "^0.6.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/bin",
@@ -50,7 +52,6 @@
     "oclif"
   ],
   "license": "MPL-2.0",
-  "main": "src/index.js",
   "oclif": {
     "commands": "./src/commands",
     "hooks": {
@@ -70,12 +71,13 @@
   },
   "repository": "typhonjs-fvtt/fvttdev",
   "scripts": {
-    "run-build": "fvttdev bundle",
-    "run-build-0": "fvttdev bundle --cwd=./test/fixture/demo-0",
-    "run-build-1entry": "fvttdev bundle -e test --cwd=./test/fixture/demo-1entry",
-    "run-build-1entry-noop": "fvttdev bundle -e test --cwd=./test/fixture/demo-1entry --metafile",
-    "run-build-1entry-ts": "fvttdev bundle -e test --cwd=./test/fixture/demo-1entry-ts",
-    "run-build-2entry": "fvttdev bundle -e test --cwd=./test/fixture/demo-2entry",
+    "run-local-debug": "env DEBUG=* ./bin/run.js bundle",
+    "run-build": "./bin/run.js bundle",
+    "run-build-0": "./bin/run.js bundle --cwd=./test/fixture/demo-0",
+    "run-build-1entry": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry",
+    "run-build-1entry-noop": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry --metafile",
+    "run-build-1entry-ts": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry-ts",
+    "run-build-2entry": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-2entry",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme && oclif-dev manifest && oclif-dev readme",

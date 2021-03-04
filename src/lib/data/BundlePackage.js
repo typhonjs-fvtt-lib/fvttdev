@@ -1,7 +1,7 @@
 /**
  *
  */
-class BundlePackage
+export default class BundlePackage
 {
    /**
     * @param {object}   bundleData - RollupRunner specific data for multiple bundle generation.
@@ -60,5 +60,3 @@ class BundlePackage
 
    }
 }
-
-module.exports = BundlePackage;

@@ -1,7 +1,7 @@
 /**
  * Defines a bundle entry.
  */
-class BundleEntry
+export default class BundleEntry
 {
    /**
     * @param {object}   data - The bundle entry data.
@@ -129,5 +129,3 @@ class BundleEntry
       return results;
    }
 }
-
-module.exports = BundleEntry;

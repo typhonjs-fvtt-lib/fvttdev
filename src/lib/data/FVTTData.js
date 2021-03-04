@@ -1,9 +1,9 @@
-const path = require('path');
+import path from 'path';
 
 /**
  *
  */
-class FVTTData
+export default class FVTTData
 {
    /**
     * @param {string[]} allDirs -
@@ -36,5 +36,3 @@ class FVTTData
       this.npmModulePath = null;
    }
 }
-
-module.exports = FVTTData;

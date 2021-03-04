@@ -1,4 +1,4 @@
-const BundleUtil  = require('../../lib/BundleUtil');
+import BundleUtil from '../../lib/BundleUtil.js';
 
 /**
  * Note: This is defined as an explicit init function so that it executes before all plugin init functions.
@@ -9,9 +9,9 @@ const BundleUtil  = require('../../lib/BundleUtil');
  *
  * @returns {Promise<void>}
  */
-module.exports = async function(options)
+export default async function(options)
 {
    global.$$eventbus.trigger('log:debug', `explicit bundle command init hook running '${options.id}'.`);
 
    BundleUtil.addFlags({ pluginName: 'fvttdev', disableKeys: ['entry'] });
-};
+}

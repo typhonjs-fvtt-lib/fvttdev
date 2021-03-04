@@ -1,17 +1,19 @@
-const fs                = require('fs');
-const path              = require('path');
+import fs                from 'fs';
+import path              from 'path';
 
-const { Command }       = require('@oclif/command');
-const dotenv            = require('dotenv');
+import { Command }       from '@oclif/command';
+import dotenv            from 'dotenv';
 
-const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
+import { NonFatalError } from '@typhonjs-node-bundle/oclif-commons';
 
-const FileUtil          = require('typhonjs-file-util').default;
+import FileUtilMod       from 'typhonjs-file-util';
+
+const FileUtil = FileUtilMod.default;
 
 /**
  * Provides default handling for TyphonJS dynamic command initialization of flags from Oclif plugins.
  */
-class DynamicCommand extends Command
+export default class DynamicCommand extends Command
 {
    /**
     * Performs any final steps before the command execution completes. This is useful for logging any data
@@ -260,10 +262,4 @@ class DynamicCommand extends Command
 
       return fileUtil.archiveFinalize();
    }
-}
-
-module.exports = DynamicCommand;
-
-function sleep(ms) {
-   return new Promise((resolve) => setTimeout(resolve, ms));
 }

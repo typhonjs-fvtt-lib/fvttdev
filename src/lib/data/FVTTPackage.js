@@ -1,4 +1,4 @@
-const BundlePackage  = require('./BundlePackage');
+import BundlePackage from './BundlePackage.js';
 
 /**
  * Defines keys to print from the manifest data.
@@ -6,11 +6,11 @@ const BundlePackage  = require('./BundlePackage');
  * @type {string[]}
  */
 const s_TO_STRING_NOOP_KEYS = ['name', 'title', 'description', 'author', 'version', 'minimumCoreVersion',
- 'compatibleCoreVersion', 'url'];
+   'compatibleCoreVersion', 'url'];
 
 /**
  */
-class FVTTPackage extends BundlePackage
+export default class FVTTPackage extends BundlePackage
 {
    /**
     * @param {object}   packageData - A parsed representation of the FVTT repo.
@@ -194,5 +194,3 @@ class FVTTPackage extends BundlePackage
       return results;
    }
 }
-
-module.exports = FVTTPackage;

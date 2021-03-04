@@ -1,15 +1,15 @@
-const fs                = require('fs');
-const path              = require('path');
+import fs                from 'fs';
+import path              from 'path';
 
-const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
+import { NonFatalError } from '@typhonjs-node-bundle/oclif-commons';
 
-const FileUtil          = require('@typhonjs-node-bundle/plugin-fileutil');
+import FileUtil          from '@typhonjs-node-bundle/plugin-fileutil';
 
-const BundleData        = require('./BundleData');
-const BundleEntry       = require('./BundleEntry');
-const FVTTData          = require('./FVTTData');
+import BundleData        from './BundleData.js';
+import BundleEntry       from './BundleEntry.js';
+import FVTTData          from './FVTTData.js';
 
-const FVTTPackage       = require('./FVTTPackage');
+import FVTTPackage       from './FVTTPackage.js';
 
 const s_MODULE_REGEX    = /(.*)[\\\/]module\.json?/;
 const s_SYSTEM_REGEX    = /(.*)[\\\/]system\.json?/;
@@ -23,7 +23,7 @@ const s_SKIP_DIRS = ['deploy', 'dist', 'node_modules'];
  * separated as they will be treated as separate bundles. The main entry point of the main module / system bundle is
  * parsed from module or system.json / `esmodules`. For now only one main source file may be specified.
  */
-class FVTTRepo
+export default class FVTTRepo
 {
    /**
     * Performs initialization / parsing of the FVTT repo being parsed.
@@ -76,8 +76,6 @@ class FVTTRepo
    }
 }
 
-module.exports = FVTTRepo;
-
 /**
  * @param {FVTTData}    packageData -
  * @param {BundleData}  bundleData -
@@ -116,14 +114,15 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    if (manifestType === null)
    {
       throw new NonFatalError(
-       `Could not find a Foundry VTT module or system in file path: \n${global.$$bundler_logCWD}`);
+         `Could not find a Foundry VTT module or system in file path: \n${global.$$bundler_logCWD}`);
    }
 
    let manifestData;
 
    try
    {
-      manifestData = require(manifestPath);
+      // require(manifestPath);
+      manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
    }
    catch (err)
    {
@@ -184,7 +183,7 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD)
    {
       // s_RESOLVE_ESMODULE attempts to load a JS file then attempts to load a Typescript file.
       const { inputPath, inputExt, inputFilename, inputBasename, inputType } =
-       s_RESOLVE_ESMODULE(esmodule, packageData);
+         s_RESOLVE_ESMODULE(esmodule, packageData);
 
       const outputCSSFilename = `${inputBasename}.css`;
 
@@ -271,14 +270,14 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    if (!FileUtil.isJS(extension))
    {
       throw new NonFatalError(
-       `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n`
-        + `${packageData.manifestPath}`);
+         `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n`
+         + `${packageData.manifestPath}`);
    }
 
    const inputParsed = path.parse(esmodule);
 
    const inputPathBase =
-    `${packageData.rootPath}${path.sep}${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
+      `${packageData.rootPath}${path.sep}${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
 
    const esmoduleBase = `${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
 
@@ -326,6 +325,6 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    // Could not locate any JS or TS file to load.
 
    throw new NonFatalError(
-    `Could not load filename '${inputParsed.dir}${path.sep}${inputParsed.name}(${inputParsed.ext}|.ts|.tsx)' `
-     + ` in 'esmodules' entry in '${packageData.manifestFilename}': \n${packageData.manifestPath}`);
+      `Could not load filename '${inputParsed.dir}${path.sep}${inputParsed.name}(${inputParsed.ext}|.ts|.tsx)' `
+      + ` in 'esmodules' entry in '${packageData.manifestFilename}': \n${packageData.manifestPath}`);
 }

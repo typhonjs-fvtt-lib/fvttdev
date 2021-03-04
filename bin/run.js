@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
 const logger            = require('typhonjs-color-logger').default;
 const oclifHandler      = require('@oclif/errors/handle');
 const { ExitError }     = require('@oclif/errors');

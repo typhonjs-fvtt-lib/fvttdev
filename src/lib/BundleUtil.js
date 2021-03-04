@@ -1,15 +1,15 @@
-const fs                = require('fs');
-const path              = require('path');
+import fs                  from 'fs';
+import path                from 'path';
 
-const { flags }         = require('@oclif/command');
+import { flags }           from '@oclif/command';
 
-const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
+import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons';
 
 const s_DEFAULT_LOG_LEVEL = 'trace';  // TODO DEFAULT SHOULD BE INFO
 
 /**
  */
-class BundleUtil
+export default class BundleUtil
 {
    /**
     * Adds built in flags for the bundle command. An array of string keys may be provided to disable one or more flags.
@@ -207,7 +207,7 @@ class BundleUtil
                   global.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
 
                   global.$$eventbus.trigger('log:verbose',
-                   `New current working directory set: \n${global.$$bundler_logCWD}`);
+                     `New current working directory set: \n${global.$$bundler_logCWD}`);
 
                   if (!fs.existsSync(global.$$bundler_baseCWD))
                   {
@@ -219,5 +219,3 @@ class BundleUtil
       });
    }
 }
-
-module.exports = BundleUtil;

@@ -1,9 +1,10 @@
-const { rollup } = require('rollup');
+import { rollup } from 'rollup';
 
 /**
  * Encapsulates interacting w/ Rollup.
+ * TODO: This needs to move into it's own module w/ dependency on Rollup.
  */
-class RollupRunner
+export default class RollupRunner
 {
    /**
     * Runs `rollup` for all bundle entries in `bundleData`.
@@ -64,7 +65,7 @@ class RollupRunner
       // Retrieve configured input plugins from Oclif plugins based on passed in `config.flags`.
 
       const remoteInputPlugins = await eventbus.triggerAsync(
-       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:input:get`, bundleData, currentBundle);
+         `typhonjs:oclif:bundle:plugins:${currentBundle.type}:input:get`, bundleData, currentBundle);
 
       let inputPlugins = [];
 
@@ -84,7 +85,7 @@ class RollupRunner
       // Output ---------------------------------------------------------------------
 
       const remoteOutputPlugins = await eventbus.triggerAsync(
-       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:output:get`, bundleData, currentBundle);
+         `typhonjs:oclif:bundle:plugins:${currentBundle.type}:output:get`, bundleData, currentBundle);
 
       let outputPlugins = [];
 
@@ -146,5 +147,3 @@ class RollupRunner
       eventbus.on(`typhonjs:node:bundle:runner:run:all`, this.rollupAll, this);
    }
 }
-
-module.exports = RollupRunner;

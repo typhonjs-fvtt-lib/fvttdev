@@ -12,7 +12,7 @@
  *
  * `typhonjs:oclif:system:flaghandler:verify` -> verifyFlags
  */
-class FlagHandler
+export default class FlagHandler
 {
    /**
     */
@@ -279,5 +279,3 @@ class FlagHandler
       }
    }
 }
-
-module.exports = FlagHandler;

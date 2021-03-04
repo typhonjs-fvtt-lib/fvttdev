@@ -1,7 +1,7 @@
 /**
  *
  */
-class BundleData
+export default class BundleData
 {
    /**
     * @param {object}   cliFlags - The CLI flags.
@@ -16,5 +16,3 @@ class BundleData
       // reverseRelativePath: path.relative(deployDir, rootPath)
    }
 }
-
-module.exports = BundleData;

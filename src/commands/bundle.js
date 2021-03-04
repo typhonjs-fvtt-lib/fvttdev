@@ -1,12 +1,12 @@
-const fs             = require('fs');
-const path           = require('path');
+import fs             from 'fs';
+import path           from 'path';
 
-const jetpack        = require('fs-jetpack');
+import jetpack        from 'fs-jetpack';
 
 // TODO Enable module loading of DynamicCommand
 // const DynamicCommand = require('@typhonjs-node-bundle/oclif-commons/src/command/DynamicCommand');
 
-const DynamicCommand = require('../lib/DynamicCommand');
+import DynamicCommand from '../lib/DynamicCommand.js';
 
 const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 
@@ -202,4 +202,4 @@ BundleCommand.description = `Bundles a module or system
 Extra documentation goes here
 `;
 
-module.exports = BundleCommand;
+export default BundleCommand;

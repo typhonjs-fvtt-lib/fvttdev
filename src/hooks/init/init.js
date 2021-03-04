@@ -1,14 +1,15 @@
-const path              = require('path');
-const os                = require('os');
+import path              from 'path';
+import os                from 'os';
 
-const Events            = require('backbone-esnext-events');
-const PluginManager     = require('typhonjs-plugin-manager');
+import Events            from 'backbone-esnext-events';
+import PluginManager     from 'typhonjs-plugin-manager';
 
-const RollupRunner      = require('../../lib/RollupRunner');
+import RollupRunner      from '../../lib/RollupRunner.js';
 
-const FVTTRepo          = require('../../lib/data/FVTTRepo');
+import FVTTRepo          from '../../lib/data/FVTTRepo.js';
 
-const FlagHandler       = require('../../lib/FlagHandler');
+import FlagHandler from '../../lib/FlagHandler.js';
+import fs          from "fs";
 
 // TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
 const s_DEFAULT_LOG_LEVEL = 'verbose';
@@ -21,7 +22,7 @@ const s_DEFAULT_LOG_LEVEL = 'verbose';
  *
  * @returns {Promise<void>}
  */
-module.exports = async function(opts)
+export default async function(opts)
 {
    try
    {
@@ -44,18 +45,18 @@ module.exports = async function(opts)
 
       // Adds color logger plugin
       global.$$pluginManager.add(
-      {
-         name: 'typhonjs-color-logger',
-         options: {
-            // Adds an exclusive filter which removes `FlagHandler` from stack trace / being a source of an error.
-            filterConfigs: [
-               { type: 'exclusive', name: 'FlagHandler', filterString:
-                '@typhonjs-node-bundle/oclif-commons/src/util/FlagHandler.js' },
-               { type: 'exclusive', name: '@babel', filterString: '@babel' }
-            ],
-            showInfo: false
-         }
-      });
+         {
+            name: 'typhonjs-color-logger',
+            options: {
+               // Adds an exclusive filter which removes `FlagHandler` from stack trace / being a source of an error.
+               filterConfigs: [
+                  { type: 'exclusive', name: 'FlagHandler', filterString:
+                        '@typhonjs-node-bundle/oclif-commons/src/util/FlagHandler.js' },
+                  { type: 'exclusive', name: '@babel', filterString: '@babel' }
+               ],
+               showInfo: false
+            }
+         });
 
       // Set the initial starting log level.
       global.$$eventbus.trigger('log:level:set', s_DEFAULT_LOG_LEVEL);
@@ -81,7 +82,7 @@ module.exports = async function(opts)
    {
       this.error(error);
    }
-};
+}
 
 /**
  * Sets the global name and version number for `fvttdev` in `global.$$cli_name` & `global.$$cli_version`. Also
@@ -97,11 +98,12 @@ function s_SET_VERSION()
    global.$$cli_log_dir = `${homeDir}${path.sep}.${global.$$cli_name}${path.sep}logs`;
 
    // Retrieve the local package path to pull the version number for `fvttdev`
-   const packagePath = path.resolve(__dirname, '../../../package.json');
+   const packagePath = path.resolve(path.resolve(), '../../../package.json');
 
    try
    {
-      const packageObj = require(packagePath);
+      // require(packagePath);
+      const packageObj = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
 
       if (packageObj)
       {

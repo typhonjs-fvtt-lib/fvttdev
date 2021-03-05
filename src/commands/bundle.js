@@ -3,12 +3,13 @@ import path           from 'path';
 
 import jetpack        from 'fs-jetpack';
 
-// TODO Enable module loading of DynamicCommand
-// const DynamicCommand = require('@typhonjs-node-bundle/oclif-commons/src/command/DynamicCommand');
+// TODO Eventually - enable module loading of DynamicCommand
+// import DynamicCommand from '@typhonjs-node-bundle/oclif-commons';
 
 import DynamicCommand from '../lib/DynamicCommand.js';
 
-const s_DIR_REL_REGEX = /\.\.\/(.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
+// eslint-disable-next-line no-useless-escape
+const s_DIR_REL_REGEX = /\.\.[\\\/](.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.
 
 /**
  * Provides the main Oclif `bundle` command that uses Rollup to bundle a FVTT module / system.

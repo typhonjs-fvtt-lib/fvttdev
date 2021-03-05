@@ -11,8 +11,10 @@ import FVTTData          from './FVTTData.js';
 
 import FVTTPackage       from './FVTTPackage.js';
 
+/* eslint-disable no-useless-escape */
 const s_MODULE_REGEX    = /(.*)[\\\/]module\.json?/;
 const s_SYSTEM_REGEX    = /(.*)[\\\/]system\.json?/;
+/* eslint-enable no-useless-escape */
 
 const s_SKIP_DIRS = ['deploy', 'dist', 'node_modules'];
 

@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+import { createRequire }   from 'module';
 
-const logger            = require('typhonjs-color-logger').default;
-const oclifHandler      = require('@oclif/errors/handle');
-const { ExitError }     = require('@oclif/errors');
+// Note: For some reason Oclif fails when importing as '@typhonjs-node-bundle/oclif-commons' but using the fully
+// qualified path works; reason unknown presently.
+import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons/src/error/NonFatalError.js';
 
-const { NonFatalError } = require('@typhonjs-node-bundle/oclif-commons');
+const require              = createRequire(import.meta.url);
+
+const logger               = require('typhonjs-color-logger').default;
+const oclifHandler         = require('@oclif/errors/handle');
+const { ExitError }        = require('@oclif/errors');
 
 require('@oclif/command').run()
 .then(require('@oclif/command/flush'))

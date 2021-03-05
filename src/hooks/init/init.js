@@ -1,15 +1,17 @@
+import fs                from 'fs';
 import path              from 'path';
 import os                from 'os';
 
 import Events            from 'backbone-esnext-events';
 import PluginManager     from 'typhonjs-plugin-manager';
 
+import FileUtil          from '@typhonjs-node-bundle/plugin-fileutil';
+
 import RollupRunner      from '../../lib/RollupRunner.js';
 
 import FVTTRepo          from '../../lib/data/FVTTRepo.js';
 
-import FlagHandler from '../../lib/FlagHandler.js';
-import fs          from "fs";
+import FlagHandler       from '../../lib/FlagHandler.js';
 
 // TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
 const s_DEFAULT_LOG_LEVEL = 'verbose';
@@ -63,13 +65,12 @@ export default async function(opts)
 
       // TODO: Eventually move these plugins to their actual module locations.
 
-      // Add '@typhonjs-node-bundle/plugin-fileutil'
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-fileutil' });
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-fileutil', instance: FileUtil });
 
-      // Add '@typhonjs-node-bundle/plugin-flaghandler'
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler', instance: new FlagHandler() });
-// TODO swap back to using flaghandler module
+// TODO swap back to using flaghandler module after updating plugin manager for ESM
 //      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler' });
+      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler', instance: new FlagHandler() });
+
 
       global.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
 
@@ -98,7 +99,7 @@ function s_SET_VERSION()
    global.$$cli_log_dir = `${homeDir}${path.sep}.${global.$$cli_name}${path.sep}logs`;
 
    // Retrieve the local package path to pull the version number for `fvttdev`
-   const packagePath = path.resolve(path.resolve(), '../../../package.json');
+   const packagePath = FileUtil.getURLDirpath(import.meta.url, '../../../package.json');
 
    try
    {

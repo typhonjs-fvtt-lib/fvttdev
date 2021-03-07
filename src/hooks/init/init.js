@@ -14,7 +14,7 @@ import FVTTRepo          from '../../lib/data/FVTTRepo.js';
 import FlagHandler       from '../../lib/FlagHandler.js';
 
 // TODO CHANGE TO 'info' LOG LEVEL FOR DEFAULT
-const s_DEFAULT_LOG_LEVEL = 'verbose';
+const s_DEFAULT_LOG_LEVEL = 'debug';
 
 /**
  * Creates a plugin manager instance.

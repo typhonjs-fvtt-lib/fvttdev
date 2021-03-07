@@ -49,6 +49,44 @@ export default class DynamicCommand extends Command
    }
 
    /**
+    * Loads all dynamic flags for this command after running any init hook.
+    *
+    * @returns {Promise<{}>}
+    */
+   async loadDynamicFlags()
+   {
+      const initHook = this.constructor._initHook;
+      if (typeof initHook === 'string')
+      {
+         // Run any custom init hook for all Oclif bundle plugins to load respective bundler plugins.
+         await this.config.runHook(initHook, this.config);
+      }
+
+      let flags = {};
+
+      const flagCommands = this.constructor._flagCommands;
+      if (Array.isArray(flagCommands))
+      {
+         // Dynamically load flags for the command from oclif-flaghandler.
+         flags = global.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { commands: flagCommands });
+      }
+
+      // Sanitize default flags. Invoke any default functions taking the value provided.
+      for (const v of Object.values(flags))
+      {
+         if (typeof v.default === 'function')
+         {
+            v.default = v.default({});
+
+            if (Array.isArray(v.default) && v.default.length === 0) { delete v.default; }
+            if (v.default === '') { delete v.default; }
+         }
+      }
+
+      return flags;
+   }
+
+   /**
     * Attempts to load environment variables from a *.env file w/ `dotenv`. Many flags have defaults, but also can be
     * set with environment variables and this is a convenient way to load many different configurations.
     *

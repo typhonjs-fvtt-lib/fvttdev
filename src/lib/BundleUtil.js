@@ -54,11 +54,11 @@ export default class BundleUtil
       const flagOptions = {
          'cwd': flags.string({
             'description': 'Use an alternative working directory.',
-            'default': function()
+            'default': function(envVars = process.env)
             {
                const envVar = `${envVarPrefix}_CWD`;
 
-               if (typeof process.env[envVar] === 'string') { return process.env[envVar]; }
+               if (typeof envVars[envVar] === 'string') { return envVars[envVar]; }
 
                return '.';
             }
@@ -79,16 +79,16 @@ export default class BundleUtil
          'external': flags.string({
             'description': 'Specifies external import references which are ignored.',
             'multiple': true,
-            'default': function()
+            'default': function(envVars = process.env)
             {
                const envVar = `${envVarPrefix}_EXTERNAL`;
 
-               if (typeof process.env[envVar] === 'string')
+               if (typeof envVars[envVar] === 'string')
                {
                   let result = void 0;
 
                   // Treat it as a JSON array.
-                  try { result = JSON.parse(process.env[envVar]); }
+                  try { result = JSON.parse(envVars[envVar]); }
                   catch (error)
                   {
                      throw new NonFatalError(`Could not parse '${envVar}' as a JSON array;\n${error.message}`);
@@ -116,11 +116,11 @@ export default class BundleUtil
 
          'loglevel': flags.string({
             'description': 'Sets log level (off, fatal, error, warn, info, verbose, debug, trace, all).',
-            'default': function()
+            'default': function(envVars = process.env)
             {
                const envVar = `${envVarPrefix}_LOG_LEVEL`;
 
-               if (typeof process.env[envVar] === 'string') { return process.env[envVar]; }
+               if (typeof envVars[envVar] === 'string') { return envVars[envVar]; }
 
                return s_DEFAULT_LOG_LEVEL;
             }
@@ -141,13 +141,18 @@ export default class BundleUtil
          'sourcemap': flags.boolean({
             'description': '[default: true] Generate source maps.',
             'allowNo': true,
-            'default': function()
+            'default': function(envVars = process.env)
             {
                const envVar = `${envVarPrefix}_SOURCEMAP`;
 
-               if (process.env[envVar] === 'true') { return true; }
+               let defaultValue = true;
 
-               return process.env[envVar] !== 'false';
+               if (envVar in envVars && envVars[envVar] !== 'true')
+               {
+                  defaultValue = false;
+               }
+
+               return defaultValue;
             }
          }),
 

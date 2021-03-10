@@ -38,7 +38,7 @@ export default class FVTTRepo
     */
    static async parse(cliFlags, baseDir = '.', origCWD = '.')
    {
-      const eventbus = global.$$eventbus;
+      const eventbus = globalThis.$$eventbus;
 
       const allDirs = await FileUtil.getDirList(baseDir, s_SKIP_DIRS);
       const allFiles = await FileUtil.getFileList(baseDir, s_SKIP_DIRS);
@@ -116,7 +116,7 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    if (manifestType === null)
    {
       throw new NonFatalError(
-         `Could not find a Foundry VTT module or system in file path: \n${global.$$bundler_logCWD}`);
+         `Could not find a Foundry VTT module or system in file path: \n${globalThis.$$bundler_logCWD}`);
    }
 
    let manifestData;

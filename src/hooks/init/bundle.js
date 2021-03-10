@@ -11,7 +11,7 @@ import BundleUtil from '../../lib/BundleUtil.js';
  */
 export default async function(options)
 {
-   global.$$eventbus.trigger('log:debug', `explicit bundle command init hook running '${options.id}'.`);
+   globalThis.$$eventbus.trigger('log:debug', `explicit bundle command init hook running '${options.id}'.`);
 
    BundleUtil.addFlags({ pluginName: 'fvttdev', disableKeys: ['entry'] });
 }

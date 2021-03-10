@@ -29,55 +29,62 @@ export default async function(opts)
    try
    {
       // Save base executing path immediately before anything else occurs w/ CLI / Oclif.
-      global.$$bundler_baseCWD = global.$$bundler_origCWD = process.cwd();
+      globalThis.$$bundler_baseCWD = globalThis.$$bundler_origCWD = process.cwd();
 
       // A short version of CWD which has the relative path if CWD is the base or subdirectory otherwise absolute.
-      global.$$bundler_logCWD = '.';
+      globalThis.$$bundler_logCWD = '.';
 
       // Defines the CLI prefix to add before environment variable flag identifiers.
-      global.$$flag_env_prefix = 'FVTTDEV';
+      globalThis.$$flag_env_prefix = 'FVTTDEV';
 
       // Save the global eventbus.
-      global.$$eventbus = new Events();
+      globalThis.$$eventbus = new Events();
 
       s_SET_VERSION();
 
       // Save the global plugin manager
-      global.$$pluginManager = new PluginManager({ eventbus: global.$$eventbus });
+      globalThis.$$pluginManager = new PluginManager({ eventbus: globalThis.$$eventbus });
 
       // Adds color logger plugin
-      global.$$pluginManager.add(
+      globalThis.$$pluginManager.add(
          {
             name: 'typhonjs-color-logger',
             options: {
                // Adds an exclusive filter which removes `FlagHandler` from stack trace / being a source of an error.
                filterConfigs: [
-                  { type: 'exclusive', name: 'FlagHandler', filterString:
-                        '@typhonjs-node-bundle/oclif-commons/src/util/FlagHandler.js' },
-                  { type: 'exclusive', name: '@babel', filterString: '@babel' }
+                  {
+                     type: 'exclusive',
+                     name: 'FlagHandler',
+                     filterString: '@typhonjs-node-bundle/oclif-commons/src/util/FlagHandler.js'
+                  },
+                  {
+                     type: 'exclusive',
+                     name: '@babel',
+                     filterString: '@babel'
+                  }
                ],
                showInfo: false
             }
          });
 
       // Set the initial starting log level.
-      global.$$eventbus.trigger('log:level:set', s_DEFAULT_LOG_LEVEL);
+      globalThis.$$eventbus.trigger('log:level:set', s_DEFAULT_LOG_LEVEL);
 
       // TODO: Eventually move these plugins to their actual module locations.
 
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-fileutil', instance: FileUtil });
+      globalThis.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-fileutil', instance: FileUtil });
 
 // TODO swap back to using flaghandler module after updating plugin manager for ESM
-//      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler' });
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler', instance: new FlagHandler() });
+//      globalThis.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler' });
+      globalThis.$$pluginManager.add({ name: '@typhonjs-node-bundle/plugin-flaghandler', instance: new FlagHandler() });
 
 
-      global.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
+      globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
 
       // Add '@typhonjs-node-rollup/rollup-runner'
-      global.$$pluginManager.add({ name: '@typhonjs-node-bundle/rollup-runner', instance: new RollupRunner() });
+      globalThis.$$pluginManager.add({ name: '@typhonjs-node-rollup/rollup-runner', instance: new RollupRunner() });
 
-      global.$$eventbus.trigger('log:debug', `fvttdev init hook running '${opts.id}'.`);
+      globalThis.$$eventbus.trigger('log:debug', `fvttdev init hook running '${opts.id}'.`);
    }
    catch (error)
    {
@@ -86,17 +93,17 @@ export default async function(opts)
 }
 
 /**
- * Sets the global name and version number for `fvttdev` in `global.$$cli_name` & `global.$$cli_version`. Also
- * provides a convenience name + package version string in `global.$$cli_name_version`.
+ * Sets the global name and version number for `fvttdev` in `globalThis.$$cli_name` & `globalThis.$$cli_version`. Also
+ * provides a convenience name + package version string in `globalThis.$$cli_name_version`.
  */
 function s_SET_VERSION()
 {
-   global.$$cli_name = 'fvttdev';
+   globalThis.$$cli_name = 'fvttdev';
 
    const homeDir = os.homedir();
 
    // Set the log path to be <USER_HOME>/.fvttdev/logs
-   global.$$cli_log_dir = `${homeDir}${path.sep}.${global.$$cli_name}${path.sep}logs`;
+   globalThis.$$cli_log_dir = `${homeDir}${path.sep}.${globalThis.$$cli_name}${path.sep}logs`;
 
    // Retrieve the local package path to pull the version number for `fvttdev`
    const packagePath = FileUtil.getURLDirpath(import.meta.url, '../../../package.json');
@@ -108,8 +115,8 @@ function s_SET_VERSION()
 
       if (packageObj)
       {
-         global.$$cli_version = packageObj.version;
-         global.$$cli_name_version = `fvttdev (${packageObj.version})`;
+         globalThis.$$cli_version = packageObj.version;
+         globalThis.$$cli_name_version = `fvttdev (${packageObj.version})`;
       }
    }
    catch (err) { /* nop */ }

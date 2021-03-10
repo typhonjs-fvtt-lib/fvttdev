@@ -52,7 +52,7 @@ class BundleCommand extends DynamicCommand
       // this.log(`Bundle command - run - bundle data: \n${JSON.stringify(fvttPackage, null, 3)}`);
 
       // Fire off RollupRunner and have it perform all bundling.
-      await global.$$eventbus.triggerAsync('typhonjs:node:bundle:runner:run:all', fvttPackage);
+      await globalThis.$$eventbus.triggerAsync('typhonjs:node:bundle:runner:run:all', fvttPackage);
 
       // Copy all top most directories not included in bundling process, module / system json, and
       // any LICENSE or README.md file.

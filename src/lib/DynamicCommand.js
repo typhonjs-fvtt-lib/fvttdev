@@ -53,30 +53,32 @@ export default class DynamicCommand extends Command
     *
     * @returns {Promise<{}>}
     */
-   async loadDynamicFlags()
+   static async loadDynamicFlags(CommandClass, config, loadDefault = true)
    {
-      const initHook = this.constructor._initHook;
+      const initHook = CommandClass._initHook;
       if (typeof initHook === 'string')
       {
          // Run any custom init hook for all Oclif bundle plugins to load respective bundler plugins.
-         await this.config.runHook(initHook, { id: this.id, flagsModule: '@oclif/core/lib/flags.js' });
+         await config.runHook(initHook, { id: this.id, flagsModule: '@oclif/core/lib/flags.js' });
       }
 
       let flags = {};
 
-      const flagCommands = this.constructor._flagCommands;
-      if (Array.isArray(flagCommands))
+      const flagCommands = CommandClass._flagCommands;
+      if (Array.isArray(flagCommands) && typeof globalThis.$$eventbus !== 'undefined')
       {
          // Dynamically load flags for the command from oclif-flaghandler.
-         flags = global.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { commands: flagCommands });
+         flags = globalThis.$$eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { commands: flagCommands });
       }
+
+      const defaultData = loadDefault ? null : void 0;
 
       // Sanitize default flags. Invoke any default functions taking the value provided.
       for (const v of Object.values(flags))
       {
          if (typeof v.default === 'function')
          {
-            v.default = v.default(null);
+            v.default = v.default(defaultData);
 
             if (Array.isArray(v.default) && v.default.length === 0) { delete v.default; }
             if (v.default === '') { delete v.default; }
@@ -109,9 +111,9 @@ export default class DynamicCommand extends Command
       if (typeof existingFlags.env === 'string')
       {
          // By default the environment variables will always be stored in `./env`
-         const envFilePath = `${global.$$bundler_baseCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
+         const envFilePath = `${globalThis.$$bundler_baseCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
 
-         const logEnvFilePath = `${global.$$bundler_logCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
+         const logEnvFilePath = `${globalThis.$$bundler_logCWD}${path.sep}env${path.sep}${existingFlags.env}.env`;
 
          // Exit gracefully if the environment file could not be found.
          if (!fs.existsSync(envFilePath))
@@ -121,7 +123,7 @@ export default class DynamicCommand extends Command
          }
          else
          {
-            global.$$eventbus.trigger('log:verbose', `Loading environment variables from: \n${logEnvFilePath}`);
+            globalThis.$$eventbus.trigger('log:verbose', `Loading environment variables from: \n${logEnvFilePath}`);
 
             // Potentially load environment variables from a *.env file.
             const env = dotenv.config({ path: envFilePath });
@@ -162,8 +164,8 @@ export default class DynamicCommand extends Command
       // If an event path is provided then fire it off to load command data.
       if (event !== null)
       {
-         this._commandData = await global.$$eventbus.triggerAsync(event, this._cliFlags, global.$$bundler_baseCWD,
-          global.$$bundler_origCWD);
+         this._commandData = await globalThis.$$eventbus.triggerAsync(event, this._cliFlags,
+          globalThis.$$bundler_baseCWD, globalThis.$$bundler_origCWD);
       }
 
       // Handle noop / no operation flag / Exit out now!
@@ -176,7 +178,7 @@ export default class DynamicCommand extends Command
          }
 
          let results = `-----------------------------------\n`;
-         results += `${global.$$cli_name_version} running: '${this.id}' - `;
+         results += `${globalThis.$$cli_name_version} running: '${this.id}' - `;
 
          // Attempt to get abbreviated noop description from command data.
          if (this._commandData && typeof this._commandData.toStringNoop === 'function')
@@ -205,7 +207,7 @@ export default class DynamicCommand extends Command
    {
       const CommandClass = this.constructor;
 
-      const eventbus = global.$$eventbus;
+      const eventbus = globalThis.$$eventbus;
 
       // Dynamically load flags for the command from oclif-flaghandler.
       CommandClass.flags = eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { commands });
@@ -216,18 +218,19 @@ export default class DynamicCommand extends Command
       // Notify that the current working directory is being changed and verify that the new directory exists.
       if (typeof flags.cwd === 'string' && flags.cwd !== '.')
       {
-         const origCWD = global.$$bundler_baseCWD;
+         const origCWD = globalThis.$$bundler_baseCWD;
          const newCWD = flags.cwd;
 
          // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
-         global.$$bundler_baseCWD = path.resolve(global.$$bundler_origCWD, newCWD);
+         globalThis.$$bundler_baseCWD = path.resolve(globalThis.$$bundler_origCWD, newCWD);
 
          // Only log absolute path if the CWD location is outside of the original path.
-         global.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
+         globalThis.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
 
-         global.$$eventbus.trigger('log:verbose', `New current working directory set: \n${global.$$bundler_logCWD}`);
+         globalThis.$$eventbus.trigger('log:verbose',
+          `New current working directory set: \n${globalThis.$$bundler_logCWD}`);
 
-         if (!fs.existsSync(global.$$bundler_baseCWD))
+         if (!fs.existsSync(globalThis.$$bundler_baseCWD))
          {
             throw new NonFatalError(`New current working directory does not exist.`);
          }
@@ -261,10 +264,10 @@ export default class DynamicCommand extends Command
     */
    async _writeMetafiles()
    {
-      const archiveDir = global.$$cli_log_dir;
+      const archiveDir = globalThis.$$cli_log_dir;
       const compressFormat = this.config.windows ? 'zip' : 'tar.gz';
 
-      const fileUtil = new FileUtil({ compressFormat, eventbus: global.$$eventbus });
+      const fileUtil = new FileUtil({ compressFormat, eventbus: globalThis.$$eventbus });
 
       const date = new Date();
       const currentTime = date.getTime() - (date.getTimezoneOffset() * 60000);
@@ -272,7 +275,7 @@ export default class DynamicCommand extends Command
       const archiveFilename =
        `${archiveDir}${path.sep}logs_${(new Date(currentTime).toJSON().slice(0, 19))}`.replace(/:/g, '_');
 
-      global.$$eventbus.trigger('log:info', `Writing metafile logs to: ${archiveFilename}.${compressFormat}`);
+      globalThis.$$eventbus.trigger('log:info', `Writing metafile logs to: ${archiveFilename}.${compressFormat}`);
 
       fileUtil.archiveCreate({ filePath: archiveFilename });
 

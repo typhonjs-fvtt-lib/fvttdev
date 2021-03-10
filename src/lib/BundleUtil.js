@@ -49,7 +49,7 @@ export default class BundleUtil
          throw new TypeError(`BundleUtil - addFlags - expected 'options.disableKeys' to be an 'array'.`);
       }
 
-      const envVarPrefix = global.$$flag_env_prefix;
+      const envVarPrefix = globalThis.$$flag_env_prefix;
 
       const flagOptions = {
          'cwd': Flags.string({
@@ -130,7 +130,7 @@ export default class BundleUtil
          }),
 
          'metafile': Flags.boolean({
-            'description': `Archives CLI runtime metafiles in: ${global.$$cli_log_dir}.`,
+            'description': `Archives CLI runtime metafiles in: ${globalThis.$$cli_log_dir}.`,
             'default': false
          }),
 
@@ -174,7 +174,7 @@ export default class BundleUtil
          }
       }
 
-      global.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
+      globalThis.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
          command: 'bundle',
          pluginName: options.pluginName,
          flags: flagOptions,
@@ -193,11 +193,11 @@ export default class BundleUtil
                // Log a warning if requested log level is unknown.
                if (!logLevels.includes(flags.loglevel))
                {
-                  global.$$eventbus.trigger('log:warn', `Unknown log level: '${flags.loglevel}'.`);
+                  globalThis.$$eventbus.trigger('log:warn', `Unknown log level: '${flags.loglevel}'.`);
                }
                else
                {
-                  global.$$eventbus.trigger('log:level:set', flags.loglevel);
+                  globalThis.$$eventbus.trigger('log:level:set', flags.loglevel);
                }
             }
 
@@ -205,20 +205,20 @@ export default class BundleUtil
             if (typeof flags.cwd === 'string' && flags.cwd !== '.')
             {
                // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
-               const origCWD = global.$$bundler_baseCWD;
-               const newCWD = path.resolve(global.$$bundler_origCWD, flags.cwd);
+               const origCWD = globalThis.$$bundler_baseCWD;
+               const newCWD = path.resolve(globalThis.$$bundler_origCWD, flags.cwd);
 
-               if (newCWD !== global.$$bundler_baseCWD)
+               if (newCWD !== globalThis.$$bundler_baseCWD)
                {
-                  global.$$bundler_baseCWD = newCWD;
+                  globalThis.$$bundler_baseCWD = newCWD;
 
                   // Only log absolute path if the CWD location is outside of the original path.
-                  global.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
+                  globalThis.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
 
-                  global.$$eventbus.trigger('log:verbose',
-                     `New current working directory set: \n${global.$$bundler_logCWD}`);
+                  globalThis.$$eventbus.trigger('log:verbose',
+                   `New current working directory set: \n${globalThis.$$bundler_logCWD}`);
 
-                  if (!fs.existsSync(global.$$bundler_baseCWD))
+                  if (!fs.existsSync(globalThis.$$bundler_baseCWD))
                   {
                      throw new NonFatalError(`New current working directory does not exist.`);
                   }

@@ -6,16 +6,22 @@ import Help from '@typhonjs-oclif/helpbase';
 export default class DynamicHelp extends Help
 {
    /**
-    * @param {Command.Config} command - The command config to be loaded.
+    * @param {Config.Command} commandConfig - The command config to be loaded.
     */
-   async showCommandHelp(command)
+   async showCommandHelp(commandConfig)
    {
       // Load the command class.
-      const CommandClass = await command.load();
+      const CommandClass = await commandConfig.load();
 
-      // Must instantiate the class to invoke `loadDynamicFlags`.
-      command.flags = await new CommandClass([], this.config).loadDynamicFlags();
+      if (typeof CommandClass.loadDynamicFlags === 'function')
+      {
+         commandConfig.flags = await CommandClass.loadDynamicFlags(CommandClass, this.config);
+      }
+      else
+      {
+         commandConfig.flags = typeof CommandClass.flags === 'object' ? CommandClass.flags : {};
+      }
 
-      await super.showCommandHelp(command);
+      await super.showCommandHelp(commandConfig);
    }
 }

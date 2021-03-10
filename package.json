@@ -58,8 +58,9 @@
   },
   "repository": "typhonjs-fvtt/fvttdev",
   "scripts": {
-    "run-debug-help-validate:manifest": "env DEBUG=* ./bin/run.js bundle --help",
-    "run-bundle-debug": "env DEBUG=* ./bin/run.js bundle",
+    "run-debug-help-bundle": "env DEBUG=* ./bin/run.js bundle --help",
+    "run-debug-help-validate:manifest": "env DEBUG=* ./bin/run.js validate:manifest --help",
+    "run-debug-bundle": "env DEBUG=* ./bin/run.js bundle",
     "run-bundle": "./bin/run.js bundle",
     "run-bundle-0": "./bin/run.js bundle --cwd=./test/fixture/demo-0",
     "run-bundle-1entry": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry",

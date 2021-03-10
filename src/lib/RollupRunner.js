@@ -48,7 +48,7 @@ export default class RollupRunner
 
       // TODO Add sanity check for currentBundle.inputPath and currentBundle.outputPath/format
 
-      const eventbus = global.$$eventbus;
+      const eventbus = globalThis.$$eventbus;
 
       // Create RollupRunner config.
       const config = {
@@ -65,7 +65,7 @@ export default class RollupRunner
       // Retrieve configured input plugins from Oclif plugins based on passed in `config.flags`.
 
       const remoteInputPlugins = await eventbus.triggerAsync(
-         `typhonjs:oclif:bundle:plugins:${currentBundle.type}:input:get`, bundleData, currentBundle);
+       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:input:get`, bundleData, currentBundle);
 
       let inputPlugins = [];
 
@@ -77,7 +77,7 @@ export default class RollupRunner
       }
 
       // Log a debug statement
-      // TODO global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - INPUT PLUGINS:`, inputPlugins);
+      // TODO globalThis.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - INPUT PLUGINS:`, inputPlugins);
 
       // Add input plugins.
       config.input.plugins = inputPlugins;
@@ -97,7 +97,7 @@ export default class RollupRunner
       }
 
       // Log a debug statement
-      // TODO global.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins,
+      // TODO globalThis.$$eventbus.trigger('log:debug:compact', `RollupRunner rollup - OUTPUT PLUGINS: `, outputPlugins,
       // '-----------------------------------------------------');
 
       // Simple test output config.

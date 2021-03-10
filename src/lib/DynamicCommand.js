@@ -59,7 +59,7 @@ export default class DynamicCommand extends Command
       if (typeof initHook === 'string')
       {
          // Run any custom init hook for all Oclif bundle plugins to load respective bundler plugins.
-         await this.config.runHook(initHook, this.config);
+         await this.config.runHook(initHook, { id: this.id, flagsModule: '@oclif/command/lib/flags.js' });
       }
 
       let flags = {};
@@ -76,7 +76,7 @@ export default class DynamicCommand extends Command
       {
          if (typeof v.default === 'function')
          {
-            v.default = v.default({});
+            v.default = v.default(null);
 
             if (Array.isArray(v.default) && v.default.length === 0) { delete v.default; }
             if (v.default === '') { delete v.default; }

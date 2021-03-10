@@ -1,12 +1,12 @@
-import fs                from 'fs';
-import path              from 'path';
+import fs                  from 'fs';
+import path                from 'path';
 
-import { Command }       from '@oclif/command';
-import dotenv            from 'dotenv';
+import { Command }         from '@oclif/core';
+import dotenv              from 'dotenv';
 
-import { NonFatalError } from '@typhonjs-node-bundle/oclif-commons';
+import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons';
 
-import FileUtilMod       from 'typhonjs-file-util';
+import FileUtilMod         from 'typhonjs-file-util';
 
 const FileUtil = FileUtilMod.default;
 
@@ -59,7 +59,7 @@ export default class DynamicCommand extends Command
       if (typeof initHook === 'string')
       {
          // Run any custom init hook for all Oclif bundle plugins to load respective bundler plugins.
-         await this.config.runHook(initHook, this.config);
+         await this.config.runHook(initHook, { id: this.id, flagsModule: '@oclif/core/lib/flags.js' });
       }
 
       let flags = {};
@@ -76,7 +76,7 @@ export default class DynamicCommand extends Command
       {
          if (typeof v.default === 'function')
          {
-            v.default = v.default({});
+            v.default = v.default(null);
 
             if (Array.isArray(v.default) && v.default.length === 0) { delete v.default; }
             if (v.default === '') { delete v.default; }
@@ -101,7 +101,7 @@ export default class DynamicCommand extends Command
     *
     * @private
     */
-   _loadEnvFile(existingFlags = {}, CommandClass)
+   async _loadEnvFile(existingFlags = {}, CommandClass)
    {
       let output = existingFlags;
 
@@ -132,7 +132,7 @@ export default class DynamicCommand extends Command
             }
 
             // Parse flags again after environment variables have been loaded.
-            const { flags } = this.parse(CommandClass);
+            const { flags } = await this.parse(CommandClass);
             output = flags;
          }
       }
@@ -157,7 +157,7 @@ export default class DynamicCommand extends Command
       const event = typeof options.event === 'string' ? options.event : null;
 
       // Parse dynamic flags for all command names
-      this._cliFlags = commands !== null ? this._initializeFlags(commands) : {};
+      this._cliFlags = commands !== null ? await this._initializeFlags(commands) : {};
 
       // If an event path is provided then fire it off to load command data.
       if (event !== null)
@@ -201,7 +201,7 @@ export default class DynamicCommand extends Command
     *
     * @private
     */
-   _initializeFlags(commands)
+   async _initializeFlags(commands)
    {
       const CommandClass = this.constructor;
 
@@ -211,7 +211,7 @@ export default class DynamicCommand extends Command
       CommandClass.flags = eventbus.triggerSync('typhonjs:oclif:system:flaghandler:get', { commands });
 
       // Perform the first stage of parsing flags. This is
-      let { flags } = this.parse(CommandClass);
+      let { flags } = await this.parse(CommandClass);
 
       // Notify that the current working directory is being changed and verify that the new directory exists.
       if (typeof flags.cwd === 'string' && flags.cwd !== '.')
@@ -234,7 +234,7 @@ export default class DynamicCommand extends Command
       }
 
       // Attempt to parse any environment variables via dotenv if applicable and reload / update flags accordingly.
-      flags = this._loadEnvFile(flags, CommandClass);
+      flags = await this._loadEnvFile(flags, CommandClass);
 
       // Verify flags given any plugin provided verify functions in FlagHandler.
       eventbus.triggerSync('typhonjs:oclif:system:flaghandler:verify', { commands, flags });

@@ -1,7 +1,7 @@
-import fs             from 'fs';
-import path           from 'path';
+import fs         from 'fs';
+import path       from 'path';
 
-import jetpack        from 'fs-jetpack';
+import jetpack    from 'fs-jetpack';
 
 // TODO Eventually - enable module loading of DynamicCommand
 // import DynamicCommand from '@typhonjs-node-bundle/oclif-commons';
@@ -24,7 +24,7 @@ class BundleCommand extends DynamicCommand
    async run()
    {
       // Run custom hook for all Oclif bundle plugins to load respective bundler plugins.
-      await this.config.runHook('bundle:load:plugins', this.config);
+      await this.config.runHook('bundle:load:plugins', { id: this.id, flagsModule: '@oclif/core/lib/flags.js' });
 
       // Initialize the dynamic flags from all Oclif plugins & inspect FVTT module / system via FVTTRepo.
       await super.initialize({ commands: ['bundle'], event: 'typhonjs:fvttdev:system:fvttrepo:parse' });

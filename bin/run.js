@@ -8,11 +8,11 @@ import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons/src/error/N
 const require              = createRequire(import.meta.url);
 
 const logger               = require('typhonjs-color-logger').default;
-const oclifHandler         = require('@oclif/errors/handle');
-const { ExitError }        = require('@oclif/errors');
 
-require('@oclif/command').run()
-.then(require('@oclif/command/flush'))
+const { Errors }           = require('@oclif/core');
+
+require('@oclif/core/lib/main').run()
+.then(require('@oclif/core/flush'))
 .catch((error) =>
 {
    // Given a magic boolean variable assigned to an error skip printing out a fatal error.
@@ -24,7 +24,7 @@ require('@oclif/command').run()
       // log error message unless the log event is `log:trace`.
       global.$$eventbus.trigger(logEvent, logEvent !== 'log:trace' ? error.message : error);
 
-      return oclifHandler(new ExitError(errorCode));
+      return Errors.handle(new Errors.ExitError(errorCode));
    }
 
    // Acquire trace info from 'typhonjs-color-logger'
@@ -48,7 +48,7 @@ require('@oclif/command').run()
       s_PRINT_ERR_MESSAGE(packageData, error);
    }
 
-   return oclifHandler(error);
+   return Errors.handle(error);
 });
 
 /**

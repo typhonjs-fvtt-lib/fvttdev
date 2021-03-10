@@ -1,7 +1,7 @@
 import fs                  from 'fs';
 import path                from 'path';
 
-import { flags }           from '@oclif/command';
+import { Flags }           from '@oclif/core';
 
 import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons';
 
@@ -52,10 +52,11 @@ export default class BundleUtil
       const envVarPrefix = global.$$flag_env_prefix;
 
       const flagOptions = {
-         'cwd': flags.string({
+         'cwd': Flags.string({
             'description': 'Use an alternative working directory.',
-            'default': function(envVars = process.env)
+            'default': function(context)
             {
+               const envVars = context === null ? {} : process.env;
                const envVar = `${envVarPrefix}_CWD`;
 
                if (typeof envVars[envVar] === 'string') { return envVars[envVar]; }
@@ -64,23 +65,24 @@ export default class BundleUtil
             }
          }),
 
-         'deploy': flags.string({
+         'deploy': Flags.string({
             'char': 'd',
             'description': 'Directory to deploy build files into.',
             'default': './dist',
             'env': `${envVarPrefix}_DEPLOY_PATH`
          }),
 
-         'entry': flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
+         'entry': Flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
 
-         'env': flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
+         'env': Flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
 
          // Specifies external imports that are ignored; see Rollup config input.external
-         'external': flags.string({
+         'external': Flags.string({
             'description': 'Specifies external import references which are ignored.',
             'multiple': true,
-            'default': function(envVars = process.env)
+            'default': function(context)
             {
+               const envVars = context === null ? {} : process.env;
                const envVar = `${envVarPrefix}_EXTERNAL`;
 
                if (typeof envVars[envVar] === 'string')
@@ -109,15 +111,16 @@ export default class BundleUtil
             }
          }),
 
-         'ignore-local-config': flags.boolean({
+         'ignore-local-config': Flags.boolean({
             'description': 'Ignores all local configuration files using the provided defaults.',
             'default': false
          }),
 
-         'loglevel': flags.string({
+         'loglevel': Flags.string({
             'description': 'Sets log level (off, fatal, error, warn, info, verbose, debug, trace, all).',
-            'default': function(envVars = process.env)
+            'default': function(context)
             {
+               const envVars = context === null ? {} : process.env;
                const envVar = `${envVarPrefix}_LOG_LEVEL`;
 
                if (typeof envVars[envVar] === 'string') { return envVars[envVar]; }
@@ -126,23 +129,24 @@ export default class BundleUtil
             }
          }),
 
-         'metafile': flags.boolean({
+         'metafile': Flags.boolean({
             'description': `Archives CLI runtime metafiles in: ${global.$$cli_log_dir}.`,
             'default': false
          }),
 
-         'noop': flags.boolean({
+         'noop': Flags.boolean({
             'description': 'Prints info on any FVTT module / system detected and exits w/ no operation.',
             'default': false
          }),
 
          // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
          // 'true' or 'false' that will determine the setting for sourcemap.
-         'sourcemap': flags.boolean({
+         'sourcemap': Flags.boolean({
             'description': '[default: true] Generate source maps.',
             'allowNo': true,
-            'default': function(envVars = process.env)
+            'default': function(context)
             {
+               const envVars = context === null ? {} : process.env;
                const envVar = `${envVarPrefix}_SOURCEMAP`;
 
                let defaultValue = true;
@@ -156,7 +160,7 @@ export default class BundleUtil
             }
          }),
 
-         'watch': flags.boolean({
+         'watch': Flags.boolean({
             'description': 'Continually build / bundle source to deploy directory.',
             'default': false
          }),

@@ -2,15 +2,15 @@ import RollupRunner      from '../../lib/RollupRunner.js';
 import FVTTRepo          from '../../lib/data/FVTTRepo.js';
 
 /**
- * @param {object} opts - options of the CLI action.
+ * @param {object} options - options of the CLI action.
  *
  * @returns {Promise<void>}
  */
-export default async function(opts)
+export default async function(options)
 {
    try
    {
-      globalThis.$$eventbus.trigger('log:debug', `fvttdev init hook running '${opts.id}'.`);
+      globalThis.$$eventbus.trigger('log:debug', `fvttdev init hook running '${options.id}'.`);
 
       globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
 

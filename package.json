@@ -15,9 +15,7 @@
     "@typhonjs-node-rollup/plugin-bundle-core": "typhonjs-node-rollup/plugin-bundle-core",
     "@typhonjs-oclif/core": "typhonjs-oclif/core#main",
     "@typhonjs-oclif/errors": "^0.0.0",
-    "fs-jetpack": "^4.0.0",
-    "typhonjs-color-logger": "^0.0.13",
-    "typhonjs-package-util": "^0.0.3"
+    "fs-jetpack": "^4.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",

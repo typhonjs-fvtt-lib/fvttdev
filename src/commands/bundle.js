@@ -1,12 +1,9 @@
-import fs         from 'fs';
-import path       from 'path';
+import fs                  from 'fs';
+import path                from 'path';
 
-import jetpack    from 'fs-jetpack';
+import jetpack             from 'fs-jetpack';
 
-// TODO Eventually - enable module loading of DynamicCommand
-// import DynamicCommand from '@typhonjs-node-bundle/oclif-commons';
-
-import DynamicCommand from '../lib/DynamicCommand.js';
+import { DynamicCommand }  from '@typhonjs-oclif/core';
 
 // eslint-disable-next-line no-useless-escape
 const s_DIR_REL_REGEX = /\.\.[\\\/](.*)/;  // TODO VERIFY WINDOWS - make sure this regex works; it should.

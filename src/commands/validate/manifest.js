@@ -1,6 +1,6 @@
-import { flags }      from "@oclif/command";
+import { Flags }           from "@oclif/core";
 
-import DynamicCommand from '../../lib/DynamicCommand.js';
+import { DynamicCommand }  from '@typhonjs-oclif/core';
 
 /**
  * Provides the main Oclif `validate:manifest` command that runs validation on the FVTT package manifest.
@@ -27,7 +27,7 @@ console.log(`!!!!!!! VALIDATION SOON!`);
 ValidateManifestCommand._flagCommands = ['validate:manifest'];
 
 ValidateManifestCommand.flags = {
-   name: flags.string({ 'char': 'n', 'description': 'name to print' }),
+   name: Flags.string({ 'char': 'n', 'description': 'name to print' }),
 };
 
 ValidateManifestCommand.description = `Validates a Foundry VTT package manifest

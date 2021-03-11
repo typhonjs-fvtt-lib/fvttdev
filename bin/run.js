@@ -1,11 +1,13 @@
 #!/usr/bin/env node
+import fs                  from 'fs';
 import { createRequire }   from 'module';
 
-import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons';
+import { NonFatalError }   from '@typhonjs-oclif/errors';
 
 const require              = createRequire(import.meta.url);
 
 const logger               = require('typhonjs-color-logger').default;
+const PackageUtil          = require('typhonjs-package-util').default;
 
 const { Errors }           = require('@oclif/core');
 
@@ -59,16 +61,13 @@ require('@oclif/core/lib/main').run()
  */
 function s_FORMAT_FROM_TRACE(trace)
 {
-   const PackageUtil = require('typhonjs-package-util').default;
-   const fs          = require('fs');
-
    let packageInfo;
 
    if (Array.isArray(trace))
    {
       let modulePath = null;
 
-      // Walk through the stack trace array of strings until the first entry that matches the four regex tests below.
+      // Walk through the stack trace array of strings until the first entry that matches the five regex tests below.
       // This defines the module path to attempt to load any associated `package.json` file.
       for (let cntr = 0; cntr < trace.length; cntr++)
       {
@@ -77,8 +76,8 @@ function s_FORMAT_FROM_TRACE(trace)
          modulePath = matches !== null && matches.length >= 1 ? matches[1] : void 0;
          if (typeof modulePath === 'string') { break; }
 
-         // Matches full path to local linked typhonjs-node-bundle package (match is group 1)
-         matches = (/^.*\((\/.*(\/typhonjs-node-bundle\/.*\/))src/g).exec(`${trace[cntr]}`);
+         // Matches full path to local linked typhonjs-oclif package (match is group 1)
+         matches = (/^.*\((\/.*(\/typhonjs-oclif\/.*\/))src/g).exec(`${trace[cntr]}`);
          modulePath = matches !== null && matches.length >= 1 ? matches[1] : void 0;
          if (typeof modulePath === 'string') { break; }
 
@@ -102,7 +101,7 @@ function s_FORMAT_FROM_TRACE(trace)
       {
          try
          {
-            const packageObj = JSON.parse(fs.readFileSync(`${modulePath}package.json`, { encode: 'utf8' }));
+            const packageObj = JSON.parse(fs.readFileSync(`${modulePath}package.json`, 'utf8'));
 
             packageInfo = PackageUtil.format(packageObj);
          }
@@ -138,10 +137,10 @@ function s_PRINT_ERR_MESSAGE(packageData, error)
           + 'Please report this error to the issues forum after checking if a similar '
            + 'report already exists:\n' + sep;
       }
-      else if (packageData.bugs.url === 'https://github.com/typhonjs-node-bundle/issues/issues' ||
+      else if (packageData.bugs.url === 'https://github.com/typhonjs-oclif/issues/issues' ||
        packageData.bugs.url === 'https://github.com/typhonjs-node-rollup/issues/issues')
       {
-         packageMessage = 'An uncaught fatal error has been detected with a TyphonJS Oclif bundle module.\n'
+         packageMessage = 'An uncaught fatal error has been detected with a TyphonJS Oclif module.\n'
           + 'Please report this error to the issues forum after checking if a similar '
            + 'report already exists:\n' + sep;
       }

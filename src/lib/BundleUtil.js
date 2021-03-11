@@ -3,7 +3,7 @@ import path                from 'path';
 
 import { Flags }           from '@oclif/core';
 
-import { NonFatalError }   from '@typhonjs-node-bundle/oclif-commons';
+import { NonFatalError }   from '@typhonjs-oclif/errors';
 
 const s_DEFAULT_LOG_LEVEL = 'trace';  // TODO DEFAULT SHOULD BE INFO
 
@@ -49,7 +49,7 @@ export default class BundleUtil
          throw new TypeError(`BundleUtil - addFlags - expected 'options.disableKeys' to be an 'array'.`);
       }
 
-      const envVarPrefix = globalThis.$$flag_env_prefix;
+      const envVarPrefix = globalThis.$$cli_env_prefix;
 
       const flagOptions = {
          'cwd': Flags.string({
@@ -205,20 +205,20 @@ export default class BundleUtil
             if (typeof flags.cwd === 'string' && flags.cwd !== '.')
             {
                // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
-               const origCWD = globalThis.$$bundler_baseCWD;
-               const newCWD = path.resolve(globalThis.$$bundler_origCWD, flags.cwd);
+               const origCWD = globalThis.$$cli_baseCWD;
+               const newCWD = path.resolve(globalThis.$$cli_origCWD, flags.cwd);
 
-               if (newCWD !== globalThis.$$bundler_baseCWD)
+               if (newCWD !== globalThis.$$cli_baseCWD)
                {
-                  globalThis.$$bundler_baseCWD = newCWD;
+                  globalThis.$$cli_baseCWD = newCWD;
 
                   // Only log absolute path if the CWD location is outside of the original path.
-                  globalThis.$$bundler_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
+                  globalThis.$$cli_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
 
                   globalThis.$$eventbus.trigger('log:verbose',
-                   `New current working directory set: \n${globalThis.$$bundler_logCWD}`);
+                   `New current working directory set: \n${globalThis.$$cli_logCWD}`);
 
-                  if (!fs.existsSync(globalThis.$$bundler_baseCWD))
+                  if (!fs.existsSync(globalThis.$$cli_baseCWD))
                   {
                      throw new NonFatalError(`New current working directory does not exist.`);
                   }

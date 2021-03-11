@@ -1,9 +1,8 @@
 import fs                from 'fs';
 import path              from 'path';
 
-import { NonFatalError } from '@typhonjs-node-bundle/oclif-commons';
-
-import FileUtil          from '@typhonjs-node-bundle/plugin-fileutil';
+import { FileUtil }      from '@typhonjs-oclif/core';
+import { NonFatalError } from '@typhonjs-oclif/errors';
 
 import BundleData        from './BundleData.js';
 import BundleEntry       from './BundleEntry.js';
@@ -116,7 +115,7 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    if (manifestType === null)
    {
       throw new NonFatalError(
-         `Could not find a Foundry VTT module or system in file path: \n${globalThis.$$bundler_logCWD}`);
+         `Could not find a Foundry VTT module or system in file path: \n${globalThis.$$cli_logCWD}`);
    }
 
    let manifestData;

@@ -271,14 +271,14 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    if (!FileUtil.isJS(extension))
    {
       throw new NonFatalError(
-         `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n`
-         + `${packageData.manifestPath}`);
+       `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n` +
+        `${packageData.manifestPath}`);
    }
 
    const inputParsed = path.parse(esmodule);
 
    const inputPathBase =
-      `${packageData.rootPath}${path.sep}${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
+    `${packageData.rootPath}${path.sep}${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
 
    const esmoduleBase = `${inputParsed.dir}${inputParsed.dir !== '' ? path.sep : ''}${inputParsed.name}`;
 
@@ -326,6 +326,6 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    // Could not locate any JS or TS file to load.
 
    throw new NonFatalError(
-      `Could not load filename '${inputParsed.dir}${path.sep}${inputParsed.name}(${inputParsed.ext}|.ts|.tsx)' `
-      + ` in 'esmodules' entry in '${packageData.manifestFilename}': \n${packageData.manifestPath}`);
+    `Could not load filename '${inputParsed.dir}${path.sep}${inputParsed.name}(${inputParsed.ext}|.ts|.tsx)' ` +
+     ` in 'esmodules' entry in '${packageData.manifestFilename}': \n${packageData.manifestPath}`);
 }

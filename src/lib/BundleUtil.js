@@ -29,7 +29,9 @@ export default class BundleUtil
     * `--watch`     -      - Continually bundle to deploy directory.    - default: `false`
     *
     * @param {object} options - The name of the registering plugin / source.
+    *
     * @param {string} options.pluginName - The name of the registering plugin / source.
+    *
     * @param {string[]} [options.disableKeys] - An array of keys to disable from standard bundle flags above.
     */
    static addFlags(options = {})

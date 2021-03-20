@@ -12,7 +12,7 @@
   "bugs": "https://github.com/typhonjs-fvtt/fvttdev/issues",
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
-    "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.1",
+    "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.2",
     "@typhonjs-oclif/core": "^0.0.0",
     "@typhonjs-oclif/errors": "^0.0.0",
     "fs-jetpack": "^4.0.0"

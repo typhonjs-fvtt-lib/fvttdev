@@ -13,7 +13,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {[]}
+    * @returns {string[]}
     */
    get allWatchFiles()
    {
@@ -29,7 +29,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {Object|*}
+    * @returns {object}
     */
    get cliFlags()
    {

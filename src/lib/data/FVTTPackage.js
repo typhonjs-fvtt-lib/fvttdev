@@ -144,7 +144,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {null|Object.npmModulePath|string|*}
+    * @returns {string}
     */
    get npmModulePath()
    {

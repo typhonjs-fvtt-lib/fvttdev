@@ -12,7 +12,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get format()
    {
@@ -20,15 +20,15 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get inputBaseName()
    {
-      return this._data.format;
+      return this._data.inputBaseName;
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get inputExt()
    {
@@ -36,7 +36,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get inputFilename()
    {
@@ -44,7 +44,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get inputPath()
    {
@@ -52,7 +52,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get inputPathRelative()
    {

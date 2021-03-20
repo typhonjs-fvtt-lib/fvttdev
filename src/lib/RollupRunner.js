@@ -25,7 +25,7 @@ export default class RollupRunner
    /**
     * @param {object}   bundleData - Data structure defining a set of bundle entries.
     *
-    * @returns {Promise<object>}
+    * @returns {Promise<object>} The bundle data instance.
     */
    async rollup(bundleData)
    {
@@ -133,7 +133,7 @@ export default class RollupRunner
    /**
     * Wires up FlagHandler on the plugin eventbus.
     *
-    * @param {PluginEvent} ev - The plugin event.
+    * @param {object} ev - PluginEvent - The plugin event.
     *
     * @see https://www.npmjs.com/package/typhonjs-plugin-manager
     *

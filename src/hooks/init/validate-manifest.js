@@ -1,4 +1,4 @@
-import { flags }  from "@oclif/command";
+import { Flags } from '@oclif/core';
 
 /**
  * Note: This is defined as an explicit init function so that it executes before all plugin init functions.
@@ -16,7 +16,7 @@ export default async function(options)
    const envVarPrefix = globalThis.$$cli_env_prefix;
 
    const flagOptions = {
-      'no-color': flags.string({
+      'no-color': Flags.boolean({
          'description': 'Output with no color.',
          'default': function(context)
          {
@@ -33,14 +33,13 @@ export default async function(options)
       pluginName: 'fvttdev',
       flags: flagOptions,
 
-      /**
-       * Verifies the `cwd` flag and sets the new base directory if applicable.
-       *
-       * @param {object}   flags - The CLI flags to verify.
-       */
-      verify: function(flags)
-      {
-console.log(`!!! validate-manifest - init hook - verify - flags: \n${JSON.stringify(flags)}`);
-      }
+      // /**
+      //  * Verifies the `cwd` flag and sets the new base directory if applicable.
+      //  *
+      //  * @param {object}   flags - The CLI flags to verify.
+      //  */
+      // verify: function(flags)
+      // {
+      // }
    });
 }

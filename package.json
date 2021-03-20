@@ -13,14 +13,13 @@
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.1",
-    "@typhonjs-oclif/core": "typhonjs-oclif/core#main",
+    "@typhonjs-oclif/core": "^0.0.0",
     "@typhonjs-oclif/errors": "^0.0.0",
     "fs-jetpack": "^4.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
-    "@typhonjs-config/eslint-config": "^0.1.0",
-    "eslint": "^7.0.0"
+    "@typhonjs-node-utils/build-test": "^0.1.0"
   },
   "engines": {
     "node": ">=14.0.0",
@@ -47,7 +46,8 @@
       "init": [
         "@typhonjs-oclif/core/hooks/init",
         "./src/hooks/init/init",
-        "./src/hooks/init/bundle"
+        "./src/hooks/init/bundle",
+        "./src/hooks/init/validate-manifest"
       ]
     },
     "bin": "fvttdev",

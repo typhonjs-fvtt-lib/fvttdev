@@ -181,7 +181,7 @@ class BundleCommand extends DynamicCommand
    /**
     * Return specific information regarding the bundle command.
     *
-    * @returns {string}
+    * @returns {string} Bundle noop string.
     */
    toStringNoop()
    {

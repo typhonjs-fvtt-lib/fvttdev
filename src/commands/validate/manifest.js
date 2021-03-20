@@ -1,5 +1,3 @@
-import { Flags }           from "@oclif/core";
-
 import { DynamicCommand }  from '@typhonjs-oclif/core';
 
 /**
@@ -25,10 +23,6 @@ console.log(`!!!!!!! VALIDATION SOON!`);
 
 // On help / run load the following command flags.
 ValidateManifestCommand._flagCommands = ['validate:manifest'];
-
-ValidateManifestCommand.flags = {
-   name: Flags.string({ 'char': 'n', 'description': 'name to print' }),
-};
 
 ValidateManifestCommand.description = `Validates a Foundry VTT package manifest
 ...

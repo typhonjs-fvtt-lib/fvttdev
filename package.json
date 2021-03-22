@@ -1,7 +1,7 @@
 {
   "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "typhonrt",
   "bin": {
     "fvttdev": "./bin/run.js"
@@ -13,7 +13,7 @@
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.2",
-    "@typhonjs-oclif/core": "^0.0.2",
+    "@typhonjs-oclif/core": "^0.0.3",
     "@typhonjs-oclif/errors": "^0.0.0",
     "fs-jetpack": "^4.0.0"
   },

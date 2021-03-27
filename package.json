@@ -1,7 +1,7 @@
 {
   "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "typhonrt",
   "bin": {
     "fvttdev": "./bin/run.js"
@@ -22,7 +22,7 @@
     "@typhonjs-node-utils/build-test": "^0.1.0"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=14.13.0",
     "npm": ">=7.0.0"
   },
   "files": [
@@ -71,7 +71,7 @@
     "eslint": "eslint .",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
-    "prepack": "oclif-dev manifest && oclif-dev manifest",
+    "prepublishOnly": "oclif-dev manifest",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\""
   }
 }

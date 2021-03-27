@@ -1,7 +1,7 @@
 {
   "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "typhonrt",
   "bin": {
     "fvttdev": "./bin/run.js"

@@ -3,19 +3,24 @@
 ### Why?
 Provides a zero config build & bundle CLI tool for Foundry VTT based on Rollup and Oclif.
 
-So far only the `bundle` command is implemented and provides zero config for JS and Typescript development. 
-CSS / Sass / Less / Stylus setup with PostCSS and more.
+So far only the `bundle` command is implemented and provides zero config bundling for JS and Typescript development. 
+CSS / Sass / Less / Stylus setup with PostCSS and more. Several more commands useful for Foundry VTT development are 
+planned for future release.
 
 ### Warning
 Seriously super pre-alpha release. The bundle command works well, but docs, tutorials, and more information and final 
 polish plus other commands are forthcoming soon. Presently `fvttdev` is built with an experimental fork of Oclif v2 
-that supports ES Modules. 
+that supports ES Modules.
 
 ### Install and usage (very abbreviated!)
 
 In `package.json`:
 
-Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.8"`
+Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.9"`
+
+Note: If you have already installed a previous version delete node_modules before updating and reinstall all modules
+as a precautionary measure.
+
 Add an NPM script: `"bundle-dev": "fvttdev bundle"`
 
 This will find your Foundry package manifest and proceed to bundle your module / system to `./dist`.

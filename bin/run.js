@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import url              from 'url';
-import errorHandler     from '@typhonjs-oclif/core/ErrorHandler';
+import url           from 'url';
 
-import flush            from '@oclif/core/flush.js';
-import { run, Errors }  from '@oclif/core';
+import { run }       from '@oclif/core';
+import flush         from '@oclif/core/flush.js';
+import errorHandler  from '@typhonjs-oclif/core/errorHandler';
 
 run(void 0, url.fileURLToPath(import.meta.url))
 .then(flush)
-.catch((error) => { errorHandler.handle(error, Errors); });
+.catch(errorHandler);
 
 

@@ -1,11 +1,8 @@
-import fs                  from 'fs';
-import path                from 'path';
-
 import { Flags }           from '@oclif/core';
 
 import { NonFatalError }   from '@typhonjs-oclif/errors';
 
-const s_DEFAULT_LOG_LEVEL = 'trace';  // TODO DEFAULT SHOULD BE INFO
+import StandardFlags       from '../flags/StandardFlags.js';
 
 /**
  */
@@ -14,16 +11,13 @@ export default class BundleUtil
    /**
     * Adds built in flags for the bundle command. An array of string keys may be provided to disable one or more flags.
     *
+    * StandardFlags are added.
     *
     * Added flags include:
-    * `--cwd`       -      - Use an alternative working directory.      - default: `'.'`     - env: {prefix}_CWD
     * `--deploy`    - `-d` - Directory to deploy build files into.      - default: `'./dist' - env: {prefix}_DEPLOY_PATH
     * `--entry`     - `-i` - Explicit entry module(s).
-    * `--env`       - `-e` - Name of *.env file to load from `./env`.
     * `--external`  -      - Specifies external imports that are ignored.                    - env: {prefix}_EXTERNAL
     * `--ignore-local-config` - Ignores all local configuration files.  - default: `false`
-    * `--loglevel`  -      - Sets log level.                            - default: `'info'`  - env: {prefix}_LOG_LEVEL
-    * `--noop`      -      - Prints essential bundling info and exits.  - default: `false`   -
     * {prefix}_LOG_LEVEL
     * `--sourcemap  -      - Generate source maps.                      - default: `true`    - env: {prefix}_SOURCEMAP
     * `--watch`     -      - Continually bundle to deploy directory.    - default: `false`
@@ -54,18 +48,7 @@ export default class BundleUtil
       const envVarPrefix = globalThis.$$cli_env_prefix;
 
       const flagOptions = {
-         'cwd': Flags.string({
-            'description': 'Use an alternative working directory.',
-            'default': function(context)
-            {
-               const envVars = context === null ? {} : process.env;
-               const envVar = `${envVarPrefix}_CWD`;
-
-               if (typeof envVars[envVar] === 'string') { return envVars[envVar]; }
-
-               return '.';
-            }
-         }),
+         ...StandardFlags.flags,
 
          'deploy': Flags.string({
             'char': 'd',
@@ -75,8 +58,6 @@ export default class BundleUtil
          }),
 
          'entry': Flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
-
-         'env': Flags.string({ 'char': 'e', 'description': 'Name of *.env file to load from `./env`.' }),
 
          // Specifies external imports that are ignored; see Rollup config input.external
          'external': Flags.string({
@@ -115,29 +96,6 @@ export default class BundleUtil
 
          'ignore-local-config': Flags.boolean({
             'description': 'Ignores all local configuration files using the provided defaults.',
-            'default': false
-         }),
-
-         'loglevel': Flags.string({
-            'description': 'Sets log level (off, fatal, error, warn, info, verbose, debug, trace, all).',
-            'default': function(context)
-            {
-               const envVars = context === null ? {} : process.env;
-               const envVar = `${envVarPrefix}_LOG_LEVEL`;
-
-               if (typeof envVars[envVar] === 'string') { return envVars[envVar]; }
-
-               return s_DEFAULT_LOG_LEVEL;
-            }
-         }),
-
-         'metafile': Flags.boolean({
-            'description': `Archives CLI runtime metafiles in: ${globalThis.$$cli_log_dir}.`,
-            'default': false
-         }),
-
-         'noop': Flags.boolean({
-            'description': 'Prints info on any FVTT module / system detected and exits w/ no operation.',
             'default': false
          }),
 
@@ -188,44 +146,7 @@ export default class BundleUtil
           */
          verify: function(flags)
          {
-            if (typeof flags.loglevel === 'string')
-            {
-               const logLevels = ['off', 'fatal', 'error', 'warn', 'info', 'verbose', 'debug', 'trace', 'all'];
-
-               // Log a warning if requested log level is unknown.
-               if (!logLevels.includes(flags.loglevel))
-               {
-                  globalThis.$$eventbus.trigger('log:warn', `Unknown log level: '${flags.loglevel}'.`);
-               }
-               else
-               {
-                  globalThis.$$eventbus.trigger('log:level:set', flags.loglevel);
-               }
-            }
-
-            // Notify that the current working directory is being changed and verify that the new directory exists.
-            if (typeof flags.cwd === 'string' && flags.cwd !== '.')
-            {
-               // Perform any initialization after initial flags have been loaded. Handle defining `cwd` and verify.
-               const origCWD = globalThis.$$cli_baseCWD;
-               const newCWD = path.resolve(globalThis.$$cli_origCWD, flags.cwd);
-
-               if (newCWD !== globalThis.$$cli_baseCWD)
-               {
-                  globalThis.$$cli_baseCWD = newCWD;
-
-                  // Only log absolute path if the CWD location is outside of the original path.
-                  globalThis.$$cli_logCWD = newCWD.startsWith(origCWD) ? path.relative(origCWD, newCWD) : newCWD;
-
-                  globalThis.$$eventbus.trigger('log:verbose',
-                   `New current working directory set: \n${globalThis.$$cli_logCWD}`);
-
-                  if (!fs.existsSync(globalThis.$$cli_baseCWD))
-                  {
-                     throw new NonFatalError(`New current working directory does not exist.`);
-                  }
-               }
-            }
+            StandardFlags.verify(flags);
          }
       });
    }

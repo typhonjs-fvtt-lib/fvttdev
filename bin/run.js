@@ -8,5 +8,3 @@ import errorHandler  from '@typhonjs-oclif/core/errorHandler';
 run(void 0, url.fileURLToPath(import.meta.url))
 .then(flush)
 .catch(errorHandler);
-
-

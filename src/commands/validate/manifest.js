@@ -1,3 +1,5 @@
+import fs                  from 'fs';
+
 import { DynamicCommand }  from '@typhonjs-oclif/core';
 
 /**
@@ -12,12 +14,45 @@ class ValidateManifestCommand extends DynamicCommand
     */
    async run()
    {
-console.log(`!!!!!!! VALIDATION SOON!`);
       // Initialize the dynamic flags from all Oclif plugins & inspect FVTT module / system via FVTTRepo.
       await super.initialize({ commands: ['validate:manifest'], event: 'typhonjs:fvttdev:system:fvttrepo:parse' });
 
+      this.validateManifest(this.commandData);
+
       // Finalize any actions for DynamicCommand; used for logging with `--metafile` flag.
       await super.finalize();
+   }
+
+   /**
+    * Validates an FVTT Package.
+    *
+    * @param {FVTTPackage} fvttPackage - fvttPackage to validate.
+    */
+   validateManifest(fvttPackage)
+   {
+      const isPlus = this.cliFlags.plus ? 'plus:' : '';
+      const isStrict = this.cliFlags.loose ? '' : ':strict';
+
+      // Constructs the validate manifest event with partials from flags `plus`, `loose` and `manifestType`.
+      const event = `typhonjs:fvtt:validate:manifest:${isPlus}${fvttPackage.manifestType}${isStrict}`;
+
+      globalThis.$$eventbus.trigger('log:debug', `validate:manifest event - ${event}`);
+
+      globalThis.$$eventbus.trigger('log:info', `Validating Manifest: ${fvttPackage.manifestPathRelative}`);
+
+      const result = globalThis.$$eventbus.triggerSync(event, fvttPackage.manifestData);
+
+      // globalThis.$$eventbus.trigger('log:debug', `validate:manifest result - ${JSON.stringify(result)}`);
+
+      if (result && !result.valid)
+      {
+         const file = fs.readFileSync(fvttPackage.manifestPath, 'utf-8');
+
+         const print = globalThis.$$eventbus.triggerSync('typhonjs:util:better:ajv:errors:as:string', result.errors,
+          { file });
+
+         console.log(print);
+      }
    }
 }
 

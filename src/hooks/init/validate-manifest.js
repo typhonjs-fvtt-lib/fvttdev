@@ -1,4 +1,9 @@
-import { Flags } from '@oclif/core';
+import { Flags }        from '@oclif/core';
+
+import BetterErrors     from '@typhonjs-node-utils/better-ajv-errors';
+import ValidateManifest from '@typhonjs-fvtt/validate-manifest/ValidateManifest';
+
+import StandardFlags    from '../../flags/StandardFlags.js';
 
 /**
  * Note: This is defined as an explicit init function so that it executes before all plugin init functions.
@@ -13,18 +18,20 @@ export default async function(options)
 {
    globalThis.$$eventbus.trigger('log:debug', `explicit validate:manifest command init hook running '${options.id}'.`);
 
-   const envVarPrefix = globalThis.$$cli_env_prefix;
+   globalThis.$$pluginManager.add({ name: '@typhonjs-node-utils/better-ajv-errors', instance: BetterErrors });
+   globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/validate-manifest', instance: ValidateManifest });
 
    const flagOptions = {
-      'no-color': Flags.boolean({
-         'description': 'Output with no color.',
-         'default': function(context)
-         {
-            const envVars = context === null ? {} : process.env;
-            const envVar = `${envVarPrefix}_NO_COLOR`;
+      ...StandardFlags.flags,
 
-            return typeof envVars[envVar] === 'string';
-         }
+      loose: Flags.boolean({
+         'description': `Perform loose validation / check types only.`,
+         'default': false
+      }),
+
+      plus: Flags.boolean({
+         'description': `Validate against manifest+ specification.`,
+         'default': false
       }),
    };
 
@@ -33,13 +40,14 @@ export default async function(options)
       pluginName: 'fvttdev',
       flags: flagOptions,
 
-      // /**
-      //  * Verifies the `cwd` flag and sets the new base directory if applicable.
-      //  *
-      //  * @param {object}   flags - The CLI flags to verify.
-      //  */
-      // verify: function(flags)
-      // {
-      // }
+      /**
+       * Verifies the `cwd` flag and sets the new base directory if applicable.
+       *
+       * @param {object}   flags - The CLI flags to verify.
+       */
+      verify: function(flags)
+      {
+         StandardFlags.verify(flags);
+      }
    });
 }

@@ -39,14 +39,8 @@ export default class FVTTRepo
    {
       const eventbus = globalThis.$$eventbus;
 
-      const allDirs = await FileUtil.getDirList(baseDir, s_SKIP_DIRS);
-      const allFiles = await FileUtil.getFileList(baseDir, s_SKIP_DIRS);
-
-// Temporary sorting
-allDirs.sort();
-allFiles.sort();
-
-// console.log(`Sorted ALLFILES:\n${JSON.stringify(allFiles, null, 3)}`);
+      const allDirs = await FileUtil.getDirList({ dir: baseDir, skipDir: s_SKIP_DIRS });
+      const allFiles = await FileUtil.getFileList({ dir: baseDir, skipDir: s_SKIP_DIRS });
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);
@@ -132,8 +126,6 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    }
    catch (err)
    {
-console.log(`FAILED TO LOAD - ALLFILES:\n${JSON.stringify(packageData.allFiles, null, 3)}`);
-
       throw new NonFatalError(`${err.message}\nFailed to load manifest at path:\n${manifestPath}`);
    }
 

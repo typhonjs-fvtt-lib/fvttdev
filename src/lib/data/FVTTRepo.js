@@ -115,19 +115,18 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    if (manifestType === null)
    {
       throw new NonFatalError(
-         `Could not find a Foundry VTT module or system in file path: \n${globalThis.$$cli_logCWD}`);
+       `Could not find a Foundry VTT module or system in file path: \n${globalThis.$$cli_logCWD}`);
    }
 
    let manifestData;
 
    try
    {
-      // require(manifestPath);
       manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
    }
    catch (err)
    {
-      throw new NonFatalError(err.message);
+      throw new NonFatalError(`${err.message}\nFailed to load manifest at path:\n${manifestPath}`);
    }
 
    // Verify that the module / system.json file has an esmodules entry.

@@ -42,6 +42,12 @@ export default class FVTTRepo
       const allDirs = await FileUtil.getDirList(baseDir, s_SKIP_DIRS);
       const allFiles = await FileUtil.getFileList(baseDir, s_SKIP_DIRS);
 
+// Temporary sorting
+allDirs.sort();
+allFiles.sort();
+
+// console.log(`Sorted ALLFILES:\n${JSON.stringify(allFiles, null, 3)}`);
+
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);
 

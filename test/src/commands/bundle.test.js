@@ -9,7 +9,7 @@ import { NonFatalError }   from '@typhonjs-oclif/errors';
 import runCLI              from '../../utils/runCLI.js';
 import packageVersion      from '../../utils/packageVersion.js';
 
-const s_WIN_REGEX = /\\\\/;
+const s_WIN_REGEX = /\\/;
 
 describe('command - bundle', () =>
 {

@@ -12,14 +12,15 @@
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-fvtt/validate-manifest": "typhonjs-fvtt/validate-manifest",
     "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.2",
-    "@typhonjs-node-utils/better-ajv-errors": "^0.0.6",
-    "@typhonjs-oclif/core": "^0.0.4",
+    "@typhonjs-node-utils/better-ajv-errors": "^0.0.7",
+    "@typhonjs-oclif/core": "^0.0.7",
     "@typhonjs-oclif/errors": "^0.0.0",
     "fs-jetpack": "^4.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
-    "@typhonjs-node-utils/build-test": "^0.1.0"
+    "@typhonjs-node-utils/build-test": "^0.1.0",
+    "fancy-test": "^1.4.10"
   },
   "engines": {
     "node": ">=14.13.0",
@@ -61,10 +62,7 @@
     "run-debug-help-validate:manifest": "env DEBUG=* ./bin/run.js validate:manifest --help",
     "run-debug-bundle": "env DEBUG=* ./bin/run.js bundle",
     "run-bundle": "./bin/run.js bundle",
-    "run-bundle-0": "./bin/run.js bundle --cwd=./test/fixture/demo-0",
     "run-bundle-1entry": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry",
-    "run-bundle-1entry-noop": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry --noop",
-    "run-bundle-1entry-metafile": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry --metafile",
     "run-bundle-1entry-ts": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry-ts",
     "run-bundle-2entry": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-2entry",
     "run-validate-manifest-help": "./bin/run.js validate:manifest --help",
@@ -74,6 +72,6 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepublishOnly": "oclif-dev manifest",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.js\""
+    "test": "c8 --reporter=lcov --reporter=text-summary mocha -color \"test/src/**/*.test.js\" --timeout 10000"
   }
 }

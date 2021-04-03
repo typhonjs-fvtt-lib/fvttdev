@@ -126,6 +126,8 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    }
    catch (err)
    {
+console.log(`FAILED TO LOAD - ALLFILES:\n${JSON.stringify(packageData.allFiles, null, 3)}`);
+
       throw new NonFatalError(`${err.message}\nFailed to load manifest at path:\n${manifestPath}`);
    }
 

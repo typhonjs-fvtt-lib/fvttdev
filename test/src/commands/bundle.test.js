@@ -1,12 +1,6 @@
-import url        from 'url';
-
 import { expect } from 'chai';
-import { run }    from '@oclif/core';
 
-const runCLI = (args) =>
-{
-   return run(args, url.fileURLToPath(import.meta.url));
-}
+import runCLI     from '../../utils/runCLI.js';
 
 describe('command - bundle', () =>
 {

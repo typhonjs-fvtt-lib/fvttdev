@@ -13,32 +13,32 @@ const s_WIN_REGEX = /\\/g;
 
 describe('command - bundle', () =>
 {
-   // it('(rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
-   // {
-   //    await expect(runCLI(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
-   //     'Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0');
-   // });
-   //
-   // fancy
-   //    .stdout()
-   //    .do(async () => await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
-   //    .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', output => {
-   //
-   //       // Capture path from stdout the generatad log location.
-   //       const s_REGEX = /\[I\] Writing metafile logs to:\s(.*)$/gm;
-   //
-   //       const match = s_REGEX.exec(output.stdout);
-   //
-   //       assert.exists(match, 'regex match found');
-   //
-   //       const filepath = match[1];
-   //       assert.isTrue(fs.existsSync(filepath), 'log archive exists');
-   //
-   //       const stats = fs.statSync(filepath);
-   //       assert.isAbove(stats.size, 100, 'log archive has data');
-   //    })
+   it('(rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
+   {
+      await expect(runCLI(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
+       'Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0');
+   });
 
-   it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', async () =>
+   fancy
+      .stdout()
+      .do(async () => await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
+      .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', output => {
+
+         // Capture path from stdout the generatad log location.
+         const s_REGEX = /\[I\] Writing metafile logs to:\s(.*)$/gm;
+
+         const match = s_REGEX.exec(output.stdout);
+
+         assert.exists(match, 'regex match found');
+
+         const filepath = match[1];
+         assert.isTrue(fs.existsSync(filepath), 'log archive exists');
+
+         const stats = fs.statSync(filepath);
+         assert.isAbove(stats.size, 100, 'log archive has data');
+      })
+
+   it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', async (done) =>
    {
       try
       {
@@ -46,13 +46,11 @@ describe('command - bundle', () =>
       }
       catch(err)
       {
-         console.log(`THE ORIG ERROR MSG: \n${err.message}`);
-         console.log(`-----------------------`);
-         console.log(`THE REGEX ERROR MSG: ${err.message.replace(s_WIN_REGEX, '/')}`);
+         // Do any replacement necessary for Windows paths.
+         const errMessage = err.message.replace(s_WIN_REGEX, '/');
+         assert.strictEqual(errMessage, s_DATA_NOOP);
+         done();
       }
-
-      // await expect(runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop'])).to.be.rejectedWith(
-      //  NonFatalError, s_DATA_NOOP);
    });
 });
 

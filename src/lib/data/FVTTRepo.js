@@ -41,9 +41,9 @@ export default class FVTTRepo
       const allDirs = await FileUtil.getDirList({ dir: baseDir, skipDir: s_SKIP_DIRS });
       const allFiles = await FileUtil.getFileList({ dir: baseDir, skipDir: s_SKIP_DIRS });
 
-console.log(`!!FVTTRepo - allDirs:\n${JSON.stringify(allDirs)}`);
+console.log(`!!FVTTRepo - allDirs:\n${JSON.stringify(allDirs, null, 3)}`);
 console.log(`---------------------`);
-console.log(`!!FVTTRepo - allFiles:\n${JSON.stringify(allFiles)}`);
+console.log(`!!FVTTRepo - allFiles:\n${JSON.stringify(allFiles, null, 3)}`);
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);

@@ -1,4 +1,6 @@
 # fvttdev
+[![Build Status](https://github.com/typhonjs-fvtt/fvttdev/workflows/CI/CD/badge.svg)](#)
+[![Coverage](https://img.shields.io/codecov/c/github/typhonjs-fvtt/fvttdev.svg)](https://codecov.io/github/typhonjs-fvtt/fvttdev)
 
 ### Why?
 Provides a zero config build & bundle CLI tool for Foundry VTT based on Rollup and Oclif.
@@ -16,10 +18,11 @@ that supports ES Modules.
 
 In `package.json`:
 
-Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.9"`
+Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.11"`
 
 Note: If you have already installed a previous version delete node_modules before updating and reinstall all modules
-as a precautionary measure.
+as a precautionary measure as the experimental Oclif v2 form is linked directly from Github. This is mainly a concern
+if you happened to use a version of `fvttdev` before `0.0.10`.
 
 Add an NPM script: `"bundle-dev": "fvttdev bundle"`
 

@@ -12,8 +12,6 @@ import packageVersion      from '../../utils/packageVersion.js';
 
 import testMetafile        from '../../utils/api/testMetafile.js';
 
-
-
 const s_WIN_REGEX = /\\/g;
 
 describe('command - bundle', () =>

@@ -13,7 +13,7 @@
     "@typhonjs-fvtt/validate-manifest": "typhonjs-fvtt/validate-manifest",
     "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.2",
     "@typhonjs-node-utils/better-ajv-errors": "^0.0.7",
-    "@typhonjs-oclif/core": "^0.0.9",
+    "@typhonjs-oclif/core": "^0.0.10",
     "@typhonjs-oclif/errors": "^0.0.0",
     "fs-jetpack": "^4.0.0"
   },

@@ -33,17 +33,13 @@ export default class FVTTRepo
     * @param {string}   [baseDir] - The root directory to parse.
     * @param {string}   [origCWD] - The original CWD.
     *
-    * @private
+    * @returns {FVTTPackage} A parsed FVTTPackage.
     */
    static async parse(cliFlags, baseDir = '.', origCWD = '.')
    {
       const eventbus = globalThis.$$eventbus;
       const allDirs = await FileUtil.getDirList({ dir: baseDir, skipDir: s_SKIP_DIRS });
       const allFiles = await FileUtil.getFileList({ dir: baseDir, skipDir: s_SKIP_DIRS });
-
-console.log(`!!FVTTRepo - allDirs:\n${JSON.stringify(allDirs, null, 3)}`);
-console.log(`---------------------`);
-console.log(`!!FVTTRepo - allFiles:\n${JSON.stringify(allFiles, null, 3)}`);
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);

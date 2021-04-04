@@ -11,7 +11,7 @@
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-fvtt/validate-manifest": "typhonjs-fvtt/validate-manifest",
-    "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.2",
+    "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.3",
     "@typhonjs-node-utils/better-ajv-errors": "^0.0.7",
     "@typhonjs-oclif/core": "^0.0.10",
     "@typhonjs-oclif/errors": "^0.0.0",

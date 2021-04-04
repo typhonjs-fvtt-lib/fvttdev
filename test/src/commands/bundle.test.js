@@ -2,6 +2,7 @@ import fs                  from 'fs';
 
 import { assert, expect }  from 'chai';
 
+import jetpack             from 'fs-jetpack';
 import { fancy }           from 'fancy-test';
 
 import { NonFatalError }   from '@typhonjs-oclif/errors';
@@ -9,10 +10,19 @@ import { NonFatalError }   from '@typhonjs-oclif/errors';
 import runCLI              from '../../utils/runCLI.js';
 import packageVersion      from '../../utils/packageVersion.js';
 
+import testMetafile        from '../../utils/api/testMetafile.js';
+
+
+
 const s_WIN_REGEX = /\\/g;
 
 describe('command - bundle', () =>
 {
+   afterEach(() =>
+   {
+      jetpack.remove('./test/deploy');
+   });
+
    it('(rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
    {
       await expect(runCLI(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
@@ -22,21 +32,7 @@ describe('command - bundle', () =>
    fancy
       .stdout()
       .do(async () => await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
-      .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', output => {
-
-         // Capture path from stdout the generatad log location.
-         const s_REGEX = /\[I\] Writing metafile logs to:\s(.*)$/gm;
-
-         const match = s_REGEX.exec(output.stdout);
-
-         assert.exists(match, 'regex match found');
-
-         const filepath = match[1];
-         assert.isTrue(fs.existsSync(filepath), 'log archive exists');
-
-         const stats = fs.statSync(filepath);
-         assert.isAbove(stats.size, 100, 'log archive has data');
-      })
+      .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', testMetafile);
 
    it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', (done) =>
    {
@@ -48,7 +44,7 @@ describe('command - bundle', () =>
          const errMessage = err.message.replace(s_WIN_REGEX, '/');
          assert.strictEqual(errMessage, s_DATA_NOOP);
          done();
-      })
+      });
    });
 });
 

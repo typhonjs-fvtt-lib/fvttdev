@@ -72,6 +72,6 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
     "prepublishOnly": "oclif-dev manifest",
-    "test": "c8 --reporter=lcov --reporter=text-summary mocha -color \"test/src/**/*.test.js\" --timeout 10000"
+    "test": "c8 --reporter=lcov --reporter=text-summary mocha -color \"test/src/**/*.test.js\" --timeout 15000"
   }
 }

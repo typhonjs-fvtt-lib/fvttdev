@@ -38,7 +38,6 @@ export default class FVTTRepo
    static async parse(cliFlags, baseDir = '.', origCWD = '.')
    {
       const eventbus = globalThis.$$eventbus;
-
       const allDirs = await FileUtil.getDirList({ dir: baseDir, skipDir: s_SKIP_DIRS });
       const allFiles = await FileUtil.getFileList({ dir: baseDir, skipDir: s_SKIP_DIRS });
 

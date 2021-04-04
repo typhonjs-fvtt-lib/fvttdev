@@ -1,5 +1,3 @@
-import fs                  from 'fs';
-
 import { assert, expect }  from 'chai';
 
 import jetpack             from 'fs-jetpack';
@@ -8,6 +6,7 @@ import { fancy }           from 'fancy-test';
 import { NonFatalError }   from '@typhonjs-oclif/errors';
 
 import runCLI              from '../../utils/runCLI.js';
+
 import packageVersion      from '../../utils/packageVersion.js';
 
 import testMetafile        from '../../utils/api/testMetafile.js';
@@ -18,7 +17,7 @@ describe('command - bundle', () =>
 {
    afterEach(() =>
    {
-      jetpack.remove('./test/deploy');
+      // jetpack.remove('./test/deploy');
    });
 
    it('(rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
@@ -43,6 +42,23 @@ describe('command - bundle', () =>
          assert.strictEqual(errMessage, s_DATA_NOOP);
          done();
       });
+   });
+
+// -------------------------------------------------------------------------------------------------------------------
+
+   it('(success) bundle -e test --cwd=./test/fixture/demo-1entry', async () =>
+   {
+      await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry']);
+   });
+
+   it('(success) bundle -e test --cwd=./test/fixture/demo-1entry-ts', async () =>
+   {
+      await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry-ts']);
+   });
+
+   it('(success) bundle -e test --cwd=./test/fixture/demo-2entry', async () =>
+   {
+      await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-2entry']);
    });
 });
 

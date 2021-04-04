@@ -3,7 +3,7 @@ import { expect }          from 'chai';
 import { Errors }          from '@oclif/core';
 import { NonFatalError }   from '@typhonjs-oclif/errors';
 
-import runCLI     from '../../utils/runCLI.js';
+import runCLI              from '../../utils/runCLI.js';
 
 describe('API', () =>
 {

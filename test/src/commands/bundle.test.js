@@ -38,19 +38,17 @@ describe('command - bundle', () =>
          assert.isAbove(stats.size, 100, 'log archive has data');
       })
 
-   it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', async (done) =>
+   it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', (done) =>
    {
-      try
+      runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop']).catch((err) =>
       {
-         await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop']);
-      }
-      catch(err)
-      {
+         expect(err).to.be.an.instanceof(NonFatalError);
+
          // Do any replacement necessary for Windows paths.
          const errMessage = err.message.replace(s_WIN_REGEX, '/');
          assert.strictEqual(errMessage, s_DATA_NOOP);
          done();
-      }
+      })
    });
 });
 

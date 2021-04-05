@@ -1,7 +1,7 @@
 {
   "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "author": "typhonrt",
   "type": "module",
   "main": "src/index.js",
@@ -15,10 +15,10 @@
   "bugs": "https://github.com/typhonjs-fvtt/fvttdev/issues",
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
-    "@typhonjs-fvtt/validate-manifest": "typhonjs-fvtt/validate-manifest",
+    "@typhonjs-fvtt/validate-manifest": "0.0.0",
     "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.3",
     "@typhonjs-node-utils/better-ajv-errors": "^0.0.7",
-    "@typhonjs-oclif/core": "^0.0.11",
+    "@typhonjs-oclif/core": "^0.0.12",
     "@typhonjs-oclif/errors": "^0.0.0",
     "fs-jetpack": "^4.0.0"
   },
@@ -71,7 +71,7 @@
     "run-bundle-1entry-ts": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-1entry-ts",
     "run-bundle-2entry": "./bin/run.js bundle -e test --cwd=./test/fixture/demo-2entry",
     "run-validate-manifest-help": "./bin/run.js validate:manifest --help",
-    "run-validate-manifest": "./bin/run.js validate:manifest --noop",
+    "run-validate-manifest": "./bin/run.js validate:manifest",
     "run-validate-manifest-0": "./bin/run.js validate:manifest --cwd=./test/fixture/demo-0",
     "eslint": "eslint .",
     "postpack": "rm -f oclif.manifest.json",

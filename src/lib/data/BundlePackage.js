@@ -13,7 +13,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get allWatchFiles()
    {
@@ -21,7 +21,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {{ cssFilename: string, inputFilename: string, inputPath: string, outputPath: string, type: string }}
+    * @returns {{ cssFilename: string, inputFilename: string, inputPath: string, outputPath: string, type: string }} -
     */
    get bundleEntries()
    {
@@ -29,7 +29,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {object}
+    * @returns {object} -
     */
    get cliFlags()
    {
@@ -37,7 +37,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get deployDir()
    {
@@ -45,7 +45,7 @@ export default class BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get reverseRelativePath()
    {

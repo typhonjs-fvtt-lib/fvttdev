@@ -60,7 +60,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get inputType()
    {
@@ -68,7 +68,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get outputPath()
    {
@@ -76,7 +76,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get outputCSSFilename()
    {
@@ -84,7 +84,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get outputCSSFilepath()
    {
@@ -92,7 +92,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get reverseRelativePath()
    {
@@ -100,7 +100,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get type()
    {
@@ -108,7 +108,7 @@ export default class BundleEntry
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get watchFiles()
    {
@@ -118,7 +118,7 @@ export default class BundleEntry
    /**
     * Creates a limited string output of the BundleEntry data.
     *
-    * @returns {string}
+    * @returns {string} -
     */
    toStringNoop()
    {

@@ -6,7 +6,7 @@ import BundlePackage from './BundlePackage.js';
  * @type {string[]}
  */
 const s_TO_STRING_NOOP_KEYS = ['name', 'title', 'description', 'author', 'version', 'minimumCoreVersion',
-   'compatibleCoreVersion', 'url'];
+ 'compatibleCoreVersion', 'url'];
 
 /**
  */
@@ -24,7 +24,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get allDirs()
    {
@@ -32,7 +32,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get allFiles()
    {
@@ -40,7 +40,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get baseDir()
    {
@@ -48,7 +48,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get baseDirPath()
    {
@@ -56,7 +56,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {Map}
+    * @returns {Map} -
     */
    get copyMap()
    {
@@ -64,7 +64,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get dirs()
    {
@@ -72,7 +72,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get files()
    {
@@ -80,7 +80,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {object}
+    * @returns {object} -
     */
    get manifestData()
    {
@@ -88,7 +88,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get manifestFilename()
    {
@@ -96,7 +96,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get manifestPath()
    {
@@ -104,7 +104,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get manifestPathRelative()
    {
@@ -112,7 +112,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get manifestType()
    {
@@ -120,7 +120,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {object}
+    * @returns {object} -
     */
    get newManifestData()
    {
@@ -128,7 +128,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get newManifestFilepath()
    {
@@ -136,7 +136,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string[]}
+    * @returns {string[]} -
     */
    get npmFiles()
    {
@@ -144,7 +144,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get npmModulePath()
    {
@@ -152,7 +152,7 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
-    * @returns {string}
+    * @returns {string} -
     */
    get rootPath()
    {
@@ -176,7 +176,7 @@ export default class FVTTPackage extends BundlePackage
    /**
     * Construct the high level overview of this FVTT package.
     *
-    * @returns {string}
+    * @returns {string} -
     */
    toStringNoop()
    {

@@ -26,7 +26,7 @@ class ValidateManifestCommand extends DynamicCommand
    /**
     * Validates an FVTT Package.
     *
-    * @param {FVTTPackage} fvttPackage - fvttPackage to validate.
+    * @param {object} fvttPackage - (FVTTPackage) to validate.
     */
    validateManifest(fvttPackage)
    {

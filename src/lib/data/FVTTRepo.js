@@ -258,7 +258,7 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD)
  * @param {string}   esmodule - file name to test.
  * @param {object}   packageData - absolute file path.
  *
- * @returns {{inputBasename: string, inputExt: string, inputPath: string, inputType: string}}
+ * @returns {{inputBasename: string, inputExt: string, inputPath: string, inputType: string}} -
  * @throws NonFatalError
  */
 function s_RESOLVE_ESMODULE(esmodule, packageData)

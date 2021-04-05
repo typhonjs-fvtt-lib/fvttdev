@@ -5,7 +5,7 @@ import { fancy }           from 'fancy-test';
 
 import { NonFatalError }   from '@typhonjs-oclif/errors';
 
-import runCLI              from '../../utils/runCLI.js';
+import fvttdev             from '../../../src/index.js';
 
 import packageVersion      from '../../utils/packageVersion.js';
 
@@ -22,18 +22,18 @@ describe('command - bundle', () =>
 
    it('(rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
    {
-      await expect(runCLI(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
+      await expect(fvttdev(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
        'Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0');
    });
 
    fancy
       .stdout()
-      .do(async () => await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
+      .do(async () => await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
       .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', testMetafile);
 
    it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', (done) =>
    {
-      runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop']).catch((err) =>
+      fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop']).catch((err) =>
       {
          expect(err).to.be.an.instanceof(NonFatalError);
 
@@ -48,17 +48,17 @@ describe('command - bundle', () =>
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-1entry', async () =>
    {
-      await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry']);
+      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry']);
    });
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-1entry-ts', async () =>
    {
-      await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry-ts']);
+      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry-ts']);
    });
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-2entry', async () =>
    {
-      await runCLI(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-2entry']);
+      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-2entry']);
    });
 });
 

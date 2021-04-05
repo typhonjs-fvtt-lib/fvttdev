@@ -14,13 +14,7 @@ class ValidateManifestCommand extends DynamicCommand
     */
    async run()
    {
-      // Initialize the dynamic flags from all Oclif plugins & inspect FVTT module / system via FVTTRepo.
-      await super.initialize({ commands: ['validate:manifest'], event: 'typhonjs:fvttdev:system:fvttrepo:parse' });
-
       this.validateManifest(this.commandData);
-
-      // Finalize any actions for DynamicCommand; used for logging with `--metafile` flag.
-      await super.finalize();
    }
 
    /**
@@ -56,10 +50,14 @@ class ValidateManifestCommand extends DynamicCommand
    }
 }
 
-// On help / run load the following command flags.
-ValidateManifestCommand._flagCommands = ['validate:manifest'];
+ValidateManifestCommand._dynamicCommand =
+{
+   flagCommands: ['validate:manifest'],
+   eventData: 'typhonjs:fvttdev:system:fvttrepo:parse'
+};
 
 ValidateManifestCommand.description = `Validates a Foundry VTT package manifest
+
 ...
 Extra documentation goes here
 `;

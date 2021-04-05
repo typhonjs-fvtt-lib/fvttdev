@@ -5,7 +5,7 @@ import { Flags }         from '@oclif/core';
 
 import { NonFatalError } from '@typhonjs-oclif/errors';
 
-const s_DEFAULT_LOG_LEVEL = 'trace';  // TODO DEFAULT SHOULD BE INFO
+const s_DEFAULT_LOG_LEVEL = 'info';  // TODO DEFAULT SHOULD BE INFO
 
 const envVarPrefix = globalThis.$$cli_env_prefix;
 

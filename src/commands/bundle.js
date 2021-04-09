@@ -174,13 +174,13 @@ class BundleCommand extends DynamicCommand
     *
     * @returns {string} Bundle noop string.
     */
-   toStringNoop()
+   toString()
    {
       let results = '';
 
       for (const entry of this.commandData.bundleEntries)
       {
-         results += `${entry.toStringNoop()}\n`;
+         results += `${entry.toString()}\n`;
       }
 
       results += `deploy directory: ${this.commandData.deployDir}\n`;

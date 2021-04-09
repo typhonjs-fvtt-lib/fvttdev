@@ -1,7 +1,6 @@
 import fs                from 'fs';
 import path              from 'path';
 
-import { FileUtil }      from '@typhonjs-oclif/core';
 import { NonFatalError } from '@typhonjs-oclif/errors';
 
 import BundleData        from './BundleData.js';
@@ -15,7 +14,9 @@ const s_MODULE_REGEX    = /(.*)[\\\/]module\.json?/;
 const s_SYSTEM_REGEX    = /(.*)[\\\/]system\.json?/;
 /* eslint-enable no-useless-escape */
 
-const s_SKIP_DIRS = ['deploy', 'dist', 'node_modules'];
+const s_EXT_JS = new Set(['.js', '.mjs']);
+
+const s_SKIP_DIRS = new Set(['deploy', 'dist', 'node_modules']);
 
 /**
  * Searches for a Foundry VTT module or system in the root directory provided. Once either `module.json` or
@@ -38,8 +39,16 @@ export default class FVTTRepo
    static async parse(cliFlags, baseDir = '.', origCWD = '.')
    {
       const eventbus = globalThis.$$eventbus;
-      const allDirs = await FileUtil.getDirList({ dir: baseDir, skipDir: s_SKIP_DIRS });
-      const allFiles = await FileUtil.getFileList({ dir: baseDir, skipDir: s_SKIP_DIRS });
+
+      const allDirs = await eventbus.triggerAsync('typhonjs:util:file:list:dir:get', {
+         dir: baseDir,
+         skipDir: s_SKIP_DIRS
+      });
+
+      const allFiles = await eventbus.triggerAsync('typhonjs:util:file:list:file:get', {
+         dir: baseDir,
+         skipDir: s_SKIP_DIRS
+      });
 
       const packageData = new FVTTData(allDirs, allFiles, baseDir);
       const bundleData = new BundleData(cliFlags);
@@ -83,6 +92,8 @@ export default class FVTTRepo
  */
 function s_PARSE_FILES(packageData, bundleData, origCWD)
 {
+   const eventbus = globalThis.$$eventbus;
+
    let rootPath = null;
    let manifestPath = null;
    let manifestType = null;
@@ -142,7 +153,8 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    packageData.manifestData = manifestData;
    packageData.manifestFilename = manifestFilename;
    packageData.manifestPath = manifestPath;
-   packageData.manifestPathRelative = FileUtil.getRelativePath(origCWD, manifestPath);
+   packageData.manifestPathRelative = eventbus.triggerSync('typhonjs:util:file:path:relative:get',
+    origCWD, manifestPath);
    packageData.manifestType = manifestType;
    packageData.newManifestFilepath = `${bundleData.deployDir}${path.sep}${manifestFilename}`;
    packageData.rootPath = rootPath;
@@ -177,6 +189,8 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
  */
 function s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD)
 {
+   const eventbus = globalThis.$$eventbus;
+
    // Load all data for esmodules referenced
    for (const esmodule of packageData.manifestData.esmodules)
    {
@@ -192,7 +206,8 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD)
          inputExt,
          inputFilename,
          inputPath,
-         inputPathRelative: FileUtil.getRelativePath(origCWD, inputPath),
+         inputPathRelative: eventbus.triggerSync('typhonjs:util:file:path:relative:get', origCWD,
+          inputPath),
          inputType,
          outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
          outputCSSFilename,
@@ -211,6 +226,8 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD)
  */
 function s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD)
 {
+   const eventbus = globalThis.$$eventbus;
+
    // Load all data for npm files / bundles referenced
    if (packageData.npmFiles.length > 0)
    {
@@ -240,7 +257,7 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD)
             format: 'es',
             inputFilename,
             inputPath,
-            inputPathRelative: FileUtil.getRelativePath(origCWD, inputPath),
+            inputPathRelative: eventbus.triggerSync('typhonjs:util:file:path:relative:get', origCWD, inputPath),
             outputPath,
             outputCSSFilename: null,
             outputCSSFilepath: null,
@@ -266,7 +283,7 @@ function s_RESOLVE_ESMODULE(esmodule, packageData)
    const extension = path.extname(esmodule);
 
    // The entry in esmodules attribute is not a JS file.
-   if (!FileUtil.isJS(extension))
+   if (!s_EXT_JS.has(extension))
    {
       throw new NonFatalError(
        `Detected a non JS module filename '${esmodule}' in 'esmodules' entry in '${packageData.manifestFilename}':\n` +

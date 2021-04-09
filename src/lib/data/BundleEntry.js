@@ -120,7 +120,7 @@ export default class BundleEntry
     *
     * @returns {string} -
     */
-   toStringNoop()
+   toString()
    {
       let results = `bundle type: ${this.type}\n`;
       results += `input path: ${this.inputPathRelative}\n`;

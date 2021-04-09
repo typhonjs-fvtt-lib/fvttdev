@@ -178,7 +178,7 @@ export default class FVTTPackage extends BundlePackage
     *
     * @returns {string} -
     */
-   toStringNoop()
+   toString()
    {
       const md = this.manifestData;
 

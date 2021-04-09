@@ -1,8 +1,8 @@
-import { Flags }           from '@oclif/core';
+import { Flags }                 from '@oclif/core';
 
-import { NonFatalError }   from '@typhonjs-oclif/errors';
+import { DynamicCommandFlags }   from '@typhonjs-oclif/core';
+import { NonFatalError }         from '@typhonjs-oclif/errors';
 
-import StandardFlags       from '../flags/StandardFlags.js';
 
 /**
  */
@@ -48,7 +48,7 @@ export default class BundleUtil
       const envVarPrefix = globalThis.$$cli_env_prefix;
 
       const flagOptions = {
-         ...StandardFlags.flags,
+         ...DynamicCommandFlags.flags,
 
          'deploy': Flags.string({
             'char': 'd',
@@ -134,7 +134,7 @@ export default class BundleUtil
          }
       }
 
-      globalThis.$$eventbus.trigger('typhonjs:oclif:system:flaghandler:add', {
+      globalThis.$$eventbus.trigger('typhonjs:oclif:handler:flag:add', {
          command: 'bundle',
          pluginName: options.pluginName,
          flags: flagOptions,
@@ -146,7 +146,7 @@ export default class BundleUtil
           */
          verify: function(flags)
          {
-            StandardFlags.verify(flags);
+            DynamicCommandFlags.verify(flags);
          }
       });
    }

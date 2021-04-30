@@ -1,8 +1,8 @@
 {
   "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
-  "version": "0.0.12",
-  "author": "typhonrt",
+  "version": "0.0.14",
+  "author": "Michael Leahy <support@typhonjs.io> (https://github.com/typhonrt)",
   "type": "module",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -12,19 +12,21 @@
   "exports": {
     ".": "./src/index.js"
   },
-  "bugs": "https://github.com/typhonjs-fvtt/fvttdev/issues",
+  "contributors": [
+    "Michael Leahy <support@typhonjs.io> (https://github.com/typhonrt)"
+  ],
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-fvtt/validate-manifest": "0.0.0",
-    "@typhonjs-node-rollup/plugin-bundle-core": "^0.0.3",
-    "@typhonjs-node-utils/better-ajv-errors": "^0.0.7",
-    "@typhonjs-oclif/core": "^0.0.13",
+    "@typhonjs-oclif-rollup/plugin-bundle-core": "^0.0.0",
+    "@typhonjs-oclif/core": "^0.0.17",
     "@typhonjs-oclif/errors": "^0.0.0",
+    "@typhonjs-utils/better-ajv-errors": "^0.0.9",
     "fs-jetpack": "^4.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
-    "@typhonjs-node-utils/build-test": "^0.1.0",
+    "@typhonjs-utils/build-test": "^0.1.0",
     "fancy-test": "^1.4.10"
   },
   "engines": {
@@ -58,10 +60,11 @@
     },
     "bin": "fvttdev",
     "plugins": [
-      "@typhonjs-node-rollup/plugin-bundle-core"
+      "@typhonjs-oclif-rollup/plugin-bundle-core"
     ]
   },
-  "repository": "typhonjs-fvtt/fvttdev",
+  "bugs": "https://github.com/typhonjs-fvtt/fvttdev/issues",
+  "repository": "github:typhonjs-fvtt/fvttdev",
   "scripts": {
     "run-debug-help-bundle": "env DEBUG=* ./bin/run.js bundle --help",
     "run-debug-help-validate:manifest": "env DEBUG=* ./bin/run.js validate:manifest --help",

@@ -3,7 +3,6 @@ import { Flags }                 from '@oclif/core';
 import { DynamicCommandFlags }   from '@typhonjs-oclif/core';
 import { NonFatalError }         from '@typhonjs-oclif/errors';
 
-
 /**
  */
 export default class BundleUtil
@@ -134,7 +133,7 @@ export default class BundleUtil
          }
       }
 
-      globalThis.$$eventbus.trigger('typhonjs:oclif:handler:flag:add', {
+      globalThis.$$eventbus.trigger('typhonjs:oclif:system:handler:flag:add', {
          command: 'bundle',
          pluginName: options.pluginName,
          flags: flagOptions,

@@ -42,7 +42,7 @@ class ValidateManifestCommand extends DynamicCommand
       {
          const file = fs.readFileSync(fvttPackage.manifestPath, 'utf-8');
 
-         const print = globalThis.$$eventbus.triggerSync('typhonjs:util:better:ajv:errors:as:string', result.errors,
+         const print = globalThis.$$eventbus.triggerSync('typhonjs:utils:better:ajv:errors:as:string', result.errors,
           { file });
 
          console.log(print);

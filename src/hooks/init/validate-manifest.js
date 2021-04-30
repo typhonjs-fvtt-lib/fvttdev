@@ -1,9 +1,8 @@
 import { Flags }                 from '@oclif/core';
 import { DynamicCommandFlags }   from '@typhonjs-oclif/core';
 
-import BetterErrors              from '@typhonjs-node-utils/better-ajv-errors';
+import BetterErrors              from '@typhonjs-utils/better-ajv-errors';
 import ValidateManifest          from '@typhonjs-fvtt/validate-manifest/ValidateManifest';
-
 
 /**
  * Note: This is defined as an explicit init function so that it executes before all plugin init functions.
@@ -18,8 +17,8 @@ export default async function(options)
 {
    globalThis.$$eventbus.trigger('log:debug', `explicit validate:manifest command init hook running '${options.id}'.`);
 
-   globalThis.$$pluginManager.add({ name: '@typhonjs-node-utils/better-ajv-errors', instance: BetterErrors });
-   globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/validate-manifest', instance: ValidateManifest });
+   await globalThis.$$pluginManager.add({ name: '@typhonjs-node-utils/better-ajv-errors', instance: BetterErrors });
+   await globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/validate-manifest', instance: ValidateManifest });
 
    const flagOptions = {
       ...DynamicCommandFlags.flags,
@@ -35,7 +34,7 @@ export default async function(options)
       }),
    };
 
-   global.$$eventbus.trigger('typhonjs:oclif:handler:flag:add', {
+   global.$$eventbus.trigger('typhonjs:oclif:system:handler:flag:add', {
       command: 'validate:manifest',
       pluginName: 'fvttdev',
       flags: flagOptions,

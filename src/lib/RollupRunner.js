@@ -73,7 +73,7 @@ export default class RollupRunner
       if (remoteInputPlugins !== void 0)
       {
          if (!Array.isArray(remoteInputPlugins)) { inputPlugins.push(remoteInputPlugins); }
-         else { inputPlugins = remoteInputPlugins.flat().filter((entry) => entry !== void 0); }
+         else { inputPlugins = remoteInputPlugins.flat(); }
       }
 
       // Log a debug statement
@@ -85,7 +85,7 @@ export default class RollupRunner
       // Output ---------------------------------------------------------------------
 
       const remoteOutputPlugins = await eventbus.triggerAsync(
-         `typhonjs:oclif:bundle:plugins:${currentBundle.type}:output:get`, bundleData, currentBundle);
+       `typhonjs:oclif:bundle:plugins:${currentBundle.type}:output:get`, bundleData, currentBundle);
 
       let outputPlugins = [];
 
@@ -93,7 +93,7 @@ export default class RollupRunner
       if (remoteOutputPlugins !== void 0)
       {
          if (!Array.isArray(remoteOutputPlugins)) { outputPlugins.push(remoteOutputPlugins); }
-         else { outputPlugins = remoteOutputPlugins.flat().filter((entry) => entry !== void 0); }
+         else { outputPlugins = remoteOutputPlugins.flat(); }
       }
 
       // Log a debug statement

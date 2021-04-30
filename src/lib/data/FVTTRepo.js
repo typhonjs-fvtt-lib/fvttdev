@@ -40,12 +40,12 @@ export default class FVTTRepo
    {
       const eventbus = globalThis.$$eventbus;
 
-      const allDirs = await eventbus.triggerAsync('typhonjs:util:file:list:dir:get', {
+      const allDirs = await eventbus.triggerAsync('typhonjs:utils:file:list:dir:get', {
          dir: baseDir,
          skipDir: s_SKIP_DIRS
       });
 
-      const allFiles = await eventbus.triggerAsync('typhonjs:util:file:list:file:get', {
+      const allFiles = await eventbus.triggerAsync('typhonjs:utils:file:list:file:get', {
          dir: baseDir,
          skipDir: s_SKIP_DIRS
       });
@@ -153,7 +153,7 @@ function s_PARSE_FILES(packageData, bundleData, origCWD)
    packageData.manifestData = manifestData;
    packageData.manifestFilename = manifestFilename;
    packageData.manifestPath = manifestPath;
-   packageData.manifestPathRelative = eventbus.triggerSync('typhonjs:util:file:path:relative:get',
+   packageData.manifestPathRelative = eventbus.triggerSync('typhonjs:utils:file:path:relative:get',
     origCWD, manifestPath);
    packageData.manifestType = manifestType;
    packageData.newManifestFilepath = `${bundleData.deployDir}${path.sep}${manifestFilename}`;
@@ -206,7 +206,7 @@ function s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD)
          inputExt,
          inputFilename,
          inputPath,
-         inputPathRelative: eventbus.triggerSync('typhonjs:util:file:path:relative:get', origCWD,
+         inputPathRelative: eventbus.triggerSync('typhonjs:utils:file:path:relative:get', origCWD,
           inputPath),
          inputType,
          outputPath: `${bundleData.deployDir}${path.sep}${esmodule}`,
@@ -257,7 +257,7 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD)
             format: 'es',
             inputFilename,
             inputPath,
-            inputPathRelative: eventbus.triggerSync('typhonjs:util:file:path:relative:get', origCWD, inputPath),
+            inputPathRelative: eventbus.triggerSync('typhonjs:utils:file:path:relative:get', origCWD, inputPath),
             outputPath,
             outputCSSFilename: null,
             outputCSSFilepath: null,

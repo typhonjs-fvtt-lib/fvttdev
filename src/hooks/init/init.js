@@ -12,9 +12,12 @@ export default async function(options)
    {
       globalThis.$$eventbus.trigger('log:debug', `fvttdev init hook running '${options.id}'.`);
 
-      globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
+      await globalThis.$$pluginManager.add({ name: '@typhonjs-fvtt/fvttrepo', instance: FVTTRepo });
 
-      globalThis.$$pluginManager.add({ name: '@typhonjs-node-rollup/rollup-runner', instance: new RollupRunner() });
+      await globalThis.$$pluginManager.add({
+         name: '@typhonjs-node-rollup/rollup-runner',
+         instance: new RollupRunner()
+      });
    }
    catch (error)
    {

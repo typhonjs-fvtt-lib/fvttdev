@@ -1,5 +1,8 @@
 import { assert, expect }  from 'chai';
 
+import spawn               from 'cross-spawn';
+import stringio            from '@rauschma/stringio';
+
 import jetpack             from 'fs-jetpack';
 import fancy               from 'fancy-test';
 
@@ -17,10 +20,26 @@ describe('command - bundle', () =>
 {
    afterEach(() =>
    {
-      // jetpack.remove('./test/deploy');
+      jetpack.remove('./test/deploy');
    });
 
-   it('(rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
+   it('(CLI / rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
+   {
+      let data = '';
+      const cli = spawn('./bin/run.js', ['bundle', '--cwd=./test/fixture/demo-0']);
+      cli.stdout.on('data', (chunk) => { data += chunk; });
+
+      try
+      {
+         await stringio.onExit(cli);
+      }
+      catch (err) { /* noop */ }
+
+      assert.strictEqual(data,
+       '\u001b[31m[E] Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0\u001b[0m\n');
+   });
+
+   it('(API / rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
    {
       await expect(fvttdev(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
        'Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0');

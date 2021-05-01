@@ -18,8 +18,8 @@
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-fvtt/validate-manifest": "0.0.0",
-    "@typhonjs-oclif-rollup/plugin-bundle-core": "^0.0.0",
-    "@typhonjs-oclif/core": "^0.0.18",
+    "@typhonjs-oclif-rollup/plugin-bundle-core": "^0.0.1",
+    "@typhonjs-oclif/core": "^0.0.19",
     "@typhonjs-oclif/errors": "^0.0.0",
     "@typhonjs-utils/better-ajv-errors": "^0.0.9",
     "fs-jetpack": "^4.0.0"
@@ -30,8 +30,7 @@
     "fancy-test": "^1.4.10"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/bin",

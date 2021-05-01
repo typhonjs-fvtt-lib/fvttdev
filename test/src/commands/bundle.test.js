@@ -1,7 +1,7 @@
 import { assert, expect }  from 'chai';
 
 import jetpack             from 'fs-jetpack';
-import { fancy }           from 'fancy-test';
+import fancy               from 'fancy-test';
 
 import { NonFatalError }   from '@typhonjs-oclif/errors';
 
@@ -26,7 +26,7 @@ describe('command - bundle', () =>
        'Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0');
    });
 
-   fancy
+   fancy.fancy
       .stdout()
       .do(async () => await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
       .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', testMetafile);

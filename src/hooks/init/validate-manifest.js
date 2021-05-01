@@ -1,4 +1,4 @@
-import { Flags }                 from '@oclif/core';
+import oclif                     from '@oclif/core';
 import { DynamicCommandFlags }   from '@typhonjs-oclif/core';
 
 import BetterErrors              from '@typhonjs-utils/better-ajv-errors';
@@ -23,12 +23,12 @@ export default async function(options)
    const flagOptions = {
       ...DynamicCommandFlags.flags,
 
-      loose: Flags.boolean({
+      loose: oclif.Flags.boolean({
          'description': `Perform loose validation / check types only.`,
          'default': false
       }),
 
-      plus: Flags.boolean({
+      plus: oclif.Flags.boolean({
          'description': `Validate against manifest+ specification.`,
          'default': false
       }),

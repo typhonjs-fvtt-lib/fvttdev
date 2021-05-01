@@ -1,6 +1,6 @@
 import url                 from 'url';
 
-import { run }             from '@oclif/core';
+import oclif               from '@oclif/core';
 import { finallyHandler }  from '@typhonjs-oclif/core';
 
 /**
@@ -12,5 +12,5 @@ import { finallyHandler }  from '@typhonjs-oclif/core';
  */
 export default async function fvttdev(args)
 {
-   return run(args, url.fileURLToPath(import.meta.url)).finally(finallyHandler);
+   return oclif.run(args, url.fileURLToPath(import.meta.url)).finally(finallyHandler);
 }

@@ -1,4 +1,4 @@
-import { Flags }                 from '@oclif/core';
+import oclif                     from '@oclif/core';
 
 import { DynamicCommandFlags }   from '@typhonjs-oclif/core';
 import { NonFatalError }         from '@typhonjs-oclif/errors';
@@ -49,17 +49,17 @@ export default class BundleUtil
       const flagOptions = {
          ...DynamicCommandFlags.flags,
 
-         'deploy': Flags.string({
+         'deploy': oclif.Flags.string({
             'char': 'd',
             'description': 'Directory to deploy build files into.',
             'default': './dist',
             'env': `${envVarPrefix}_DEPLOY_PATH`
          }),
 
-         'entry': Flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
+         'entry': oclif.Flags.string({ 'char': 'i', 'description': 'Explicit entry module(s).' }),
 
          // Specifies external imports that are ignored; see Rollup config input.external
-         'external': Flags.string({
+         'external': oclif.Flags.string({
             'description': 'Specifies external import references which are ignored.',
             'multiple': true,
             'default': function(context)
@@ -93,14 +93,14 @@ export default class BundleUtil
             }
          }),
 
-         'ignore-local-config': Flags.boolean({
+         'ignore-local-config': oclif.Flags.boolean({
             'description': 'Ignores all local configuration files using the provided defaults.',
             'default': false
          }),
 
          // By default sourcemap is set to true, but if the environment variable `DEPLOY_SOURCEMAP` is defined as
          // 'true' or 'false' that will determine the setting for sourcemap.
-         'sourcemap': Flags.boolean({
+         'sourcemap': oclif.Flags.boolean({
             'description': '[default: true] Generate source maps.',
             'allowNo': true,
             'default': function(context)
@@ -119,7 +119,7 @@ export default class BundleUtil
             }
          }),
 
-         'watch': Flags.boolean({
+         'watch': oclif.Flags.boolean({
             'description': 'Continually build / bundle source to deploy directory.',
             'default': false
          }),

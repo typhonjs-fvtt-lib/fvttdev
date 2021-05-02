@@ -79,6 +79,11 @@ describe('command - bundle', () =>
    {
       await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-2entry']);
    });
+
+   it('(success) bundle -e test --cwd=./test/fixture/demo-node-resolve-babel', async () =>
+   {
+      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-node-resolve-babel']);
+   });
 });
 
 const s_DATA_NOOP = `-----------------------------------

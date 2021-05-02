@@ -1,0 +1,8 @@
+// dialog.scss - Uses the ID / DemoFVTTDevDialog assigned via DemoDialog.js and the default `dialog-content` class.
+@use 'base';
+
+#DemoFVTTDevDialog .dialog-content {
+  color: base.$primary-color;
+  font-family: base.$font-stack;
+  font-size: base.$font-size;
+}

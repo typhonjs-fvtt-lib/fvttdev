@@ -18,7 +18,7 @@ that supports ES Modules.
 
 In `package.json`:
 
-Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.15"`
+Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.16"`
 
 Note: If you have already installed a previous version delete node_modules before updating and reinstall all modules
 as a precautionary measure as the experimental Oclif v2 fork is linked directly from Github. This is mainly a concern

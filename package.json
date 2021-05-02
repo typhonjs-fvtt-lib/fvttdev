@@ -1,7 +1,7 @@
 {
   "name": "@typhonjs-fvtt/fvttdev",
   "description": "Provides a zero config CLI build tool for Foundry VTT modules / systems based on Rollup and Oclif",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "author": "Michael Leahy <support@typhonjs.io> (https://github.com/typhonrt)",
   "type": "module",
   "main": "src/index.js",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@oclif/core": "git+https://github.com/typhonjs-oclif/core-esm.git",
     "@typhonjs-fvtt/validate-manifest": "0.0.0",
-    "@typhonjs-oclif-rollup/plugin-bundle-core": "^0.0.1",
+    "@typhonjs-oclif-rollup/plugin-bundle-core": "^0.0.2",
     "@typhonjs-oclif/core": "^0.0.19",
     "@typhonjs-oclif/errors": "^0.0.0",
     "@typhonjs-utils/better-ajv-errors": "^0.0.9",
@@ -27,7 +27,8 @@
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
     "@typhonjs-utils/build-test": "^0.1.0",
-    "fancy-test": "^1.4.10"
+    "fancy-test": "^1.4.10",
+    "unique-names-generator": "^4.0.0"
   },
   "engines": {
     "node": ">=14.0.0"

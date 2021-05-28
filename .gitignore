@@ -4,6 +4,7 @@ npm-debug.log
 *-debug.log
 *-error.log
 /coverage
-/test/deploy
 /dist
+/lib
+/test/deploy
 node_modules

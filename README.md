@@ -22,11 +22,14 @@ planned for future release.
 
 ### Roadmap
 
-(5/28/21): I just got significant ES Module support into Oclif v2 which is still in beta, but powers `fvttdev`. 
+(05/28/21): I just got significant ES Module support into Oclif v2 which is still in beta, but powers `fvttdev`. 
 `fvttdev` is the first non-trivial ESM Oclif CLI. So with ESM support now mainline in the latest Oclif v2 beta I 
 look forward to rapid progress in the coming months. Outside of a beta launch likely mid-summer longer term goals
 aim to support the unbundle dev cycle w/ hot module replacement (HMR) in addition to already solid production 
 bundling.
+
+All build tooling is current as of `05.28.21` including Typescript (4.3.2), Babel (7.14.3) and PostCSS / Sass / Less / 
+Stylus.
 
 ### Warning
 This an alpha stage project, but a stable release on NPM is available. The bundle command works really well, but docs, 
@@ -36,7 +39,7 @@ tutorials, and more information and final polish plus other commands are forthco
 
 In `package.json`:
 
-Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.17"`
+Add to devDependencies: `"@typhonjs-fvtt/fvttdev": "0.0.18"`
 
 Note: If you have already installed a previous version delete node_modules and any `package-lock.json` file before 
 updating and reinstall all modules as a precautionary measure since `fvttdev` just switched to the mainline Oclif v2 

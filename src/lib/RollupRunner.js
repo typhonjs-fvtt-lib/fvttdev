@@ -54,13 +54,17 @@ export default class RollupRunner
       const config = {
          input: {
             input: currentBundle.inputPath,
-            external: bundleData.cliFlags.external
          },
          output: {
             file: currentBundle.outputPath,
             format: currentBundle.format
          }
       };
+
+      // TODO: Temporary fix for recent @rollup/plugin-node-resolve change. Temporary fix is to only add any
+      // user defined external data to NPM bundles; all other bundles receive all external data (cli + NPM).
+      // https://github.com/rollup/plugins/pull/799
+      config.input.external = currentBundle.type === 'npm' ? bundleData.cliFlags.external : bundleData.allExternal;
 
       // Retrieve configured input plugins from Oclif plugins based on passed in `config.flags`.
 

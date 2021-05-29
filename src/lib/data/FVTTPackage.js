@@ -32,6 +32,14 @@ export default class FVTTPackage extends BundlePackage
    }
 
    /**
+    * @returns {*[]} -
+    */
+   get allExternal()
+   {
+      return this._packageData.allExternal;
+   }
+
+   /**
     * @returns {string[]} -
     */
    get allFiles()
@@ -141,6 +149,14 @@ export default class FVTTPackage extends BundlePackage
    get npmFiles()
    {
       return this._packageData.npmFiles;
+   }
+
+   /**
+    * @returns {RegExp[]} -
+    */
+   get npmExternal()
+   {
+      return this._packageData.npmExternal;
    }
 
    /**

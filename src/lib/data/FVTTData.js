@@ -20,6 +20,20 @@ export default class FVTTData
       this.dirs =  [];
       this.files = [];
 
+      /**
+       * Stores the generated regex for NPM bundle exclusion. Must not be included in NPM bundles.
+       *
+       * @type {RegExp[]}
+       */
+      this.npmExternal = [];
+
+      /**
+       * Stores all cliFlags external array and npmExternal which is combined after parsing.
+       *
+       * @type {*[]}
+       */
+      this.allExternal = [];
+
       this.manifestData = null;
       this.manifestFilename = null;
       this.manifestPath = null;

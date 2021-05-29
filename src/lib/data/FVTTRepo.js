@@ -59,6 +59,10 @@ export default class FVTTRepo
 
       s_PARSE_MAIN_BUNDLES(packageData, bundleData, origCWD);
 
+      // Combine cliFlags external data w/ NPM generated external data.
+      packageData.allExternal.push(...bundleData.cliFlags.external);
+      packageData.allExternal.push(...packageData.npmExternal);
+
       const fvttPackage = new FVTTPackage(packageData, bundleData);
 
       // Allow any plugins to potentially process package & bundle data.
@@ -240,7 +244,7 @@ function s_PARSE_NPM_BUNDLES(packageData, bundleData, origCWD)
          // Add a regex and escape it for the name of the file / NPM module to external.
          const regex = `${path.sep}npm${path.sep}${inputFilename}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-         bundleData.cliFlags.external.push(new RegExp(regex));
+         packageData.npmExternal.push(new RegExp(regex));
 
          // Verify that the file could be found.
          if (!fs.existsSync(inputPath))

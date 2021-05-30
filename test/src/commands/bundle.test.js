@@ -41,18 +41,18 @@ describe('command - bundle', () =>
 
    it('(API / rejected / NonFatalError) bundle --cwd=./test/fixture/demo-0', async () =>
    {
-      await expect(fvttdev(['bundle', '--cwd=./test/fixture/demo-0'])).to.be.rejectedWith(NonFatalError,
+      await expect(fvttdev('bundle', '--cwd=./test/fixture/demo-0')).to.be.rejectedWith(NonFatalError,
        'Could not find a Foundry VTT module or system in file path: \n./test/fixture/demo-0');
    });
 
    fancy.fancy
       .stdout()
-      .do(async () => await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile']))
+      .do(async () => await fvttdev('bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--metafile'))
       .it('(created log archive) bundle -e test --cwd=./test/fixture/demo-1entry --metafile', testMetafile);
 
    it('(rejected / NonFatalError / noop info) bundle -e test --cwd=./test/fixture/demo-1entry --noop', (done) =>
    {
-      fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop']).catch((err) =>
+      fvttdev('bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry', '--noop').catch((err) =>
       {
          expect(err).to.be.an.instanceof(NonFatalError);
 
@@ -67,22 +67,22 @@ describe('command - bundle', () =>
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-1entry', async () =>
    {
-      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry']);
+      await fvttdev('bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry');
    });
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-1entry-ts', async () =>
    {
-      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry-ts']);
+      await fvttdev('bundle', '-e', 'test', '--cwd=./test/fixture/demo-1entry-ts');
    });
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-2entry', async () =>
    {
-      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-2entry']);
+      await fvttdev('bundle', '-e', 'test', '--cwd=./test/fixture/demo-2entry');
    });
 
    it('(success) bundle -e test --cwd=./test/fixture/demo-node-resolve-babel', async () =>
    {
-      await fvttdev(['bundle', '-e', 'test', '--cwd=./test/fixture/demo-node-resolve-babel']);
+      await fvttdev('bundle', '-e', 'test', '--cwd=./test/fixture/demo-node-resolve-babel');
    });
 });
 
